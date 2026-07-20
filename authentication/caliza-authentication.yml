@@ -1,0 +1,54 @@
+generated: '2026-07-18'
+method: searched
+source: https://docs.caliza.com/docs/authenticate
+docs: https://docs.caliza.com/reference/authentication-1
+summary:
+  types: [oauth2, openIdConnect]
+  oauth2_flows: [password, authorizationCode, clientCredentials]
+  token_transport: bearer
+  identity_provider: Keycloak (realm "caliza")
+schemes:
+- name: OAuth2
+  type: oauth2
+  description: >-
+    Caliza uses OAuth 2.0 / OpenID Connect backed by Keycloak. The documented
+    quickstart uses the Resource Owner Password Credentials grant
+    (grant_type=password) with a client_id + client_secret (from the dashboard
+    under Settings > API Credentials) plus a username + password. The token
+    response returns an access_token (JWT, ~86400s TTL), a refresh_token, and
+    token_type "Bearer". The Keycloak discovery document additionally advertises
+    authorization_code, client_credentials, refresh_token, implicit, CIBA and
+    device_code grants.
+  flows:
+  - flow: password
+    tokenUrl: https://api.caliza.com/auth/realms/caliza/protocol/openid-connect/token
+    documented: true
+  - flow: authorizationCode
+    authorizationUrl: https://api.caliza.com/auth/realms/caliza/protocol/openid-connect/auth
+    tokenUrl: https://api.caliza.com/auth/realms/caliza/protocol/openid-connect/token
+    pkce: [S256, plain]
+    advertised: true
+  - flow: clientCredentials
+    tokenUrl: https://api.caliza.com/auth/realms/caliza/protocol/openid-connect/token
+    advertised: true
+  endpoints:
+    issuer: https://api.caliza.com/auth/realms/caliza
+    token: https://api.caliza.com/auth/realms/caliza/protocol/openid-connect/token
+    authorization: https://api.caliza.com/auth/realms/caliza/protocol/openid-connect/auth
+    userinfo: https://api.caliza.com/auth/realms/caliza/protocol/openid-connect/userinfo
+    jwks: https://api.caliza.com/auth/realms/caliza/protocol/openid-connect/certs
+    sandbox_token: https://api.sandbox.caliza.com/auth/realms/caliza/protocol/openid-connect/token
+  token_endpoint_auth_methods:
+  - private_key_jwt
+  - client_secret_basic
+  - client_secret_post
+  - tls_client_auth
+  - client_secret_jwt
+request_authorization:
+  header: Authorization
+  format: 'Bearer {access_token}'
+notes: >-
+  Every Core API request carries Authorization: Bearer {access_token}. Access
+  tokens are JWTs signed by the Keycloak realm; verify against the jwks endpoint.
+  Realm roles observed in issued tokens include ROLE_INTEGRATOR,
+  ROLE_CREATE_TRANSACTIONS, ROLE_VIEW_ACTIVITY and ROLE_MANAGE_PAYMENT_CONTACTS.
