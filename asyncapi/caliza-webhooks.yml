@@ -1,0 +1,63 @@
+generated: '2026-07-18'
+method: searched
+source: https://docs.caliza.com/docs/webhook-events
+spec_type: Webhooks
+docs:
+- https://docs.caliza.com/docs/webhooks
+- https://docs.caliza.com/docs/webhook-events
+- https://docs.caliza.com/docs/webhook-signature-validation-guide
+delivery:
+  transport: HTTPS POST to the integrator-configured callback URL
+  configure_operation: updateWebhookConfig (POST /v1/integrators/{integratorId}/webhooks)
+  get_config_operation: getIntegratorWebhooks
+  secret_operations: [getIntegratorWebhookSecret, updateIntegratorWebhookSecret]
+  requirement: Endpoint must respond 200 OK within 5 seconds.
+  retry: Retries on non-2xx / timeout (retry settings in webhook config).
+security:
+  signature_header: X-Caliza-Webhook-Signature
+  algorithm: HMAC-SHA256 over the raw request body, Base64-encoded
+  verification: Recompute HMAC with the webhook secret and constant-time compare against the header.
+envelope:
+  detail: Every webhook shares a common envelope; the data field shape varies by event type.
+events:
+- {name: TRANSACTION_COMPLETED, group: transaction, data: transaction object}
+- {name: TRANSACTION_FAILED, group: transaction, data: transaction object}
+- {name: TRANSACTION_EXPIRED, group: transaction, data: transaction object}
+- {name: TRANSACTION_UNDER_REVIEW, group: transaction, data: transaction object}
+- {name: TRANSACTION_REFUNDED, group: transaction, data: transaction object}
+- {name: TRANSACTION_UETR, group: transaction, data: SWIFT UETR tracking reference}
+- {name: CRYPTO_DEPOSIT_RECEIVED, group: transaction, data: transaction object with on-chain hash}
+- {name: PAYMENT_IN_COMPLETED, group: transaction, data: transaction object with payInSender details}
+- {name: PAY_IN_ACCOUNT_CREATED, group: account, data: virtual/pay-in account}
+- {name: BENEFICIARY_APPROVED, group: beneficiary, data: beneficiary}
+- {name: BENEFICIARY_FAILED, group: beneficiary, data: beneficiary}
+- {name: RECIPIENT_DATA_UPDATE_REQUIRED, group: recipient, data: recipient}
+- {name: SWEEP_PAYOUT_STARTED, group: sweep, data: sweep payout}
+- {name: SWEEP_PAYOUT_COMPLETED, group: sweep, data: sweep payout}
+- {name: SWEEP_PAYOUT_REFUNDED, group: sweep, data: sweep payout}
+- {name: SWEEP_PAYOUT_INTERNAL_TRANSFER_FAILED, group: sweep, data: sweep payout}
+transaction_data_fields:
+- id
+- simulationId
+- integratorId
+- beneficiaryId
+- from
+- to
+- totalFees
+- totalTaxes
+- status
+- exchangeRate
+- flowOfFundsId
+- fiatAccountId
+- recipientId
+- depositTransactionHash
+- withdrawalTransactionHash
+- uetr
+- rejectionReason
+- sweepPayoutId
+- payInSender
+pay_in_rails: [ACH, WIRE, SWIFT, RTP]
+notes: >-
+  Caliza publishes a webhook event catalog but no machine-readable AsyncAPI
+  document; this artifact captures the documented event surface. No standalone
+  AsyncAPI spec was found on the provider's site or GitHub.

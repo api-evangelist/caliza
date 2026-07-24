@@ -1,0 +1,48 @@
+generated: '2026-07-18'
+method: searched
+source: https://api.caliza.com/auth/realms/caliza/.well-known/openid-configuration
+docs: https://docs.caliza.com/docs/authenticate
+schemes:
+- name: OAuth2 (Keycloak realm "caliza")
+  source: well-known/caliza-openid-configuration.json
+  flows:
+  - flow: password
+    tokenUrl: https://api.caliza.com/auth/realms/caliza/protocol/openid-connect/token
+scopes:
+- scope: openid
+  description: OpenID Connect authentication; issues an ID token identifying the integrator.
+  flows: [password, authorizationCode]
+- scope: email
+  description: Access to the integrator's email claim.
+  flows: [password, authorizationCode]
+- scope: profile
+  description: Access to the integrator's profile claims (name, preferred_username).
+  flows: [password, authorizationCode]
+- scope: offline_access
+  description: Issues a refresh token for long-lived offline access.
+  flows: [password, authorizationCode]
+- scope: roles
+  description: Includes realm/client role mappings in the token.
+  flows: [password, authorizationCode]
+- scope: address
+  description: Access to address claims.
+  flows: [authorizationCode]
+- scope: phone
+  description: Access to phone-number claims.
+  flows: [authorizationCode]
+- scope: web-origins
+  description: Populates allowed CORS web origins.
+  flows: [authorizationCode]
+- scope: microprofile-jwt
+  description: MicroProfile JWT claims mapping.
+  flows: [authorizationCode]
+- scope: acr
+  description: Authentication Context Class Reference claim.
+  flows: [authorizationCode]
+notes: >-
+  Scopes are the standard Keycloak/OIDC scope set advertised by the realm
+  discovery document; the documented quickstart token response returns
+  "scope": "email openid profile". API-level authorization is enforced through
+  realm roles (e.g. ROLE_CREATE_TRANSACTIONS, ROLE_VIEW_ACTIVITY,
+  ROLE_MANAGE_PAYMENT_CONTACTS) carried inside the access-token JWT rather than
+  through granular OAuth resource scopes.

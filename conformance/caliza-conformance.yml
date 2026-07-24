@@ -1,0 +1,40 @@
+generated: '2026-07-18'
+method: searched
+source: https://docs.caliza.com
+standards:
+- id: oauth2
+  conforms: true
+  evidence: OAuth 2.0 token endpoint (Keycloak) documented; Bearer access tokens on every request.
+- id: oidc
+  conforms: true
+  evidence: OpenID Connect discovery document served at /auth/realms/caliza/.well-known/openid-configuration.
+- id: openid-connect-discovery
+  conforms: true
+  evidence: well-known/caliza-openid-configuration.json (200).
+- id: rfc9116-security-txt
+  conforms: false
+  evidence: /.well-known/security.txt returns 404 across hosts.
+- id: rfc9457-problem-details
+  conforms: false
+  evidence: Errors use a proprietary {code,message,traceId,path} envelope, not application/problem+json.
+- id: rfc8594-sunset-header
+  conforms: false
+  evidence: No deprecation policy or Sunset/Deprecation header support documented.
+- id: webhook-hmac-signing
+  conforms: true
+  evidence: X-Caliza-Webhook-Signature HMAC-SHA256 over raw body, Base64-encoded.
+- id: iso3166-2
+  conforms: true
+  evidence: Beneficiary addresses validated against ISO 3166-2 country/state combinations.
+- id: iso4217-currency-codes
+  conforms: true
+  evidence: Amount objects carry ISO 4217 currencyCode values.
+- id: swift-uetr
+  conforms: true
+  evidence: Transactions expose a SWIFT UETR tracking reference (uetr) and TRANSACTION_UETR webhook.
+compliance_note: >-
+  Caliza operates a Vanta-hosted Trust Center at https://trust.caliza.com and
+  states it is compliance-first and overseen by local banking partners, but the
+  specific named certifications (e.g. SOC 2 / ISO 27001 / PCI DSS) could not be
+  verified from the public, JavaScript-rendered trust page during this pass; no
+  Compliance pointer is asserted to avoid fabrication.

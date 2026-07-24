@@ -1,0 +1,49 @@
+generated: '2026-07-18'
+method: searched
+source: https://docs.caliza.com/docs/authenticate
+docs:
+- https://docs.caliza.com/docs/mock-fiat-deposits
+- https://docs.caliza.com/docs/mock-stablecoin-deposits
+environments:
+  sandbox:
+    api_base_url: https://api.sandbox.caliza.com/core-api/v1
+    dashboard: https://dashboard.sandbox.caliza.com
+    token_endpoint: https://api.sandbox.caliza.com/auth/realms/caliza/protocol/openid-connect/token
+  production:
+    api_base_url: https://api.caliza.com/core-api/v1
+    dashboard: https://dashboard.caliza.com
+separation:
+  detail: >-
+    Sandbox and production are separate hosts (api.sandbox.caliza.com vs
+    api.caliza.com), each with its own Keycloak realm and its own dashboard for
+    obtaining Client ID / Client Secret credentials under Settings > API
+    Credentials. Sandbox-only operations return
+    operation.not_allowed_outside_sandbox when called on production.
+mock_deposit_simulators:
+- operation: createFakeSpeiInDeposit
+  path: reference/createfakespeiindeposit
+  description: Simulate a SPEI (Mexico) inbound deposit to test deposit flows, balance updates and webhooks.
+- operation: createFakePixInDeposit
+  path: reference/createfakepixindeposit
+  description: Simulate a PIX (Brazil) inbound deposit.
+- operation: createFakeUsdDeposit
+  path: reference/createfakeusddeposit
+  description: Simulate a USD wire/international deposit.
+- operation: createFakeCryptoDeposit
+  path: reference/createfakecryptodeposit
+  description: Simulate a cryptocurrency deposit arriving at a DFNS wallet (specify network + currency).
+- operation: createFakePixOutConfirmation
+  path: reference/createfakepixindeposit_1
+  description: Trigger a simulated PIX payout confirmation webhook.
+- operation: approveVerificationSandbox
+  path: reference/approveverificationsandbox
+  description: Manually approve a KYC/KYB verification without the third-party provider (sandbox only).
+limits:
+  detail: >-
+    Sandbox enforces its own transaction ceiling; exceeding it returns
+    limit.sandbox_limit_reached ("The max amount of sandbox is '<limit>'").
+test_values:
+  detail: >-
+    Caliza does not publish fixed magic test card numbers or IBANs; sandbox
+    testing is driven by the mock deposit simulator endpoints above plus the
+    sandbox verification-approval endpoint. Do not invent test values.

@@ -1,0 +1,16 @@
+generated: '2026-07-18'
+method: searched
+probe: true
+url: https://trust.caliza.com
+platform: Vanta Trust Center
+linked_from: https://www.caliza.com/ (Security)
+certifications: []
+certifications_note: >-
+  A live Vanta-hosted Trust Center is published and linked from the Caliza
+  homepage. Its content is rendered client-side (JavaScript) and the specific
+  named certifications/reports could not be extracted programmatically during
+  this pass. Certifications are intentionally left empty rather than guessed; no
+  Compliance pointer is emitted. Re-run to enrich if the trust page exposes a
+  server-rendered or API-accessible certification list.
+evidence:
+- {source: https://trust.caliza.com, kind: trust-center, platform: vanta}

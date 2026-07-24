@@ -1,0 +1,36 @@
+generated: '2026-07-18'
+method: searched
+source: live probes of /.well-known/* across Caliza hosts
+hosts:
+- host: https://api.caliza.com
+  documents:
+  - path: /auth/realms/caliza/.well-known/openid-configuration
+    status: 200
+    file: caliza-openid-configuration.json
+    note: Keycloak OpenID Connect discovery document for the "caliza" realm (production)
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+  - path: /.well-known/ai-plugin.json
+    status: 404
+- host: https://api.sandbox.caliza.com
+  documents:
+  - path: /auth/realms/caliza/.well-known/openid-configuration
+    status: 200
+    note: Keycloak OIDC discovery document (sandbox realm) — see sandbox/caliza-sandbox.yml
+- host: https://www.caliza.com
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/openid-configuration
+    status: 404
+- host: https://docs.caliza.com
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /llms.txt
+    status: 200
+    note: See llms/caliza-llms.txt (LLMsTxt artifact)

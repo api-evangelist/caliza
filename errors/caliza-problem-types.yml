@@ -1,0 +1,74 @@
+generated: '2026-07-18'
+method: searched
+source: https://docs.caliza.com/docs/api-error-catalog
+format: custom-json
+envelope:
+  description: >-
+    Non-validation errors return a coded error object; request-body validation
+    failures return a list of human-readable field messages.
+  coded_error:
+    fields:
+      code: Machine-readable error code (see problems[]).
+      message: Human-readable error message.
+      traceId: Trace identifier for debugging — include when contacting support.
+      path: The request URI that triggered the error.
+    example: |
+      {"code":"beneficiary.not_found","message":"Beneficiary not found","traceId":"abc123","path":"/v1/beneficiaries/xyz"}
+  validation_error:
+    fields:
+      errors: Array of human-readable field-level error strings.
+    example: |
+      {"errors":["External id is required","Beneficiary type is required"]}
+http_status_codes:
+- {status: 200, meaning: OK — successful request with data}
+- {status: 201, meaning: Created}
+- {status: 204, meaning: No Content}
+- {status: 400, meaning: Bad Request — missing/invalid parameters}
+- {status: 401, meaning: Unauthorized — missing, invalid, or expired token}
+- {status: 403, meaning: Forbidden — authenticated but lacks permission}
+- {status: 404, meaning: Not Found}
+- {status: 412, meaning: Precondition Failed}
+- {status: 409, meaning: Conflict}
+- {status: 422, meaning: Unprocessable Entity — semantic errors}
+- {status: 500, meaning: Internal Server Error}
+- {status: 502, meaning: Bad Gateway}
+- {status: 503, meaning: Service Unavailable}
+problems:
+- {status: 404, code: beneficiary.not_found, title: Beneficiary not found, remediation: The beneficiary ID does not exist or is not owned by your integrator.}
+- {status: 404, code: integrator.not_found, title: Integrator not found, remediation: The authenticated integrator does not exist.}
+- {status: 404, code: simulation.not_found, title: Simulation not found, remediation: The simulation ID does not exist.}
+- {status: 404, code: transaction.not_found, title: Transaction not found, remediation: The transaction ID does not exist.}
+- {status: 404, code: flow_of_funds.not_found, title: Flow of funds not found, remediation: No matching payment flow exists for the given currency pair and integrator.}
+- {status: 404, code: recipient.not_found, title: Recipient not found, remediation: The recipient ID does not exist or is not owned by your integrator.}
+- {status: 404, code: virtual_account.not_found, title: Virtual Account not found, remediation: No virtual accounts exist for the given beneficiary or integrator.}
+- {status: 404, code: payment-instructions.not_found, title: Payment instructions not found, remediation: Beneficiary is not enabled, or no deposit configuration exists for the requested payment rail.}
+- {status: 404, code: block.not_found, title: Block not found, remediation: No root crypto deposit block found for the transaction's flow of funds.}
+- {status: 412, code: callback_url.not_set, title: Callback URL must be set before creating beneficiary, remediation: Configure your webhook URL before creating beneficiaries.}
+- {status: 412, code: beneficiary.operation_not_permitted, title: Beneficiaries can only be updated while pending, remediation: Beneficiary status is not PENDING.}
+- {status: 412, code: beneficiary.cannot_create_operation, title: Beneficiary can not create operation, remediation: Beneficiary is not in a valid state to transact.}
+- {status: 412, code: simulation.is_already_executed, title: Simulation is already executed, remediation: The simulation was already used to create a transaction — create a new one.}
+- {status: 412, code: simulation.is_expired, title: Simulation is expired, remediation: The simulation TTL has elapsed — create a new one.}
+- {status: 412, code: simulation.exchange_rate_changed_too_much, title: Simulation exchange rate changed too much, remediation: Market rate drifted beyond the acceptable threshold — create a new simulation.}
+- {status: 412, code: integrator.efx_not_enabled, title: eFX transactions are not enabled for this integrator, remediation: efx=true was requested but your integrator lacks eFX capability.}
+- {status: 412, code: integrator.invalid_fee_configuration, title: Integrator fee configuration is not configured properly, remediation: Your fee/contract configuration is missing or invalid — contact support.}
+- {status: 412, code: transaction.not_efx_transaction, title: ACAM220 files can only be uploaded for eFX transactions, remediation: The transaction is not an eFX transaction.}
+- {status: 412, code: operation.not_allowed_outside_sandbox, title: This resource is not available on production, remediation: The operation is only available in the sandbox environment.}
+- {status: 400, code: flow_of_funds.insufficient-funds, title: Insufficient funds, remediation: Beneficiary balance is insufficient for the transaction amount.}
+- {status: 400, code: flow_of_funds.invalid-amount, title: Amount below minimum, remediation: Transaction amount is below the minimum for the payment rail.}
+- {status: 400, code: flow_of_funds.invalid-beneficiary-type, title: Invalid beneficiary type for rail, remediation: Beneficiary type not supported for the configured payment rail.}
+- {status: 400, code: limit.daily_limit_reached, title: Daily limit reached, remediation: Daily transaction limit exceeded.}
+- {status: 400, code: limit.sandbox_limit_reached, title: Sandbox limit reached, remediation: Sandbox transaction limit exceeded.}
+- {status: 400, code: transaction.invalid_transfer_purpose_for_country, title: Invalid transfer purpose for country, remediation: Choose a transfer purpose valid for the destination country.}
+- {status: 400, code: validation.invalid_enum_value, title: Invalid enum value, remediation: An invalid enum value was provided (e.g. currency code, payment rail type).}
+- {status: 400, code: validation.invalid_file_type, title: Invalid file type, remediation: Uploaded file has an unsupported type.}
+- {status: 409, code: beneficiary.conflict, title: Beneficiary already exists, remediation: A beneficiary with the same integratorBeneficiaryId already exists.}
+- {status: 409, code: transaction.document_upload_not_allowed_for_status, title: Documents cannot be uploaded for a transaction in its current status, remediation: The transaction reached a final state and no longer accepts document uploads.}
+- {status: 422, code: virtual_account.unprocessable, title: Unprocessable Virtual Account Request, remediation: Virtual account creation validation failed — see detail message.}
+- {status: 422, code: payout.unprocessable, title: Unprocessable Payout Request, remediation: Payout request is missing required configuration.}
+- {status: 422, code: flexiblekyx.missing-kyx-requirements, title: Please complete KYX requirements before proceeding, remediation: Beneficiary has not completed required KYC/KYB steps.}
+notes: >-
+  Errors are NOT RFC 9457 problem+json; Caliza uses a proprietary
+  code/message/traceId/path envelope for coded errors and an errors[] array for
+  body-validation failures. During simulation creation an InsufficientFunds
+  condition is surfaced in the response body's amountValidation field (warning)
+  rather than as an HTTP error. File uploads are limited to 10 MB.

@@ -1,0 +1,21 @@
+generated: '2026-07-18'
+method: searched
+source: https://docs.caliza.com
+versioning:
+  scheme: uri-path
+  versions: [v1, v2]
+  detail: Path-versioned resources; v2 offered for enhanced simulation endpoints.
+  docs: https://docs.caliza.com/reference/overview
+deprecation:
+  policy_url: null
+  sunset_header: false
+  detail: No formal deprecation policy or RFC 8594 Sunset/Deprecation header support is documented.
+sla:
+  url: null
+  uptime_target: null
+status_page: https://status.caliza.com
+deprecated_operations: []
+notes: >-
+  A public status page is operated at status.caliza.com (Caliza Status). No
+  published SLA/uptime target or deprecation policy was found in the developer
+  documentation.

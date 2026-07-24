@@ -1,0 +1,22 @@
+generated: '2026-07-18'
+method: generated
+source: https://docs.caliza.com (grounded in the documented Core API reference operations)
+api: Caliza Core API
+base_url: https://api.caliza.com/core-api/v1
+skills:
+- file: caliza-send-first-payment.md
+  name: Simulate and send a cross-border payment
+  api: Caliza Core API
+  operations: [createsimulation, createtransaction, gettransactionbyid]
+- file: caliza-onboard-beneficiary.md
+  name: Onboard and verify a beneficiary with a virtual account
+  api: Caliza Core API
+  operations: [savebeneficiary, createverification, getverificationstatus, createvirtualaccount]
+- file: caliza-batch-payout.md
+  name: Run a batch payout to saved recipients
+  api: Caliza Core API
+  operations: [createrecipient, createsimulation, payouts, getalltransactions]
+- file: caliza-verify-webhook.md
+  name: Configure and verify Caliza webhooks
+  api: Caliza Core API
+  operations: [updatewebhookconfig, getintegratorwebhooksecret]

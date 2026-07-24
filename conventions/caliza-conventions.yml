@@ -1,0 +1,59 @@
+generated: '2026-07-18'
+method: searched
+source: https://docs.caliza.com
+docs:
+- https://docs.caliza.com/docs/authenticate
+- https://docs.caliza.com/reference/response-codes
+- https://docs.caliza.com/docs/api-error-catalog
+- https://docs.caliza.com/docs/webhook-signature-validation-guide
+authentication:
+  style: oauth2-bearer
+  detail: 'OAuth 2.0 / OIDC (Keycloak). Authorization: Bearer {access_token} on every request.'
+  ref: authentication/caliza-authentication.yml
+base_urls:
+  production: https://api.caliza.com/core-api/v1
+  sandbox: https://api.sandbox.caliza.com/core-api/v1
+versioning:
+  scheme: uri-path
+  versions: [v1, v2]
+  detail: >-
+    Resources are versioned in the path (/v1/..., /v2/...). Certain endpoints
+    (e.g. simulations) offer an enhanced v2 with richer fee/FX breakdowns while
+    v1 remains available.
+idempotency:
+  supported: false
+  detail: >-
+    No idempotency-key header or parameter is documented. The design instead
+    uses a two-step simulate-then-execute pattern: a simulation is created
+    first and its single-use simulationId is required to create the resulting
+    transaction/payment; a simulation that was already executed returns
+    simulation.is_already_executed, which limits accidental double-execution.
+pagination:
+  supported: true
+  style: unspecified
+  detail: >-
+    List endpoints (transactions, beneficiaries, recipients) are documented as
+    returning paginated results with filtering and sorting support, but the
+    specific page/cursor parameter and response-envelope field names are not
+    published in the public reference.
+error_envelope:
+  coded: '{code, message, traceId, path}'
+  validation: '{errors: [string]}'
+  ref: errors/caliza-problem-types.yml
+request_tracing:
+  field: traceId
+  detail: Coded error responses include a traceId to quote when contacting support.
+rate_limiting:
+  documented: false
+  detail: No rate-limit policy or headers are published in the public reference.
+webhooks:
+  signature_header: X-Caliza-Webhook-Signature
+  algorithm: HMAC-SHA256 over the raw request body, Base64-encoded
+  requirement: Endpoint must respond 200 OK within 5 seconds; verify signature before processing.
+  ref: asyncapi/caliza-webhooks.yml
+amounts:
+  shape: '{currencyCode, value}'
+  detail: Monetary amounts are objects with an ISO currency code and a decimal value (e.g. {"currencyCode":"USD","value":97.52}).
+uploads:
+  max_size_mb: 10
+  detail: Document uploads use multipart/form-data; files must be non-empty and under 10 MB.

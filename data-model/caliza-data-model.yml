@@ -1,0 +1,54 @@
+generated: '2026-07-18'
+method: derived
+source: https://docs.caliza.com (API reference + webhook object shapes)
+entities:
+- name: Integrator
+  description: The authenticated API account (your platform). Root owner of all resources.
+  key_fields: [integratorId, webhookUrl, webhookSecret, capabilities, balances]
+- name: Beneficiary
+  description: An individual (PERSON) or business (BUSINESS) that can send/receive funds; subject to KYC/KYB.
+  key_fields: [id, integratorBeneficiaryId, type, status, person, business, address]
+- name: RelatedPerson
+  description: A beneficial owner, director, legal representative or authorized signatory of a business beneficiary.
+  key_fields: [id, name, dateOfBirth, citizenship, governmentId]
+- name: VirtualAccount
+  description: A unique named account number (per currency) issued to a beneficiary to receive deposits over a rail.
+  key_fields: [accountNumber, routingNumber, currency, status, paymentRails]
+- name: Recipient
+  description: A saved payout destination (bank/crypto) reused across transactions.
+  key_fields: [id, type, bankDetails, currency, verificationStatus]
+- name: Simulation
+  description: A single-use, time-boxed (~24h) preview of fees/FX/settlement for a transaction; required to execute one.
+  key_fields: [simulationId, from, to, fees, exchangeRate, expiresAt]
+- name: Transaction
+  description: An executed money movement (payment, payout, conversion) created from a simulation.
+  key_fields: [id, simulationId, beneficiaryId, from, to, totalFees, status, exchangeRate, recipientId]
+- name: Payment
+  description: A payment-typed transaction with deposit/payment instructions and optional supporting documents.
+  key_fields: [id, simulationId, status, paymentInstructions]
+- name: Wallet
+  description: A Caliza-managed crypto wallet per beneficiary per blockchain network.
+  key_fields: [address, network]
+- name: Verification
+  description: A KYC/KYB verification session with a redirect URL and status.
+  key_fields: [status, verificationUrl]
+relationships:
+- {from: Beneficiary, type: belongs_to, to: Integrator, via: integratorId}
+- {from: Beneficiary, type: has_many, to: RelatedPerson, via: beneficiaryId}
+- {from: Beneficiary, type: has_many, to: VirtualAccount, via: beneficiaryId}
+- {from: Beneficiary, type: has_many, to: Recipient, via: beneficiaryId}
+- {from: Beneficiary, type: has_many, to: Wallet, via: beneficiaryId}
+- {from: Beneficiary, type: has_one, to: Verification, via: beneficiaryId}
+- {from: Transaction, type: belongs_to, to: Simulation, via: simulationId}
+- {from: Transaction, type: belongs_to, to: Beneficiary, via: beneficiaryId}
+- {from: Transaction, type: has_one, to: Recipient, via: recipientId}
+- {from: Payment, type: belongs_to, to: Simulation, via: simulationId}
+enums:
+  beneficiary_type: [PERSON, BUSINESS, INDIVIDUAL]
+  transaction_status: [CREATED, PROCESSING, COMPLETED, FAILED, CANCELLED, EXPIRED, REFUNDED, UNDER_REVIEW, SUCCEEDED]
+  payment_rails: [ACH, WIRE, SWIFT, RTP, PIX, SPEI]
+  blockchain_networks: [ETH, POLYGON, TRX, XLM, BASE, SOLANA]
+notes: >-
+  Amounts are {currencyCode, value} objects. Derived from the public API
+  reference operation descriptions and webhook data-object field tables; id
+  prefixes are not published by Caliza.
