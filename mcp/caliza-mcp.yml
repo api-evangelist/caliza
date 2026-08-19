@@ -6,64 +6,180 @@ server:
   name: caliza
   transport: http
   url: null
-  note: >-
-    No official hosted/remote Caliza MCP server was found (docs, npm
-    @modelcontextprotocol, MCP registries). This is a candidate tool surface
-    derived one-tool-per-operation from the documented Core API reference.
+  note: No official hosted/remote Caliza MCP server was found (docs, npm @modelcontextprotocol, MCP registries).
+    This is a candidate tool surface derived one-tool-per-operation from the documented Core API reference.
 tools:
-- {name: create_simulation, description: Preview fees/FX/settlement for a transaction (v1), source_operation: createsimulation_1}
-- {name: create_simulation_v2, description: Enhanced v2 simulation with itemized fee and multi-hop breakdowns, source_operation: createsimulation}
-- {name: get_simulation, description: Retrieve a simulation, source_operation: getsimulationbyid}
-- {name: get_simulation_v2, description: Retrieve a v2 simulation, source_operation: getsimulationbyidv2}
-- {name: create_transaction, description: Execute a transaction from a simulation, source_operation: createtransaction}
-- {name: create_transaction_with_documents, description: Execute a transaction with supporting documents, source_operation: createtransaction_1}
-- {name: get_transaction, description: Retrieve transaction details, source_operation: gettransactionbyid}
-- {name: get_transaction_with_documents, description: Retrieve a transaction with attached documents, source_operation: gettransactionbyidwithdocuments}
-- {name: list_transactions, description: List/filter transactions (paginated), source_operation: getalltransactions}
-- {name: export_transactions_csv, description: Export transactions to CSV, source_operation: getalltransactions_1_1}
-- {name: get_proof_of_payment, description: Download a transaction proof-of-payment document, source_operation: gettransactionproofofpayment}
-- {name: upload_document, description: Attach a supporting document to a transaction, source_operation: uploaddocument}
-- {name: execute_batch_payout, description: Execute a batch payout to many recipients, source_operation: payouts}
-- {name: execute_sweep_payout, description: Consolidate/sweep balances to a destination, source_operation: sweeppayouts}
-- {name: create_payment, description: Create a payment from a simulation, source_operation: createpayment}
-- {name: create_payment_with_documents, description: Create a payment with supporting documents, source_operation: createpaymentwithdocuments}
-- {name: get_payment, description: Retrieve payment details, source_operation: gettransactionbyid_1}
-- {name: get_payment_instructions, description: Get deposit/payment instructions for a rail, source_operation: getpaymentinstructions}
-- {name: get_deposit_instructions, description: Get deposit instructions for a beneficiary/rail, source_operation: getdepositinstructions}
-- {name: update_payment_hash, description: Associate an on-chain hash with a payment deposit, source_operation: updatetransactionhash_1}
-- {name: register_beneficiary, description: Create an individual/business beneficiary, source_operation: savebeneficiary}
-- {name: list_beneficiaries, description: List/filter beneficiaries (paginated), source_operation: getall}
-- {name: get_beneficiary, description: Retrieve a beneficiary, source_operation: getbeneficiary}
-- {name: update_beneficiary, description: Update a beneficiary, source_operation: updatebeneficiary}
-- {name: delete_beneficiary, description: Remove a beneficiary, source_operation: deletebeneficiary}
-- {name: enable_beneficiary, description: Enable a beneficiary account, source_operation: enablebeneficiary}
-- {name: disable_beneficiary, description: Disable a beneficiary account, source_operation: disablebeneficiary}
-- {name: accept_terms, description: Record a beneficiary's T&C acceptance, source_operation: accepttermsandconditions}
-- {name: get_beneficiary_balance, description: Get a beneficiary balance for a currency, source_operation: getbeneficiarybalance}
-- {name: get_beneficiary_detailed_balance, description: Get an itemized balance breakdown, source_operation: getbeneficiarydetailedbalance}
-- {name: get_beneficiary_multicurrency_balance, description: Get balances across currencies, source_operation: getbeneficiarydetailedbalancebycurrencies}
-- {name: list_virtual_accounts, description: List a beneficiary's virtual accounts, source_operation: listvirtualaccounts}
-- {name: create_virtual_account, description: Generate a new virtual account, source_operation: createvirtualaccount}
-- {name: find_or_create_wallet, description: Get or create a crypto wallet on a network, source_operation: findorcreatewallet}
-- {name: create_related_person, description: Add a related person (owner/director), source_operation: createrelatedperson}
-- {name: list_related_persons, description: List related persons, source_operation: listrelatedpersons}
-- {name: get_related_person, description: Retrieve a related person, source_operation: getrelatedperson}
-- {name: update_related_person, description: Update a related person, source_operation: updaterelatedperson}
-- {name: delete_related_person, description: Delete a related person, source_operation: deleterelatedperson}
-- {name: add_related_person_document, description: Upload a document for a related person, source_operation: addrelatedpersondocument}
-- {name: list_recipients, description: List saved recipients, source_operation: getrecipients}
-- {name: create_recipient, description: Register a payout recipient, source_operation: createrecipient}
-- {name: get_recipient, description: Retrieve a recipient, source_operation: getrecipient}
-- {name: update_recipient, description: Update a recipient, source_operation: updaterecipient}
-- {name: delete_recipient, description: Remove a recipient, source_operation: deleterecipient}
-- {name: create_verification, description: Start a KYC/KYB verification session, source_operation: createverification}
-- {name: get_verification_status, description: Poll verification status, source_operation: getverificationstatus}
-- {name: get_me, description: Get the current integrator profile, source_operation: getme}
-- {name: update_me, description: Update the integrator profile, source_operation: updateme}
-- {name: get_integrator_balances, description: Get integrator balances across currencies, source_operation: getintegratorbalances}
-- {name: list_capabilities, description: List enabled integrator capabilities/rails/currencies, source_operation: getcapabilitiesbyintegratorid}
-- {name: get_webhook_config, description: Get webhook configuration, source_operation: getintegratorwebhooks}
-- {name: update_webhook_config, description: Configure the webhook endpoint/events, source_operation: updatewebhookconfig}
-- {name: get_webhook_secret, description: Retrieve the webhook signing secret, source_operation: getintegratorwebhooksecret}
-- {name: rotate_webhook_secret, description: Rotate the webhook signing secret, source_operation: updateintegratorwebhooksecret}
-- {name: get_terms_and_conditions, description: Retrieve the current T&C document, source_operation: gettermsandconditions}
+- name: create_simulation
+  description: Preview fees/FX/settlement for a transaction (v1)
+  source_operation: createsimulation_1
+- name: create_simulation_v2
+  description: Enhanced v2 simulation with itemized fee and multi-hop breakdowns
+  source_operation: createsimulation
+- name: get_simulation
+  description: Retrieve a simulation
+  source_operation: getsimulationbyid
+- name: get_simulation_v2
+  description: Retrieve a v2 simulation
+  source_operation: getsimulationbyidv2
+- name: create_transaction
+  description: Execute a transaction from a simulation
+  source_operation: createtransaction
+- name: create_transaction_with_documents
+  description: Execute a transaction with supporting documents
+  source_operation: createtransaction_1
+- name: get_transaction
+  description: Retrieve transaction details
+  source_operation: gettransactionbyid
+- name: get_transaction_with_documents
+  description: Retrieve a transaction with attached documents
+  source_operation: gettransactionbyidwithdocuments
+- name: list_transactions
+  description: List/filter transactions (paginated)
+  source_operation: getalltransactions
+- name: export_transactions_csv
+  description: Export transactions to CSV
+  source_operation: getalltransactions_1_1
+- name: get_proof_of_payment
+  description: Download a transaction proof-of-payment document
+  source_operation: gettransactionproofofpayment
+- name: upload_document
+  description: Attach a supporting document to a transaction
+  source_operation: uploaddocument
+- name: execute_batch_payout
+  description: Execute a batch payout to many recipients
+  source_operation: payouts
+- name: execute_sweep_payout
+  description: Consolidate/sweep balances to a destination
+  source_operation: sweeppayouts
+- name: create_payment
+  description: Create a payment from a simulation
+  source_operation: createpayment
+- name: create_payment_with_documents
+  description: Create a payment with supporting documents
+  source_operation: createpaymentwithdocuments
+- name: get_payment
+  description: Retrieve payment details
+  source_operation: gettransactionbyid_1
+- name: get_payment_instructions
+  description: Get deposit/payment instructions for a rail
+  source_operation: getpaymentinstructions
+- name: get_deposit_instructions
+  description: Get deposit instructions for a beneficiary/rail
+  source_operation: getdepositinstructions
+- name: update_payment_hash
+  description: Associate an on-chain hash with a payment deposit
+  source_operation: updatetransactionhash_1
+- name: register_beneficiary
+  description: Create an individual/business beneficiary
+  source_operation: savebeneficiary
+- name: list_beneficiaries
+  description: List/filter beneficiaries (paginated)
+  source_operation: getall
+- name: get_beneficiary
+  description: Retrieve a beneficiary
+  source_operation: getbeneficiary
+- name: update_beneficiary
+  description: Update a beneficiary
+  source_operation: updatebeneficiary
+- name: delete_beneficiary
+  description: Remove a beneficiary
+  source_operation: deletebeneficiary
+- name: enable_beneficiary
+  description: Enable a beneficiary account
+  source_operation: enablebeneficiary
+- name: disable_beneficiary
+  description: Disable a beneficiary account
+  source_operation: disablebeneficiary
+- name: accept_terms
+  description: Record a beneficiary's T&C acceptance
+  source_operation: accepttermsandconditions
+- name: get_beneficiary_balance
+  description: Get a beneficiary balance for a currency
+  source_operation: getbeneficiarybalance
+- name: get_beneficiary_detailed_balance
+  description: Get an itemized balance breakdown
+  source_operation: getbeneficiarydetailedbalance
+- name: get_beneficiary_multicurrency_balance
+  description: Get balances across currencies
+  source_operation: getbeneficiarydetailedbalancebycurrencies
+- name: list_virtual_accounts
+  description: List a beneficiary's virtual accounts
+  source_operation: listvirtualaccounts
+- name: create_virtual_account
+  description: Generate a new virtual account
+  source_operation: createvirtualaccount
+- name: find_or_create_wallet
+  description: Get or create a crypto wallet on a network
+  source_operation: findorcreatewallet
+- name: create_related_person
+  description: Add a related person (owner/director)
+  source_operation: createrelatedperson
+- name: list_related_persons
+  description: List related persons
+  source_operation: listrelatedpersons
+- name: get_related_person
+  description: Retrieve a related person
+  source_operation: getrelatedperson
+- name: update_related_person
+  description: Update a related person
+  source_operation: updaterelatedperson
+- name: delete_related_person
+  description: Delete a related person
+  source_operation: deleterelatedperson
+- name: add_related_person_document
+  description: Upload a document for a related person
+  source_operation: addrelatedpersondocument
+- name: list_recipients
+  description: List saved recipients
+  source_operation: getrecipients
+- name: create_recipient
+  description: Register a payout recipient
+  source_operation: createrecipient
+- name: get_recipient
+  description: Retrieve a recipient
+  source_operation: getrecipient
+- name: update_recipient
+  description: Update a recipient
+  source_operation: updaterecipient
+- name: delete_recipient
+  description: Remove a recipient
+  source_operation: deleterecipient
+- name: create_verification
+  description: Start a KYC/KYB verification session
+  source_operation: createverification
+- name: get_verification_status
+  description: Poll verification status
+  source_operation: getverificationstatus
+- name: get_me
+  description: Get the current integrator profile
+  source_operation: getme
+- name: update_me
+  description: Update the integrator profile
+  source_operation: updateme
+- name: get_integrator_balances
+  description: Get integrator balances across currencies
+  source_operation: getintegratorbalances
+- name: list_capabilities
+  description: List enabled integrator capabilities/rails/currencies
+  source_operation: getcapabilitiesbyintegratorid
+- name: get_webhook_config
+  description: Get webhook configuration
+  source_operation: getintegratorwebhooks
+- name: update_webhook_config
+  description: Configure the webhook endpoint/events
+  source_operation: updatewebhookconfig
+- name: get_webhook_secret
+  description: Retrieve the webhook signing secret
+  source_operation: getintegratorwebhooksecret
+- name: rotate_webhook_secret
+  description: Rotate the webhook signing secret
+  source_operation: updateintegratorwebhooksecret
+- name: get_terms_and_conditions
+  description: Retrieve the current T&C document
+  source_operation: gettermsandconditions
+deployment:
+  mode: none
+  verified: derived
+  tools: 56
+  checked: '2026-08-12'
+  source: catalog MCP census
