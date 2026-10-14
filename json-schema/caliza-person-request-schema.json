@@ -1,0 +1,207 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/caliza/main/json-schema/caliza-person-request-schema.json",
+  "title": "PersonRequest",
+  "description": "Individual person information for beneficiary registration including identity documents, contact details, and compliance information.",
+  "x-generated": "2026-10-14",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/caliza-api-documentation-reference-openapi.yml#/components/schemas/PersonRequest",
+  "required": [
+    "address",
+    "citizenship",
+    "dateOfBirth",
+    "email",
+    "firstName",
+    "idNumber",
+    "lastName",
+    "phoneNumber"
+  ],
+  "type": "object",
+  "properties": {
+    "firstName": {
+      "maxLength": 100,
+      "minLength": 0,
+      "type": "string"
+    },
+    "lastName": {
+      "maxLength": 100,
+      "minLength": 0,
+      "type": "string"
+    },
+    "dateOfBirth": {
+      "type": "string",
+      "format": "date"
+    },
+    "placeOfBirth": {
+      "type": "string"
+    },
+    "citizenship": {
+      "type": "string"
+    },
+    "idNumber": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string"
+    },
+    "phoneNumber": {
+      "maxLength": 21,
+      "minLength": 0,
+      "pattern": "^(\\+)[0-9\\s.]{6,20}$",
+      "type": "string"
+    },
+    "profession": {
+      "type": "string"
+    },
+    "gender": {
+      "type": "string",
+      "enum": [
+        "MALE",
+        "FEMALE",
+        "OTHER"
+      ]
+    },
+    "address": {
+      "$ref": "#/$defs/AddressRequest"
+    },
+    "maritalStatus": {
+      "type": "string"
+    },
+    "mothersName": {
+      "type": "string"
+    },
+    "industry": {
+      "type": "string",
+      "enum": [
+        "agriculture",
+        "mining",
+        "utilities",
+        "construction",
+        "manufacturing",
+        "chemicalManufacturing",
+        "merchantWholesale",
+        "automotive",
+        "retailFurnishing",
+        "retailElectronics",
+        "retailHome",
+        "retailFood",
+        "healthStores",
+        "gasoline",
+        "retailClothing",
+        "retailSporting",
+        "retailNonStore",
+        "transportation",
+        "publishing",
+        "finance",
+        "realEstate",
+        "rentalServices",
+        "professionalNonLegal",
+        "accounting",
+        "travel",
+        "educationalMedical",
+        "performingArts",
+        "recreationGambling",
+        "foodService",
+        "maintenance",
+        "laundry",
+        "religiousCharity",
+        "publicAdministration"
+      ]
+    },
+    "incomeSource": {
+      "type": "string",
+      "enum": [
+        "salary",
+        "selfEmployed",
+        "inheritance",
+        "investments",
+        "retirement",
+        "rentalIncome",
+        "governmentBenefits",
+        "familySupport"
+      ]
+    },
+    "annualIncome": {
+      "type": "number"
+    },
+    "occupation": {
+      "type": "string",
+      "enum": [
+        "executive",
+        "sales",
+        "consulting",
+        "government",
+        "healthcare",
+        "financeAccounting",
+        "technology",
+        "scienceEngineering",
+        "foodServices",
+        "legalServices",
+        "manufacturing",
+        "other"
+      ]
+    },
+    "wealthSource": {
+      "type": "string",
+      "enum": [
+        "salary",
+        "selfEmployed",
+        "inheritance",
+        "familySupport",
+        "investments",
+        "retirement",
+        "rentalIncome",
+        "governmentBenefits",
+        "businessSale",
+        "other"
+      ]
+    }
+  },
+  "$defs": {
+    "AddressRequest": {
+      "required": [
+        "city",
+        "country",
+        "state",
+        "streetOne",
+        "zipcode"
+      ],
+      "type": "object",
+      "description": "Physical address request format for beneficiary or integrator registration.",
+      "properties": {
+        "streetOne": {
+          "maxLength": 100,
+          "minLength": 0,
+          "type": "string"
+        },
+        "streetTwo": {
+          "maxLength": 100,
+          "minLength": 0,
+          "type": "string"
+        },
+        "geolocation": {
+          "type": "string"
+        },
+        "city": {
+          "maxLength": 100,
+          "minLength": 0,
+          "type": "string"
+        },
+        "zipcode": {
+          "type": "string"
+        },
+        "state": {
+          "maxLength": 3,
+          "minLength": 0,
+          "type": "string"
+        },
+        "country": {
+          "maxLength": 2,
+          "minLength": 0,
+          "type": "string"
+        }
+      }
+    }
+  }
+}

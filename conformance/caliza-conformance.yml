@@ -32,9 +32,18 @@ standards:
 - id: swift-uetr
   conforms: true
   evidence: Transactions expose a SWIFT UETR tracking reference (uetr) and TRANSACTION_UETR webhook.
-compliance_note: >-
-  Caliza operates a Vanta-hosted Trust Center at https://trust.caliza.com and
-  states it is compliance-first and overseen by local banking partners, but the
-  specific named certifications (e.g. SOC 2 / ISO 27001 / PCI DSS) could not be
-  verified from the public, JavaScript-rendered trust page during this pass; no
-  Compliance pointer is asserted to avoid fabrication.
+- id: openapi-3.0
+  conforms: true
+  evidence: the document declares 3.0.1
+- id: rfc9457
+  conforms: false
+  evidence: no response declares application/problem+json
+- id: idempotency
+  conforms: false
+  evidence: no idempotency key parameter on mutating operations
+- id: pagination
+  conforms: true
+  evidence: list operations take page
+compliance_note: Caliza operates a Vanta-hosted Trust Center at https://trust.caliza.com and states it is compliance-first and overseen by local
+  banking partners, but the specific named certifications (e.g. SOC 2 / ISO 27001 / PCI DSS) could not be verified from the public, JavaScript-rendered
+  trust page during this pass; no Compliance pointer is asserted to avoid fabrication.

@@ -1,0 +1,161 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/caliza/main/json-schema/caliza-simulation-request-schema.json",
+  "title": "SimulationRequest",
+  "x-generated": "2026-10-14",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/caliza-api-documentation-reference-openapi.yml#/components/schemas/SimulationRequest",
+  "required": [
+    "beneficiaryId",
+    "from"
+  ],
+  "type": "object",
+  "properties": {
+    "beneficiaryId": {
+      "type": "string"
+    },
+    "from": {
+      "$ref": "#/$defs/AmountDto"
+    },
+    "toCurrencyCode": {
+      "type": "string",
+      "enum": [
+        "USDT",
+        "USDC",
+        "USD",
+        "BRL",
+        "MXN",
+        "COP",
+        "EUR",
+        "EURT",
+        "HKD",
+        "SGD",
+        "CNY",
+        "CNH",
+        "ARS",
+        "ANY"
+      ]
+    },
+    "to": {
+      "$ref": "#/$defs/AmountDto"
+    },
+    "destination": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "FIAT",
+        "CRYPTO"
+      ]
+    },
+    "dashboardExperience": {
+      "type": "boolean"
+    },
+    "paymentRail": {
+      "type": "string",
+      "enum": [
+        "PIX",
+        "SPEI",
+        "WIRE",
+        "RTP",
+        "COP",
+        "CVU",
+        "LOCAL_EXCHANGE",
+        "CRYPTO_INTERNAL_TRANSFER",
+        "POLYGON",
+        "ETH",
+        "TRON",
+        "STELLAR",
+        "UNKNOWN",
+        "ACH",
+        "SWIFT",
+        "BASE",
+        "SOLANA",
+        "CALIZA_WALLET",
+        "MAIN_CALIZA_WALLET",
+        "ANY"
+      ]
+    },
+    "alias": {
+      "type": "string"
+    },
+    "fundingMethod": {
+      "type": "string",
+      "enum": [
+        "PIX",
+        "SPEI",
+        "WIRE",
+        "RTP",
+        "COP",
+        "CVU",
+        "LOCAL_EXCHANGE",
+        "CRYPTO_INTERNAL_TRANSFER",
+        "POLYGON",
+        "ETH",
+        "TRON",
+        "STELLAR",
+        "UNKNOWN",
+        "ACH",
+        "SWIFT",
+        "BASE",
+        "SOLANA",
+        "CALIZA_WALLET",
+        "MAIN_CALIZA_WALLET",
+        "ANY"
+      ]
+    },
+    "achSameDay": {
+      "type": "boolean",
+      "description": "When true, requests same-day ACH settlement instead of the default 1–2 business day settlement. Only applicable when the payment rail is ACH. When set on the simulation, this value automatically carries over to the transaction without needing to re-specify it in the TransactionRequest."
+    },
+    "customFees": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "number"
+      }
+    },
+    "payorId": {
+      "type": "string",
+      "description": "The ID of the sponsor beneficiary funding the payment — your integrator's main beneficiary. Provide it to process the payment as Payment On Behalf Of (POBO): Caliza funds the payment from your main beneficiary while it runs through the account named in `beneficiaryId`. Must differ from `beneficiaryId`. Omit it for a standard payment."
+    }
+  },
+  "$defs": {
+    "AmountDto": {
+      "type": "object",
+      "description": "Represents a monetary amount with currency code and value.",
+      "required": [
+        "currencyCode",
+        "value"
+      ],
+      "properties": {
+        "currencyCode": {
+          "type": "string",
+          "description": "ISO 4217 currency code or cryptocurrency ticker symbol.",
+          "enum": [
+            "USDT",
+            "USDC",
+            "USD",
+            "BRL",
+            "MXN",
+            "COP",
+            "EUR",
+            "EURT",
+            "HKD",
+            "SGD",
+            "CNY",
+            "CNH",
+            "ARS",
+            "ANY"
+          ]
+        },
+        "value": {
+          "type": "number",
+          "description": "The monetary amount in the specified currency. Precision depends on the currency (typically 2 decimal places for fiat, up to 8 for crypto).",
+          "minimum": 0
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,123 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/caliza/main/json-schema/caliza-simulation-v2-request-schema.json",
+  "title": "SimulationV2Request",
+  "description": "Request to simulate a payment transaction including amount conversion, fees, and payment rail selection for both funding and payout.",
+  "x-generated": "2026-10-14",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/caliza-api-documentation-reference-openapi.yml#/components/schemas/SimulationV2Request",
+  "type": "object",
+  "properties": {
+    "beneficiaryId": {
+      "type": "string"
+    },
+    "from": {
+      "$ref": "#/$defs/AmountDto"
+    },
+    "to": {
+      "$ref": "#/$defs/AmountDto"
+    },
+    "funding": {
+      "type": "string",
+      "enum": [
+        "PIX",
+        "SPEI",
+        "WIRE",
+        "RTP",
+        "COP",
+        "CVU",
+        "LOCAL_EXCHANGE",
+        "CRYPTO_INTERNAL_TRANSFER",
+        "POLYGON",
+        "ETH",
+        "TRON",
+        "STELLAR",
+        "UNKNOWN",
+        "ACH",
+        "SWIFT",
+        "BASE",
+        "SOLANA",
+        "CALIZA_WALLET",
+        "MAIN_CALIZA_WALLET",
+        "ANY"
+      ]
+    },
+    "payout": {
+      "type": "string",
+      "enum": [
+        "PIX",
+        "SPEI",
+        "WIRE",
+        "RTP",
+        "COP",
+        "CVU",
+        "LOCAL_EXCHANGE",
+        "CRYPTO_INTERNAL_TRANSFER",
+        "POLYGON",
+        "ETH",
+        "TRON",
+        "STELLAR",
+        "UNKNOWN",
+        "ACH",
+        "SWIFT",
+        "BASE",
+        "SOLANA",
+        "CALIZA_WALLET",
+        "MAIN_CALIZA_WALLET",
+        "ANY"
+      ]
+    },
+    "recipientId": {
+      "type": "string"
+    },
+    "achSameDay": {
+      "type": "boolean",
+      "description": "When true, requests same-day ACH settlement instead of the default 1–2 business day settlement. Only applicable when the payment rail is ACH. When set on the simulation, this value automatically carries over to the transaction without needing to re-specify it in the TransactionRequest."
+    },
+    "customFees": {
+      "type": "object",
+      "description": "Optional integrator-defined fees applied on the currency-conversion (FX) leg of the operation. Supply your own spread under the `INTEGRATOR_SPREAD` key (the `INTEGRATOR` alias is also accepted); this spread is added on top of Caliza's spread and becomes your revenue on the conversion. Values are in basis points (BPS), where `100 BPS = 1%`, and must be `>= 0`. Passing `0` or omitting the field disables your spread, in which case `integratorRate` equals `calizaRate` in the response. Only the FX leg is affected; same-currency flows are unaffected. The resulting rate tiers are returned under `conversionDetails` (`marketExchangeRate`, `calizaRate`, `integratorRate`) and each margin appears as a `spreadFees[]` item (`type: CALIZA` for Caliza's revenue and `type: INTEGRATOR_SPREAD` for yours).",
+      "additionalProperties": {
+        "type": "number"
+      }
+    }
+  },
+  "$defs": {
+    "AmountDto": {
+      "type": "object",
+      "description": "Represents a monetary amount with currency code and value.",
+      "required": [
+        "currencyCode",
+        "value"
+      ],
+      "properties": {
+        "currencyCode": {
+          "type": "string",
+          "description": "ISO 4217 currency code or cryptocurrency ticker symbol.",
+          "enum": [
+            "USDT",
+            "USDC",
+            "USD",
+            "BRL",
+            "MXN",
+            "COP",
+            "EUR",
+            "EURT",
+            "HKD",
+            "SGD",
+            "CNY",
+            "CNH",
+            "ARS",
+            "ANY"
+          ]
+        },
+        "value": {
+          "type": "number",
+          "description": "The monetary amount in the specified currency. Precision depends on the currency (typically 2 decimal places for fiat, up to 8 for crypto).",
+          "minimum": 0
+        }
+      }
+    }
+  }
+}

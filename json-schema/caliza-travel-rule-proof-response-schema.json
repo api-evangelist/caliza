@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/caliza/main/json-schema/caliza-travel-rule-proof-response-schema.json",
+  "title": "TravelRuleProofResponse",
+  "description": "A wallet ownership proof for a self-hosted wallet recipient. The microtransfer instruction fields are present only while a PENDING microtransfer test awaits its on-chain deposit.",
+  "x-generated": "2026-10-14",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/caliza-api-documentation-reference-openapi.yml#/components/schemas/TravelRuleProofResponse",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "recipientId": {
+      "type": "string"
+    },
+    "walletAddress": {
+      "type": "string",
+      "description": "The wallet address the proof covers."
+    },
+    "chain": {
+      "type": "string",
+      "description": "The blockchain of the wallet address (for example `ETH` or `TRON`)."
+    },
+    "method": {
+      "type": "string",
+      "description": "How the proof was produced.",
+      "enum": [
+        "SIGNATURE",
+        "MICROTRANSFER"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "description": "Lifecycle status of the proof. PENDING applies only to microtransfer tests awaiting their deposit; EXPIRED means the validity window has passed; INVALIDATED means the recipient's Travel Rule data changed after the proof was collected.",
+      "enum": [
+        "PENDING",
+        "VERIFIED",
+        "EXPIRED",
+        "INVALIDATED"
+      ]
+    },
+    "verifiedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "For a VERIFIED proof, when it expires. For a PENDING microtransfer test, the deadline for the test deposit to arrive."
+    },
+    "expectedAmount": {
+      "type": "number",
+      "description": "Microtransfer tests only — the exact amount to send from the wallet being proven."
+    },
+    "expectedCurrency": {
+      "type": "string",
+      "description": "Microtransfer tests only — the currency of the test transfer."
+    },
+    "destinationAddress": {
+      "type": "string",
+      "description": "Microtransfer tests only — the address to send the test transfer to (the beneficiary's own Caliza wallet; the test amount is credited to the beneficiary's balance)."
+    }
+  }
+}

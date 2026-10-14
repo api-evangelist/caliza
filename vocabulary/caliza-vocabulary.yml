@@ -1,0 +1,443 @@
+generated: '2026-10-14'
+method: derived
+generator: derive-vocabulary.py
+source: openapi/caliza-api-documentation-reference-openapi.yml
+vocabulary:
+  name: Caliza Domain Vocabulary
+  description: 'Terms declared by Caliza''s own API contract: its resource groups, objects and enumerations, with the contract''s definitions.
+    Derived, not authored.'
+  version: '2026-10-14'
+  terms:
+  - term: Transaction V1
+    definition: 'Create, simulate, inspect and manage financial transactions. Includes endpoints to create transactions and simulations, retrieve
+      transaction details, update metadata (e.g. blockchain hashes), export results, and run batch or sweep payouts. Use these for the full transaction
+      lifecycle: preview costs, execute, and track status.'
+    tags:
+    - Resource Group
+    source: openapi/caliza-api-documentation-reference-openapi.yml
+  - term: Transaction V1 Sandbox
+    definition: Sandbox-only transaction utilities for integration and testing. Simulate deposits, payouts and webhook notifications (PIX, SPEI,
+      USD, etc.) without real funds to validate integration behavior and webhook handling.
+    tags:
+    - Resource Group
+    source: openapi/caliza-api-documentation-reference-openapi.yml
+  - term: Payment V1
+    definition: 'Payment-specific operations: create payments, attach supporting documents, set/update payment blockchain hashes and retrieve
+      payment instructions. Use these when initiating or inspecting single payment flows and their required documentation.'
+    tags:
+    - Resource Group
+    source: openapi/caliza-api-documentation-reference-openapi.yml
+  - term: Beneficiary V1
+    definition: Manage beneficiaries (individuals and businesses) and their related resources. Endpoints cover creating, updating, enabling/disabling,
+      deleting beneficiaries, managing wallets, virtual accounts, files, balances and recording terms acceptance. Use these to onboard and maintain
+      pay-in/payout recipients.
+    tags:
+    - Resource Group
+    source: openapi/caliza-api-documentation-reference-openapi.yml
+  - term: Related Person
+    definition: Manage related persons (e.g. beneficial owners, directors, representatives) linked to a beneficiary. Create, retrieve, update,
+      list and delete related persons and upload supporting identity documents for compliance verification.
+    tags:
+    - Resource Group
+    source: openapi/caliza-api-documentation-reference-openapi.yml
+  - term: Integrator V1
+    definition: 'Integrator-level configuration and profile endpoints: manage integrator profile, credentials, webhook configuration and secrets,
+      view integrator balances and perform integrator-scoped operations.'
+    tags:
+    - Resource Group
+    source: openapi/caliza-api-documentation-reference-openapi.yml
+  - term: Integrator Capabilities V1
+    definition: Inspect and list the set of capabilities/features enabled for an integrator account (supported currencies, payment rails, transaction
+      types, limits and special features). Useful to adapt client behavior to account permissions.
+    tags:
+    - Resource Group
+    source: openapi/caliza-api-documentation-reference-openapi.yml
+  - term: Recipient V1
+    definition: Manage saved payment recipients used as payout destinations. Create, retrieve, update, list and delete recipient profiles including
+      bank/crypto details and verification metadata.
+    tags:
+    - Resource Group
+    source: openapi/caliza-api-documentation-reference-openapi.yml
+  - term: Travel Rule V1
+    definition: Crypto Travel Rule compliance endpoints. Collect wallet ownership proofs for self-hosted (non-custodial) wallet recipients — via
+      wallet signature or microtransfer (Satoshi test) — and retrieve the Travel Rule information a depositor's VASP needs to originate the Travel
+      Rule message for an inbound crypto deposit.
+    tags:
+    - Resource Group
+    source: openapi/caliza-api-documentation-reference-openapi.yml
+  - term: KYC/KYB V1
+    definition: Manage KYC (Know Your Customer) and KYB (Know Your Business) verification for beneficiaries. Create interactive verification sessions
+      that redirect users to a third-party provider and track verification status.
+    tags:
+    - Resource Group
+    source: openapi/caliza-api-documentation-reference-openapi.yml
+  - term: Terms and Conditions V1
+    definition: Retrieve the current terms & conditions document and record user acceptance. Use these endpoints to present legal terms to users
+      and store auditable acceptance (timestamp, IP, version) required for compliance.
+    tags:
+    - Resource Group
+    source: openapi/caliza-api-documentation-reference-openapi.yml
+  - term: AmountDto
+    definition: Represents a monetary amount with currency code and value.
+    tags:
+    - Object
+    source: openapi/caliza-api-documentation-reference-openapi.yml#/components/schemas/AmountDto
+  - term: AmountFourDecimalPlacesResponse
+    definition: Monetary amount with up to four decimal places precision, typically used for fee calculations and exchange rate conversions.
+    tags:
+    - Object
+    source: openapi/caliza-api-documentation-reference-openapi.yml#/components/schemas/AmountFourDecimalPlacesResponse
+  - term: ConversionDetails
+    definition: Detailed breakdown of currency conversion including exchange rates and amounts for multi-currency transactions.
+    tags:
+    - Object
+    source: openapi/caliza-api-documentation-reference-openapi.yml#/components/schemas/ConversionDetails
+  - term: ExpectedSettlementTimeDetails
+    definition: Information about expected settlement time for a transaction.
+    tags:
+    - Object
+    source: openapi/caliza-api-documentation-reference-openapi.yml#/components/schemas/ExpectedSettlementTimeDetails
+  - term: FeeDetails
+    definition: 'Comprehensive breakdown of all fees applied to a transaction: - taxes: Tax amount charged on the transaction (e.g., IOF in Brazil,
+      VAT, etc.) - integratorFee: Fee amount allocated to the integrator - fixedFees: List of fixed fees charged regardless of transaction amount
+      - percentageFees: List of fees calculated as a percentage of the transaction amount - spreadFees: List of fees derived from excha'
+    tags:
+    - Object
+    source: openapi/caliza-api-documentation-reference-openapi.yml#/components/schemas/FeeDetails
+  - term: FixedFeeItemResponse
+    definition: Details of a fixed fee charged on a transaction, independent of transaction amount.
+    tags:
+    - Object
+    source: openapi/caliza-api-documentation-reference-openapi.yml#/components/schemas/FixedFeeItemResponse
+  - term: OldFeeItemResponse
+    definition: Legacy fee structure format (deprecated). Use FixedFeeItemResponse, PercentageFeeItemResponse, or SpreadFeeItemResponse for new
+      integrations.
+    tags:
+    - Object
+    source: openapi/caliza-api-documentation-reference-openapi.yml#/components/schemas/OldFeeItemResponse
+  - term: PercentageFeeItemResponse
+    definition: Details of a percentage-based fee calculated as a portion of the transaction amount.
+    tags:
+    - Object
+    source: openapi/caliza-api-documentation-reference-openapi.yml#/components/schemas/PercentageFeeItemResponse
+  - term: SpreadFeeItemResponse
+    definition: Details of fees derived from exchange rate spread in currency conversion transactions.
+    tags:
+    - Object
+    source: openapi/caliza-api-documentation-reference-openapi.yml#/components/schemas/SpreadFeeItemResponse
+  - term: TransactionDetailsResponse
+    definition: Detailed information about a transaction including conversion details, fees, and settlement expectations.
+    tags:
+    - Object
+    source: openapi/caliza-api-documentation-reference-openapi.yml#/components/schemas/TransactionDetailsResponse
+  - term: SimulationResponse
+    definition: Response with simulated payment details including exchange rates, fees breakdown, and final amounts for both funding and payout.
+    tags:
+    - Object
+    source: openapi/caliza-api-documentation-reference-openapi.yml#/components/schemas/SimulationResponse
+  - term: SimulationRequest
+    definition: 'Object declared by the contract with fields: beneficiaryId, from, toCurrencyCode, to, destination, type, dashboardExperience,
+      paymentRail, alias, fundingMethod, achSameDay, customFees. (1 more)'
+    tags:
+    - Object
+    source: openapi/caliza-api-documentation-reference-openapi.yml#/components/schemas/SimulationRequest
+  - term: AccountDetailsDto
+    definition: 'Container for different types of bank account details supporting multiple payment rails. Each property corresponds to a specific
+      payment method: - wireDetails: Wire transfer account details for domestic U.S. transfers - achDetails: ACH (Automated Clearing House) account
+      details for U.S. electronic transfers - swiftDetails: SWIFT international wire transfer account details - pixDetails: PIX account'
+    tags:
+    - Object
+    source: openapi/caliza-api-documentation-reference-openapi.yml#/components/schemas/AccountDetailsDto
+  - term: AchAccountDto
+    definition: 'ACH account information for electronic fund transfers in the United States. - personInfo: Personal information for individual
+      account holders - bankInfo: Bank identification and routing information (required) - businessInfo: Business information for corporate account
+      holders'
+    tags:
+    - Object
+    source: openapi/caliza-api-documentation-reference-openapi.yml#/components/schemas/AchAccountDto
+  - term: AchBankInfo
+    definition: Bank information for ACH transfers including routing details and bank address.
+    tags:
+    - Object
+    source: openapi/caliza-api-documentation-reference-openapi.yml#/components/schemas/AchBankInfo
+  - term: AchBusinessInfo
+    definition: 'Object declared by the contract with fields: name, address, city, state, country, postalCode, accountNumber, accountType, routingNumber,
+      registrationNumber, phoneNumber, registrationType. (5 more)'
+    tags:
+    - Object
+    source: openapi/caliza-api-documentation-reference-openapi.yml#/components/schemas/AchBusinessInfo
+  - term: AchPersonInfo
+    definition: 'Object declared by the contract with fields: name, street1, postalCode, city, state, country, routingKey, accountNumber, accountType,
+      type.'
+    tags:
+    - Object
+    source: openapi/caliza-api-documentation-reference-openapi.yml#/components/schemas/AchPersonInfo
+  - term: BankInfo
+    definition: Bank information including BIC/SWIFT code and address details for international wire transfers.
+    tags:
+    - Object
+    source: openapi/caliza-api-documentation-reference-openapi.yml#/components/schemas/BankInfo
+  - term: BusinessInfo
+    definition: Business account information for wire transfers including company details and bank account information.
+    tags:
+    - Object
+    source: openapi/caliza-api-documentation-reference-openapi.yml#/components/schemas/BusinessInfo
+  - term: CopAccountDto
+    definition: Colombian Peso (COP) bank account details for transfers in Colombia.
+    tags:
+    - Object
+    source: openapi/caliza-api-documentation-reference-openapi.yml#/components/schemas/CopAccountDto
+  - term: CvuAccountDto
+    definition: CVU (Clave Virtual Uniforme) account details for instant transfers in Argentina.
+    tags:
+    - Object
+    source: openapi/caliza-api-documentation-reference-openapi.yml#/components/schemas/CvuAccountDto
+  - term: FiatAccountDto
+    definition: Fiat currency bank account information including account type, ownership, and detailed banking information for various payment
+      rails.
+    tags:
+    - Object
+    source: openapi/caliza-api-documentation-reference-openapi.yml#/components/schemas/FiatAccountDto
+  - term: LocalTargetBankAccountDto
+    definition: Local bank account details for a beneficiary in their domestic country, supporting multiple countries and payment systems.
+    tags:
+    - Object
+    source: openapi/caliza-api-documentation-reference-openapi.yml#/components/schemas/LocalTargetBankAccountDto
+  - term: NFBlockchainInfoDto
+    definition: Blockchain network information for crypto transactions including transaction hashes and wallet addresses.
+    tags:
+    - Object
+    source: openapi/caliza-api-documentation-reference-openapi.yml#/components/schemas/NFBlockchainInfoDto
+  - term: NFLocalInfoDto
+    definition: Local payment network information for SPEI, PIX, and other domestic payment systems.
+    tags:
+    - Object
+    source: openapi/caliza-api-documentation-reference-openapi.yml#/components/schemas/NFLocalInfoDto
+  - term: NFTransferWalletDto
+    definition: Cryptocurrency wallet information for blockchain-based transfers.
+    tags:
+    - Object
+    source: openapi/caliza-api-documentation-reference-openapi.yml#/components/schemas/NFTransferWalletDto
+  - term: PayInSenderResponse
+    definition: Information about the payment rail and sender details for pay-in transactions.
+    tags:
+    - Object
+    source: openapi/caliza-api-documentation-reference-openapi.yml#/components/schemas/PayInSenderResponse
+  - term: PersonInfo
+    definition: Individual person account information for wire transfers including personal details and bank account information.
+    tags:
+    - Object
+    source: openapi/caliza-api-documentation-reference-openapi.yml#/components/schemas/PersonInfo
+  - term: PixAccountDto
+    definition: PIX account details for instant payments in Brazil.
+    tags:
+    - Object
+    source: openapi/caliza-api-documentation-reference-openapi.yml#/components/schemas/PixAccountDto
+  - term: SpeiAccountDto
+    definition: SPEI (Sistema de Pagos Electrónicos Interbancarios) account details for electronic transfers in Mexico.
+    tags:
+    - Object
+    source: openapi/caliza-api-documentation-reference-openapi.yml#/components/schemas/SpeiAccountDto
+  - term: SwiftAccountDto
+    definition: SWIFT international wire transfer account details supporting both individual and business accounts.
+    tags:
+    - Object
+    source: openapi/caliza-api-documentation-reference-openapi.yml#/components/schemas/SwiftAccountDto
+  - term: SwiftBankInfo
+    definition: Bank information for SWIFT international wire transfers including SWIFT code and bank address.
+    tags:
+    - Object
+    source: openapi/caliza-api-documentation-reference-openapi.yml#/components/schemas/SwiftBankInfo
+  - term: SwiftBusinessInfo
+    definition: Business account information for SWIFT international wire transfers.
+    tags:
+    - Object
+    source: openapi/caliza-api-documentation-reference-openapi.yml#/components/schemas/SwiftBusinessInfo
+  - term: SwiftPersonInfo
+    definition: Individual person account information for SWIFT international wire transfers including IBAN details.
+    tags:
+    - Object
+    source: openapi/caliza-api-documentation-reference-openapi.yml#/components/schemas/SwiftPersonInfo
+  - term: TargetInfoResponse
+    definition: Information about the target account and source of funds for a transaction.
+    tags:
+    - Object
+    source: openapi/caliza-api-documentation-reference-openapi.yml#/components/schemas/TargetInfoResponse
+  - term: TransactionResponse
+    definition: Complete transaction information including status, amounts, blockchain info, and timestamps.
+    tags:
+    - Object
+    source: openapi/caliza-api-documentation-reference-openapi.yml#/components/schemas/TransactionResponse
+  - term: WireAccountDto
+    definition: Domestic wire transfer account details for U.S. transfers supporting both individual and business accounts.
+    tags:
+    - Object
+    source: openapi/caliza-api-documentation-reference-openapi.yml#/components/schemas/WireAccountDto
+  - term: TransactionRequest
+    definition: 'Object declared by the contract with fields: simulationId, beneficiaryIp, marketExecutionType, achSameDay, transferPurpose, memo,
+      paymentReference.'
+    tags:
+    - Object
+    source: openapi/caliza-api-documentation-reference-openapi.yml#/components/schemas/TransactionRequest
+  - term: PayoutRequest
+    definition: 'Object declared by the contract with fields: source, sourceType, transactions.'
+    tags:
+    - Object
+    source: openapi/caliza-api-documentation-reference-openapi.yml#/components/schemas/PayoutRequest
+  - term: PayoutTransaction
+    definition: 'Object declared by the contract with fields: amount, target, targetType, paymentRailType.'
+    tags:
+    - Object
+    source: openapi/caliza-api-documentation-reference-openapi.yml#/components/schemas/PayoutTransaction
+  - term: PageableObject
+    definition: Pagination information object including page number, size, offset, and sorting configuration.
+    tags:
+    - Object
+    source: openapi/caliza-api-documentation-reference-openapi.yml#/components/schemas/PageableObject
+  - term: Sort
+    definition: Sorting configuration for paginated results including order direction and property to sort by.
+    tags:
+    - Object
+    source: openapi/caliza-api-documentation-reference-openapi.yml#/components/schemas/Sort
+  - term: PageTransactionResponse
+    definition: Paginated list of transactions including pagination metadata and transaction details.
+    tags:
+    - Object
+    source: openapi/caliza-api-documentation-reference-openapi.yml#/components/schemas/PageTransactionResponse
+  - term: DashboardTransactionWithDocumentsDto
+    definition: Transaction details with attached documents and complete payment information for dashboard display.
+    tags:
+    - Object
+    source: openapi/caliza-api-documentation-reference-openapi.yml#/components/schemas/DashboardTransactionWithDocumentsDto
+  - term: DocumentDto
+    definition: Document metadata including type, URL, and upload date for transaction-related files.
+    tags:
+    - Object
+    source: openapi/caliza-api-documentation-reference-openapi.yml#/components/schemas/DocumentDto
+  - term: PaymentInstructionsResponse
+    definition: Payment instructions for funding a transaction including bank details and reference codes.
+    tags:
+    - Object
+    source: openapi/caliza-api-documentation-reference-openapi.yml#/components/schemas/PaymentInstructionsResponse
+  - term: SweepPayoutBeneficiary
+    definition: Beneficiary information for sweep payout operations.
+    tags:
+    - Object
+    source: openapi/caliza-api-documentation-reference-openapi.yml#/components/schemas/SweepPayoutBeneficiary
+  - term: SweepPayoutRequest
+    definition: Request to perform a sweep payout operation, consolidating balances from multiple beneficiaries.
+    tags:
+    - Object
+    source: openapi/caliza-api-documentation-reference-openapi.yml#/components/schemas/SweepPayoutRequest
+  - term: SweepPayoutResponse
+    definition: Response from a sweep payout operation indicating success and details of the automated payout.
+    tags:
+    - Object
+    source: openapi/caliza-api-documentation-reference-openapi.yml#/components/schemas/SweepPayoutResponse
+  - term: SimulationV2Request
+    definition: Request to simulate a payment transaction including amount conversion, fees, and payment rail selection for both funding and payout.
+    tags:
+    - Object
+    source: openapi/caliza-api-documentation-reference-openapi.yml#/components/schemas/SimulationV2Request
+  - term: MockSpeiDepositRequest
+    definition: Mock request to simulate an incoming SPEI deposit in the sandbox environment. Provide `transactionId` to settle an existing pending
+      deposit (matched mode), or `clabe` and `amount` to simulate an unmatched deposit that auto-creates a transaction. The two modes are mutually
+      exclusive.
+    tags:
+    - Object
+    source: openapi/caliza-api-documentation-reference-openapi.yml#/components/schemas/MockSpeiDepositRequest
+  - term: MockDepositRequest
+    definition: Mock request to simulate a deposit for testing purposes in the sandbox environment.
+    tags:
+    - Object
+    source: openapi/caliza-api-documentation-reference-openapi.yml#/components/schemas/MockDepositRequest
+  - term: MockUSDepositRequest
+    definition: Mock request to simulate a U.S. deposit for testing purposes in the sandbox environment.
+    tags:
+    - Object
+    source: openapi/caliza-api-documentation-reference-openapi.yml#/components/schemas/MockUSDepositRequest
+  - term: MockCryptoDepositRequest
+    definition: Mock request to simulate a cryptocurrency deposit at a DFNS wallet for testing purposes in the sandbox environment.
+    tags:
+    - Object
+    source: openapi/caliza-api-documentation-reference-openapi.yml#/components/schemas/MockCryptoDepositRequest
+  - term: MockCryptoDepositTravelRule
+    definition: Optional Travel Rule scenario for a simulated crypto deposit. With withMessage true, the sender VASP's Travel Rule message is
+      simulated for the deposit; false (or omitting the block) simulates a self-hosted origin with no message, which clears via the hold's timeout
+      path when at or above the threshold.
+    tags:
+    - Object
+    source: openapi/caliza-api-documentation-reference-openapi.yml#/components/schemas/MockCryptoDepositTravelRule
+  - term: MockTravelRuleClearanceRequest
+    definition: Sandbox request to resolve the Travel Rule decision a transaction is waiting on, standing in for the counterparty VASP (payouts)
+      or the inbound verdict (deposits).
+    tags:
+    - Object
+    source: openapi/caliza-api-documentation-reference-openapi.yml#/components/schemas/MockTravelRuleClearanceRequest
+  - term: MockWithdrawalRequest
+    definition: Mock request to simulate a withdrawal for testing purposes in the sandbox environment.
+    tags:
+    - Object
+    source: openapi/caliza-api-documentation-reference-openapi.yml#/components/schemas/MockWithdrawalRequest
+  - term: AddressResponse
+    definition: Physical address information for a beneficiary or integrator including all address components.
+    tags:
+    - Object
+    source: openapi/caliza-api-documentation-reference-openapi.yml#/components/schemas/AddressResponse
+  - term: AddressEntity
+    definition: Physical address information with geolocation support.
+    tags:
+    - Object
+    source: openapi/caliza-api-documentation-reference-openapi.yml#/components/schemas/AddressEntity
+  - term: BeneficiaryLifeCycleResponse
+    definition: Records lifecycle events for a beneficiary account (activation, deactivation, etc.).
+    tags:
+    - Object
+    source: openapi/caliza-api-documentation-reference-openapi.yml#/components/schemas/BeneficiaryLifeCycleResponse
+  - term: BeneficiaryResponse
+    definition: Complete beneficiary information including personal/business details, KYC status, and account configuration.
+    tags:
+    - Object
+    source: openapi/caliza-api-documentation-reference-openapi.yml#/components/schemas/BeneficiaryResponse
+  - term: BeneficiaryRiskDetailsResponse
+    definition: Risk assessment details for a beneficiary including risk rating, score, and calculation timestamp.
+    tags:
+    - Object
+    source: openapi/caliza-api-documentation-reference-openapi.yml#/components/schemas/BeneficiaryRiskDetailsResponse
+  - term: BusinessResponse
+    definition: Business entity information response including incorporation details and verification status.
+    tags:
+    - Object
+    source: openapi/caliza-api-documentation-reference-openapi.yml#/components/schemas/BusinessResponse
+  - term: FileResponse
+    definition: Uploaded file information including file ID, type, and storage details.
+    tags:
+    - Object
+    source: openapi/caliza-api-documentation-reference-openapi.yml#/components/schemas/FileResponse
+  - term: LocalTargetBankAccountResponse
+    definition: Local bank account details response for a beneficiary in their domestic country.
+    tags:
+    - Object
+    source: openapi/caliza-api-documentation-reference-openapi.yml#/components/schemas/LocalTargetBankAccountResponse
+  - term: PersonResponse
+    definition: Individual person information response including identity details and verification status.
+    tags:
+    - Object
+    source: openapi/caliza-api-documentation-reference-openapi.yml#/components/schemas/PersonResponse
+  - term: AddressRequest
+    definition: Physical address request format for beneficiary or integrator registration.
+    tags:
+    - Object
+    source: openapi/caliza-api-documentation-reference-openapi.yml#/components/schemas/AddressRequest
+  - term: BeneficiaryRequest
+    definition: 'Object declared by the contract with fields: integratorId, integratorBeneficiaryId, type, person, business, localTargetBankAccount,
+      localCalizaOwnedBankAccountId, active.'
+    tags:
+    - Object
+    source: openapi/caliza-api-documentation-reference-openapi.yml#/components/schemas/BeneficiaryRequest
+  - term: BusinessRequest
+    definition: 'Object declared by the contract with fields: name, dateOfIncorporation, idNumber, address, phoneNumber, email, website, contacts,
+      description, legalStructure.'
+    tags:
+    - Object
+    source: openapi/caliza-api-documentation-reference-openapi.yml#/components/schemas/BusinessRequest

@@ -1,0 +1,80 @@
+generated: '2026-10-14'
+method: derived
+source: the pre-flight dossier, apis.yml pointers, spec servers, well-known, vendors -- nothing fetched here
+generator: derive-hosts.py
+summary:
+  hosts: 6
+  own: 5
+  other_domain: 1
+  platform: 0
+  roles:
+  - api
+  - legal
+  - other
+  - portal
+  - status
+  - website
+hosts:
+- host: api.caliza.com
+  found_by:
+  - apis[]
+  types: []
+  serves:
+  - api
+  registrable_domain: caliza.com
+  role: api
+  relation: own
+- host: cdn.prod.website-files.com
+  found_by:
+  - pointer
+  types:
+  - TermsOfService
+  - PrivacyPolicy
+  serves: []
+  registrable_domain: website-files.com
+  role: legal
+  relation: other-domain
+- host: docs.caliza.com
+  found_by:
+  - pointer
+  - apis[]
+  types:
+  - DeveloperPortal
+  - Documentation
+  - APIReference
+  - GettingStarted
+  serves:
+  - docs
+  registrable_domain: caliza.com
+  role: portal
+  relation: own
+- host: status.caliza.com
+  found_by:
+  - pointer
+  types:
+  - StatusPage
+  serves: []
+  registrable_domain: caliza.com
+  role: status
+  relation: own
+- host: trust.caliza.com
+  found_by:
+  - pointer
+  types:
+  - TrustCenter
+  serves: []
+  registrable_domain: caliza.com
+  role: other
+  relation: own
+- host: www.caliza.com
+  found_by:
+  - pointer
+  types:
+  - Website
+  - Blog
+  - Support
+  - SignUp
+  serves: []
+  registrable_domain: caliza.com
+  role: website
+  relation: own

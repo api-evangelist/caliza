@@ -1,0 +1,1394 @@
+{
+  "@context": {
+    "@vocab": "https://caliza.com/schema#",
+    "schema": "https://schema.org/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "dcterms": "http://purl.org/dc/terms/",
+    "caliza": "https://caliza.com/schema#",
+    "AmountDto": "caliza:AmountDto",
+    "currencyCode": {
+      "@id": "caliza:currencyCode",
+      "@type": "xsd:string"
+    },
+    "value": {
+      "@id": "caliza:value",
+      "@type": "xsd:decimal"
+    },
+    "AmountFourDecimalPlacesResponse": "caliza:AmountFourDecimalPlacesResponse",
+    "ConversionDetails": "caliza:ConversionDetails",
+    "effectiveTransactionValue": {
+      "@id": "caliza:effectiveTransactionValue",
+      "@type": "xsd:decimal"
+    },
+    "marketExchangeRate": {
+      "@id": "caliza:marketExchangeRate",
+      "@type": "xsd:decimal"
+    },
+    "clientRate": {
+      "@id": "caliza:clientRate",
+      "@type": "xsd:decimal"
+    },
+    "calizaRate": {
+      "@id": "caliza:calizaRate",
+      "@type": "xsd:decimal"
+    },
+    "integratorRate": {
+      "@id": "caliza:integratorRate",
+      "@type": "xsd:decimal"
+    },
+    "amountToBeConverted": {
+      "@id": "caliza:amountToBeConverted",
+      "@type": "@id"
+    },
+    "ExpectedSettlementTimeDetails": "caliza:ExpectedSettlementTimeDetails",
+    "expectedTime": {
+      "@id": "caliza:expectedTime",
+      "@type": "xsd:string"
+    },
+    "displayText": {
+      "@id": "caliza:displayText",
+      "@type": "xsd:string"
+    },
+    "additionalInfo": {
+      "@id": "caliza:additionalInfo",
+      "@type": "xsd:string"
+    },
+    "cutoffTime": {
+      "@id": "caliza:cutoffTime",
+      "@type": "xsd:dateTime"
+    },
+    "FeeDetails": "caliza:FeeDetails",
+    "taxes": {
+      "@id": "caliza:taxes",
+      "@type": "@id"
+    },
+    "integratorFee": {
+      "@id": "caliza:integratorFee",
+      "@type": "@id"
+    },
+    "fixedFees": {
+      "@id": "caliza:fixedFees",
+      "@container": "@list"
+    },
+    "percentageFees": {
+      "@id": "caliza:percentageFees",
+      "@container": "@list"
+    },
+    "spreadFees": {
+      "@id": "caliza:spreadFees",
+      "@container": "@list"
+    },
+    "oldFees": {
+      "@id": "caliza:oldFees",
+      "@container": "@list"
+    },
+    "totalFees": {
+      "@id": "caliza:totalFees",
+      "@type": "@id"
+    },
+    "vet": {
+      "@id": "caliza:vet",
+      "@type": "xsd:decimal"
+    },
+    "FixedFeeItemResponse": "caliza:FixedFeeItemResponse",
+    "block": {
+      "@id": "caliza:block",
+      "@type": "xsd:string"
+    },
+    "type": {
+      "@id": "caliza:type",
+      "@type": "xsd:string"
+    },
+    "concept": {
+      "@id": "caliza:concept",
+      "@type": "xsd:string"
+    },
+    "paymentRail": {
+      "@id": "caliza:paymentRail",
+      "@type": "xsd:string"
+    },
+    "chargeMode": {
+      "@id": "caliza:chargeMode",
+      "@type": "xsd:string"
+    },
+    "OldFeeItemResponse": "caliza:OldFeeItemResponse",
+    "fromCurrency": {
+      "@id": "caliza:fromCurrency",
+      "@type": "xsd:string"
+    },
+    "toCurrency": {
+      "@id": "caliza:toCurrency",
+      "@type": "xsd:string"
+    },
+    "feeValue": {
+      "@id": "caliza:feeValue",
+      "@type": "xsd:decimal"
+    },
+    "feeCurrency": {
+      "@id": "caliza:feeCurrency",
+      "@type": "xsd:string"
+    },
+    "marketRate": {
+      "@id": "caliza:marketRate",
+      "@type": "xsd:decimal"
+    },
+    "effectiveRate": {
+      "@id": "caliza:effectiveRate",
+      "@type": "xsd:decimal"
+    },
+    "baseCurrency": {
+      "@id": "caliza:baseCurrency",
+      "@type": "xsd:string"
+    },
+    "baseAmount": {
+      "@id": "caliza:baseAmount",
+      "@type": "xsd:decimal"
+    },
+    "PercentageFeeItemResponse": "caliza:PercentageFeeItemResponse",
+    "percentageRate": {
+      "@id": "caliza:percentageRate",
+      "@type": "xsd:decimal"
+    },
+    "calculatedFee": {
+      "@id": "caliza:calculatedFee",
+      "@type": "xsd:decimal"
+    },
+    "SpreadFeeItemResponse": "caliza:SpreadFeeItemResponse",
+    "spreadBasisPoint": {
+      "@id": "caliza:spreadBasisPoint",
+      "@type": "xsd:decimal"
+    },
+    "TransactionDetailsResponse": "caliza:TransactionDetailsResponse",
+    "conversionDetails": {
+      "@id": "caliza:conversionDetails",
+      "@type": "@id"
+    },
+    "feeDetails": {
+      "@id": "caliza:feeDetails",
+      "@type": "@id"
+    },
+    "transferPurpose": {
+      "@id": "caliza:transferPurpose",
+      "@type": "xsd:string"
+    },
+    "paymentReference": {
+      "@id": "caliza:paymentReference",
+      "@type": "xsd:string"
+    },
+    "memo": {
+      "@id": "caliza:memo",
+      "@type": "xsd:string"
+    },
+    "expectedSettlementTimeDetails": {
+      "@id": "caliza:expectedSettlementTimeDetails",
+      "@type": "@id"
+    },
+    "SimulationResponse": "caliza:SimulationResponse",
+    "id": {
+      "@id": "caliza:id",
+      "@type": "xsd:string"
+    },
+    "integratorId": {
+      "@id": "caliza:integratorId",
+      "@type": "xsd:string"
+    },
+    "beneficiaryId": {
+      "@id": "caliza:beneficiaryId",
+      "@type": "xsd:string"
+    },
+    "from": {
+      "@id": "caliza:from",
+      "@type": "@id"
+    },
+    "to": {
+      "@id": "caliza:to",
+      "@type": "@id"
+    },
+    "flowOfFundsId": {
+      "@id": "caliza:flowOfFundsId",
+      "@type": "xsd:string"
+    },
+    "transactionDetails": {
+      "@id": "caliza:transactionDetails",
+      "@type": "@id"
+    },
+    "amountValidation": {
+      "@id": "caliza:amountValidation",
+      "@type": "xsd:string"
+    },
+    "executed": {
+      "@id": "caliza:executed",
+      "@type": "xsd:boolean"
+    },
+    "guaranteedRate": {
+      "@id": "caliza:guaranteedRate",
+      "@type": "xsd:boolean"
+    },
+    "rateValidityInMinutes": {
+      "@id": "caliza:rateValidityInMinutes",
+      "@type": "xsd:integer"
+    },
+    "createdDate": {
+      "@id": "caliza:createdDate",
+      "@type": "xsd:dateTime"
+    },
+    "lastModifiedDate": {
+      "@id": "caliza:lastModifiedDate",
+      "@type": "xsd:dateTime"
+    },
+    "expiresAt": {
+      "@id": "caliza:expiresAt",
+      "@type": "xsd:dateTime"
+    },
+    "achSameDay": {
+      "@id": "caliza:achSameDay",
+      "@type": "xsd:boolean"
+    },
+    "payorId": {
+      "@id": "caliza:payorId",
+      "@type": "xsd:string"
+    },
+    "SimulationRequest": "caliza:SimulationRequest",
+    "toCurrencyCode": {
+      "@id": "caliza:toCurrencyCode",
+      "@type": "xsd:string"
+    },
+    "destination": {
+      "@id": "caliza:destination",
+      "@type": "xsd:string"
+    },
+    "dashboardExperience": {
+      "@id": "caliza:dashboardExperience",
+      "@type": "xsd:boolean"
+    },
+    "alias": {
+      "@id": "caliza:alias",
+      "@type": "xsd:string"
+    },
+    "fundingMethod": {
+      "@id": "caliza:fundingMethod",
+      "@type": "xsd:string"
+    },
+    "customFees": {
+      "@id": "caliza:customFees"
+    },
+    "AccountDetailsDto": "caliza:AccountDetailsDto",
+    "wireDetails": {
+      "@id": "caliza:wireDetails",
+      "@type": "@id"
+    },
+    "achDetails": {
+      "@id": "caliza:achDetails",
+      "@type": "@id"
+    },
+    "swiftDetails": {
+      "@id": "caliza:swiftDetails",
+      "@type": "@id"
+    },
+    "pixDetails": {
+      "@id": "caliza:pixDetails",
+      "@type": "@id"
+    },
+    "copDetails": {
+      "@id": "caliza:copDetails",
+      "@type": "@id"
+    },
+    "speiDetails": {
+      "@id": "caliza:speiDetails",
+      "@type": "@id"
+    },
+    "cvuDetails": {
+      "@id": "caliza:cvuDetails",
+      "@type": "@id"
+    },
+    "AchAccountDto": "caliza:AchAccountDto",
+    "personInfo": {
+      "@id": "caliza:personInfo",
+      "@type": "@id"
+    },
+    "bankInfo": {
+      "@id": "caliza:bankInfo",
+      "@type": "@id"
+    },
+    "businessInfo": {
+      "@id": "caliza:businessInfo",
+      "@type": "@id"
+    },
+    "AchBankInfo": "caliza:AchBankInfo",
+    "routingNumber": {
+      "@id": "caliza:routingNumber",
+      "@type": "xsd:string"
+    },
+    "name": {
+      "@id": "caliza:name",
+      "@type": "xsd:string"
+    },
+    "street1": {
+      "@id": "caliza:street1",
+      "@type": "xsd:string"
+    },
+    "street2": {
+      "@id": "caliza:street2",
+      "@type": "xsd:string"
+    },
+    "postalCode": {
+      "@id": "caliza:postalCode",
+      "@type": "xsd:string"
+    },
+    "city": {
+      "@id": "caliza:city",
+      "@type": "xsd:string"
+    },
+    "state": {
+      "@id": "caliza:state",
+      "@type": "xsd:string"
+    },
+    "country": {
+      "@id": "caliza:country",
+      "@type": "xsd:string"
+    },
+    "AchBusinessInfo": "caliza:AchBusinessInfo",
+    "address": {
+      "@id": "caliza:address",
+      "@type": "xsd:string"
+    },
+    "accountNumber": {
+      "@id": "caliza:accountNumber",
+      "@type": "xsd:string"
+    },
+    "accountType": {
+      "@id": "caliza:accountType",
+      "@type": "xsd:string"
+    },
+    "registrationNumber": {
+      "@id": "caliza:registrationNumber",
+      "@type": "xsd:string"
+    },
+    "phoneNumber": {
+      "@id": "caliza:phoneNumber",
+      "@type": "xsd:string"
+    },
+    "registrationType": {
+      "@id": "caliza:registrationType",
+      "@type": "xsd:string"
+    },
+    "registrationDate": {
+      "@id": "caliza:registrationDate",
+      "@type": "xsd:string"
+    },
+    "registrationExpiryDate": {
+      "@id": "caliza:registrationExpiryDate",
+      "@type": "xsd:string"
+    },
+    "mobileNumber": {
+      "@id": "caliza:mobileNumber",
+      "@type": "xsd:string"
+    },
+    "businessNature": {
+      "@id": "caliza:businessNature",
+      "@type": "xsd:string"
+    },
+    "email": {
+      "@id": "caliza:email",
+      "@type": "xsd:string"
+    },
+    "AchPersonInfo": "caliza:AchPersonInfo",
+    "routingKey": {
+      "@id": "caliza:routingKey",
+      "@type": "xsd:string"
+    },
+    "BankInfo": "caliza:BankInfo",
+    "bic": {
+      "@id": "caliza:bic",
+      "@type": "xsd:string"
+    },
+    "BusinessInfo": "caliza:BusinessInfo",
+    "CopAccountDto": "caliza:CopAccountDto",
+    "firstName": {
+      "@id": "caliza:firstName",
+      "@type": "xsd:string"
+    },
+    "lastName": {
+      "@id": "caliza:lastName",
+      "@type": "xsd:string"
+    },
+    "bankAccount": {
+      "@id": "caliza:bankAccount",
+      "@type": "xsd:string"
+    },
+    "bankCode": {
+      "@id": "caliza:bankCode",
+      "@type": "xsd:string"
+    },
+    "thirdPartyWithdrawal": {
+      "@id": "caliza:thirdPartyWithdrawal",
+      "@type": "xsd:boolean"
+    },
+    "documentId": {
+      "@id": "caliza:documentId",
+      "@type": "xsd:string"
+    },
+    "documentType": {
+      "@id": "caliza:documentType",
+      "@type": "xsd:string"
+    },
+    "bitsoContactId": {
+      "@id": "caliza:bitsoContactId",
+      "@type": "xsd:string"
+    },
+    "CvuAccountDto": "caliza:CvuAccountDto",
+    "recipientName": {
+      "@id": "caliza:recipientName",
+      "@type": "xsd:string"
+    },
+    "cvu": {
+      "@id": "caliza:cvu",
+      "@type": "xsd:string"
+    },
+    "FiatAccountDto": "caliza:FiatAccountDto",
+    "belongsToBeneficiary": {
+      "@id": "caliza:belongsToBeneficiary",
+      "@type": "xsd:boolean"
+    },
+    "fiatAccountType": {
+      "@id": "caliza:fiatAccountType",
+      "@type": "xsd:string"
+    },
+    "accountDetails": {
+      "@id": "caliza:accountDetails",
+      "@type": "@id"
+    },
+    "owner": {
+      "@id": "caliza:owner",
+      "@type": "xsd:string"
+    },
+    "LocalTargetBankAccountDto": "caliza:LocalTargetBankAccountDto",
+    "targetCountry": {
+      "@id": "caliza:targetCountry",
+      "@type": "xsd:string"
+    },
+    "NFBlockchainInfoDto": "caliza:NFBlockchainInfoDto",
+    "depositTransactionHash": {
+      "@id": "caliza:depositTransactionHash",
+      "@type": "xsd:string"
+    },
+    "withdrawalTransactionHash": {
+      "@id": "caliza:withdrawalTransactionHash",
+      "@type": "xsd:string"
+    },
+    "fundingWallet": {
+      "@id": "caliza:fundingWallet",
+      "@type": "xsd:string"
+    },
+    "targetWallet": {
+      "@id": "caliza:targetWallet",
+      "@type": "@id"
+    },
+    "NFLocalInfoDto": "caliza:NFLocalInfoDto",
+    "speiInClabe": {
+      "@id": "caliza:speiInClabe",
+      "@type": "xsd:string"
+    },
+    "speiInBankName": {
+      "@id": "caliza:speiInBankName",
+      "@type": "xsd:string"
+    },
+    "speiInBeneficiaryName": {
+      "@id": "caliza:speiInBeneficiaryName",
+      "@type": "xsd:string"
+    },
+    "speiOutClabe": {
+      "@id": "caliza:speiOutClabe",
+      "@type": "xsd:string"
+    },
+    "pixCopyAndPaste": {
+      "@id": "caliza:pixCopyAndPaste",
+      "@type": "xsd:string"
+    },
+    "pixExpiresAt": {
+      "@id": "caliza:pixExpiresAt",
+      "@type": "xsd:dateTime"
+    },
+    "targetPixKey": {
+      "@id": "caliza:targetPixKey",
+      "@type": "xsd:string"
+    },
+    "targetAccount": {
+      "@id": "caliza:targetAccount",
+      "@type": "@id"
+    },
+    "destinationFiatAccount": {
+      "@id": "caliza:destinationFiatAccount",
+      "@type": "@id"
+    },
+    "pixOutSearchableId": {
+      "@id": "caliza:pixOutSearchableId",
+      "@type": "xsd:string"
+    },
+    "speiOutSearchableId": {
+      "@id": "caliza:speiOutSearchableId",
+      "@type": "xsd:string"
+    },
+    "fundingDetails": {
+      "@id": "caliza:fundingDetails"
+    },
+    "uetr": {
+      "@id": "caliza:uetr",
+      "@type": "xsd:string"
+    },
+    "achTraceNumber": {
+      "@id": "caliza:achTraceNumber",
+      "@type": "xsd:string"
+    },
+    "achSecCode": {
+      "@id": "caliza:achSecCode",
+      "@type": "xsd:string"
+    },
+    "achEffectiveDate": {
+      "@id": "caliza:achEffectiveDate",
+      "@type": "xsd:date"
+    },
+    "NFTransferWalletDto": "caliza:NFTransferWalletDto",
+    "tag": {
+      "@id": "caliza:tag",
+      "@type": "xsd:string"
+    },
+    "chain": {
+      "@id": "caliza:chain",
+      "@type": "xsd:string"
+    },
+    "provider": {
+      "@id": "caliza:provider",
+      "@type": "xsd:string"
+    },
+    "PayInSenderResponse": "caliza:PayInSenderResponse",
+    "paymentRails": {
+      "@id": "caliza:paymentRails",
+      "@type": "xsd:string"
+    },
+    "details": {
+      "@id": "caliza:details"
+    },
+    "PersonInfo": "caliza:PersonInfo",
+    "PixAccountDto": "caliza:PixAccountDto",
+    "pixKey": {
+      "@id": "caliza:pixKey",
+      "@type": "xsd:string"
+    },
+    "SpeiAccountDto": "caliza:SpeiAccountDto",
+    "clabe": {
+      "@id": "caliza:clabe",
+      "@type": "xsd:string"
+    },
+    "receiverName": {
+      "@id": "caliza:receiverName",
+      "@type": "xsd:string"
+    },
+    "SwiftAccountDto": "caliza:SwiftAccountDto",
+    "isPobo": {
+      "@id": "caliza:isPobo",
+      "@type": "xsd:boolean"
+    },
+    "pobo": {
+      "@id": "caliza:pobo",
+      "@type": "xsd:boolean"
+    },
+    "SwiftBankInfo": "caliza:SwiftBankInfo",
+    "swiftCode": {
+      "@id": "caliza:swiftCode",
+      "@type": "xsd:string"
+    },
+    "SwiftBusinessInfo": "caliza:SwiftBusinessInfo",
+    "SwiftPersonInfo": "caliza:SwiftPersonInfo",
+    "iban": {
+      "@id": "caliza:iban",
+      "@type": "xsd:string"
+    },
+    "dateOfBirth": {
+      "@id": "caliza:dateOfBirth",
+      "@type": "xsd:date"
+    },
+    "identificationType": {
+      "@id": "caliza:identificationType",
+      "@type": "xsd:string"
+    },
+    "identificationNumber": {
+      "@id": "caliza:identificationNumber",
+      "@type": "xsd:string"
+    },
+    "identificationIssuer": {
+      "@id": "caliza:identificationIssuer",
+      "@type": "xsd:string"
+    },
+    "occupation": {
+      "@id": "caliza:occupation",
+      "@type": "xsd:string"
+    },
+    "TargetInfoResponse": "caliza:TargetInfoResponse",
+    "targetId": {
+      "@id": "caliza:targetId",
+      "@type": "xsd:string"
+    },
+    "fundsTarget": {
+      "@id": "caliza:fundsTarget",
+      "@type": "xsd:string"
+    },
+    "TransactionResponse": "caliza:TransactionResponse",
+    "simulationId": {
+      "@id": "caliza:simulationId",
+      "@type": "xsd:string"
+    },
+    "status": {
+      "@id": "caliza:status",
+      "@type": "xsd:string"
+    },
+    "blockchainInfo": {
+      "@id": "caliza:blockchainInfo",
+      "@type": "@id"
+    },
+    "localInfo": {
+      "@id": "caliza:localInfo",
+      "@type": "@id"
+    },
+    "beneficiaryIp": {
+      "@id": "caliza:beneficiaryIp",
+      "@type": "xsd:string"
+    },
+    "targetInfo": {
+      "@id": "caliza:targetInfo",
+      "@type": "@id"
+    },
+    "settledAt": {
+      "@id": "caliza:settledAt",
+      "@type": "xsd:dateTime"
+    },
+    "payInSender": {
+      "@id": "caliza:payInSender",
+      "@type": "@id"
+    },
+    "WireAccountDto": "caliza:WireAccountDto",
+    "TransactionRequest": "caliza:TransactionRequest",
+    "marketExecutionType": {
+      "@id": "caliza:marketExecutionType",
+      "@type": "xsd:string"
+    },
+    "PayoutRequest": "caliza:PayoutRequest",
+    "source": {
+      "@id": "caliza:source",
+      "@type": "xsd:string"
+    },
+    "sourceType": {
+      "@id": "caliza:sourceType",
+      "@type": "xsd:string"
+    },
+    "transactions": {
+      "@id": "caliza:transactions",
+      "@container": "@list"
+    },
+    "PayoutTransaction": "caliza:PayoutTransaction",
+    "amount": {
+      "@id": "caliza:amount",
+      "@type": "@id"
+    },
+    "target": {
+      "@id": "caliza:target",
+      "@type": "xsd:string"
+    },
+    "targetType": {
+      "@id": "caliza:targetType",
+      "@type": "xsd:string"
+    },
+    "paymentRailType": {
+      "@id": "caliza:paymentRailType",
+      "@type": "xsd:string"
+    },
+    "PageableObject": "caliza:PageableObject",
+    "offset": {
+      "@id": "caliza:offset",
+      "@type": "xsd:integer"
+    },
+    "sort": {
+      "@id": "caliza:sort",
+      "@type": "@id"
+    },
+    "pageNumber": {
+      "@id": "caliza:pageNumber",
+      "@type": "xsd:integer"
+    },
+    "pageSize": {
+      "@id": "caliza:pageSize",
+      "@type": "xsd:integer"
+    },
+    "paged": {
+      "@id": "caliza:paged",
+      "@type": "xsd:boolean"
+    },
+    "unpaged": {
+      "@id": "caliza:unpaged",
+      "@type": "xsd:boolean"
+    },
+    "Sort": "caliza:Sort",
+    "empty": {
+      "@id": "caliza:empty",
+      "@type": "xsd:boolean"
+    },
+    "sorted": {
+      "@id": "caliza:sorted",
+      "@type": "xsd:boolean"
+    },
+    "unsorted": {
+      "@id": "caliza:unsorted",
+      "@type": "xsd:boolean"
+    },
+    "PageTransactionResponse": "caliza:PageTransactionResponse",
+    "totalElements": {
+      "@id": "caliza:totalElements",
+      "@type": "xsd:integer"
+    },
+    "totalPages": {
+      "@id": "caliza:totalPages",
+      "@type": "xsd:integer"
+    },
+    "first": {
+      "@id": "caliza:first",
+      "@type": "xsd:boolean"
+    },
+    "last": {
+      "@id": "caliza:last",
+      "@type": "xsd:boolean"
+    },
+    "size": {
+      "@id": "caliza:size",
+      "@type": "xsd:integer"
+    },
+    "content": {
+      "@id": "caliza:content",
+      "@container": "@list"
+    },
+    "number": {
+      "@id": "caliza:number",
+      "@type": "xsd:integer"
+    },
+    "numberOfElements": {
+      "@id": "caliza:numberOfElements",
+      "@type": "xsd:integer"
+    },
+    "pageable": {
+      "@id": "caliza:pageable",
+      "@type": "@id"
+    },
+    "DashboardTransactionWithDocumentsDto": "caliza:DashboardTransactionWithDocumentsDto",
+    "date": {
+      "@id": "caliza:date",
+      "@type": "xsd:string"
+    },
+    "paymentType": {
+      "@id": "caliza:paymentType",
+      "@type": "xsd:string"
+    },
+    "fromAccount": {
+      "@id": "caliza:fromAccount",
+      "@type": "@id"
+    },
+    "fromAmount": {
+      "@id": "caliza:fromAmount",
+      "@type": "@id"
+    },
+    "toAccount": {
+      "@id": "caliza:toAccount",
+      "@type": "@id"
+    },
+    "toAmount": {
+      "@id": "caliza:toAmount",
+      "@type": "@id"
+    },
+    "initiatedBy": {
+      "@id": "caliza:initiatedBy",
+      "@type": "xsd:string"
+    },
+    "documents": {
+      "@id": "caliza:documents",
+      "@container": "@list"
+    },
+    "completed": {
+      "@id": "caliza:completed",
+      "@type": "xsd:boolean"
+    },
+    "DocumentDto": "caliza:DocumentDto",
+    "viewUrl": {
+      "@id": "caliza:viewUrl",
+      "@type": "xsd:string"
+    },
+    "uploadedBy": {
+      "@id": "caliza:uploadedBy",
+      "@type": "xsd:string"
+    },
+    "uploadedAt": {
+      "@id": "caliza:uploadedAt",
+      "@type": "xsd:dateTime"
+    },
+    "PaymentInstructionsResponse": "caliza:PaymentInstructionsResponse",
+    "receiverAddress": {
+      "@id": "caliza:receiverAddress",
+      "@type": "xsd:string"
+    },
+    "receiverBankName": {
+      "@id": "caliza:receiverBankName",
+      "@type": "xsd:string"
+    },
+    "receiverBankAddress": {
+      "@id": "caliza:receiverBankAddress",
+      "@type": "xsd:string"
+    },
+    "reference": {
+      "@id": "caliza:reference",
+      "@type": "xsd:string"
+    },
+    "SweepPayoutBeneficiary": "caliza:SweepPayoutBeneficiary",
+    "SweepPayoutRequest": "caliza:SweepPayoutRequest",
+    "currency": {
+      "@id": "caliza:currency",
+      "@type": "xsd:string"
+    },
+    "filter": {
+      "@id": "caliza:filter",
+      "@type": "xsd:string"
+    },
+    "beneficiariesSubSet": {
+      "@id": "caliza:beneficiariesSubSet",
+      "@container": "@list"
+    },
+    "withdrawalMethod": {
+      "@id": "caliza:withdrawalMethod",
+      "@type": "xsd:string"
+    },
+    "SweepPayoutResponse": "caliza:SweepPayoutResponse",
+    "payoutBeneficiaryFilter": {
+      "@id": "caliza:payoutBeneficiaryFilter",
+      "@type": "xsd:string"
+    },
+    "sweepDestination": {
+      "@id": "caliza:sweepDestination",
+      "@type": "xsd:string"
+    },
+    "SimulationV2Request": "caliza:SimulationV2Request",
+    "funding": {
+      "@id": "caliza:funding",
+      "@type": "xsd:string"
+    },
+    "payout": {
+      "@id": "caliza:payout",
+      "@type": "xsd:string"
+    },
+    "recipientId": {
+      "@id": "caliza:recipientId",
+      "@type": "xsd:string"
+    },
+    "MockSpeiDepositRequest": "caliza:MockSpeiDepositRequest",
+    "transactionId": {
+      "@id": "caliza:transactionId",
+      "@type": "xsd:string"
+    },
+    "payerRfc": {
+      "@id": "caliza:payerRfc",
+      "@type": "xsd:string"
+    },
+    "payerName": {
+      "@id": "caliza:payerName",
+      "@type": "xsd:string"
+    },
+    "payerBank": {
+      "@id": "caliza:payerBank",
+      "@type": "xsd:string"
+    },
+    "payerAccount": {
+      "@id": "caliza:payerAccount",
+      "@type": "xsd:string"
+    },
+    "MockDepositRequest": "caliza:MockDepositRequest",
+    "MockUSDepositRequest": "caliza:MockUSDepositRequest",
+    "MockCryptoDepositRequest": "caliza:MockCryptoDepositRequest",
+    "walletAddress": {
+      "@id": "caliza:walletAddress",
+      "@type": "xsd:string"
+    },
+    "network": {
+      "@id": "caliza:network",
+      "@type": "xsd:string"
+    },
+    "fromAddress": {
+      "@id": "caliza:fromAddress",
+      "@type": "xsd:string"
+    },
+    "travelRule": {
+      "@id": "caliza:travelRule",
+      "@type": "@id"
+    },
+    "MockCryptoDepositTravelRule": "caliza:MockCryptoDepositTravelRule",
+    "withMessage": {
+      "@id": "caliza:withMessage",
+      "@type": "xsd:boolean"
+    },
+    "originatorName": {
+      "@id": "caliza:originatorName",
+      "@type": "xsd:string"
+    },
+    "beneficiaryName": {
+      "@id": "caliza:beneficiaryName",
+      "@type": "xsd:string"
+    },
+    "MockTravelRuleClearanceRequest": "caliza:MockTravelRuleClearanceRequest",
+    "outcome": {
+      "@id": "caliza:outcome",
+      "@type": "xsd:string"
+    },
+    "MockWithdrawalRequest": "caliza:MockWithdrawalRequest",
+    "referenceId": {
+      "@id": "caliza:referenceId",
+      "@type": "xsd:string"
+    },
+    "AddressResponse": "caliza:AddressResponse",
+    "streetOne": {
+      "@id": "caliza:streetOne",
+      "@type": "xsd:string"
+    },
+    "streetTwo": {
+      "@id": "caliza:streetTwo",
+      "@type": "xsd:string"
+    },
+    "geolocation": {
+      "@id": "caliza:geolocation",
+      "@type": "xsd:string"
+    },
+    "zipcode": {
+      "@id": "caliza:zipcode",
+      "@type": "xsd:string"
+    },
+    "AddressEntity": "caliza:AddressEntity",
+    "BeneficiaryLifeCycleResponse": "caliza:BeneficiaryLifeCycleResponse",
+    "timestamp": {
+      "@id": "caliza:timestamp",
+      "@type": "xsd:dateTime"
+    },
+    "BeneficiaryResponse": "caliza:BeneficiaryResponse",
+    "integratorBeneficiaryId": {
+      "@id": "caliza:integratorBeneficiaryId",
+      "@type": "xsd:string"
+    },
+    "person": {
+      "@id": "caliza:person",
+      "@type": "@id"
+    },
+    "business": {
+      "@id": "caliza:business",
+      "@type": "@id"
+    },
+    "localTargetBankAccount": {
+      "@id": "caliza:localTargetBankAccount",
+      "@type": "@id"
+    },
+    "files": {
+      "@id": "caliza:files",
+      "@container": "@list"
+    },
+    "active": {
+      "@id": "caliza:active",
+      "@type": "xsd:boolean"
+    },
+    "kycVerified": {
+      "@id": "caliza:kycVerified",
+      "@type": "xsd:boolean"
+    },
+    "termsAndConditions": {
+      "@id": "caliza:termsAndConditions",
+      "@type": "xsd:boolean"
+    },
+    "hasValidPixKey": {
+      "@id": "caliza:hasValidPixKey",
+      "@type": "xsd:boolean"
+    },
+    "riskScore": {
+      "@id": "caliza:riskScore",
+      "@type": "@id"
+    },
+    "beneficiaryLifeCycle": {
+      "@id": "caliza:beneficiaryLifeCycle",
+      "@container": "@list"
+    },
+    "BeneficiaryRiskDetailsResponse": "caliza:BeneficiaryRiskDetailsResponse",
+    "riskRating": {
+      "@id": "caliza:riskRating",
+      "@type": "xsd:string"
+    },
+    "riskScoreVersion": {
+      "@id": "caliza:riskScoreVersion",
+      "@type": "xsd:integer"
+    },
+    "calculatedAt": {
+      "@id": "caliza:calculatedAt",
+      "@type": "xsd:dateTime"
+    },
+    "riskScoreSnapshot": {
+      "@id": "caliza:riskScoreSnapshot",
+      "@type": "xsd:integer"
+    },
+    "BusinessResponse": "caliza:BusinessResponse",
+    "dateOfIncorporation": {
+      "@id": "caliza:dateOfIncorporation",
+      "@type": "xsd:date"
+    },
+    "idNumber": {
+      "@id": "caliza:idNumber",
+      "@type": "xsd:string"
+    },
+    "telephone": {
+      "@id": "caliza:telephone",
+      "@type": "xsd:string"
+    },
+    "contacts": {
+      "@id": "caliza:contacts",
+      "@container": "@list"
+    },
+    "FileResponse": "caliza:FileResponse",
+    "key": {
+      "@id": "caliza:key",
+      "@type": "xsd:string"
+    },
+    "classifier": {
+      "@id": "caliza:classifier",
+      "@type": "xsd:string"
+    },
+    "category": {
+      "@id": "caliza:category",
+      "@type": "xsd:string"
+    },
+    "identification": {
+      "@id": "caliza:identification",
+      "@type": "xsd:string"
+    },
+    "documentOwnerType": {
+      "@id": "caliza:documentOwnerType",
+      "@type": "xsd:string"
+    },
+    "LocalTargetBankAccountResponse": "caliza:LocalTargetBankAccountResponse",
+    "ispb": {
+      "@id": "caliza:ispb",
+      "@type": "xsd:string"
+    },
+    "agency": {
+      "@id": "caliza:agency",
+      "@type": "xsd:string"
+    },
+    "clabeAccount": {
+      "@id": "caliza:clabeAccount",
+      "@type": "xsd:string"
+    },
+    "PersonResponse": "caliza:PersonResponse",
+    "placeOfBirth": {
+      "@id": "caliza:placeOfBirth",
+      "@type": "xsd:string"
+    },
+    "citizenship": {
+      "@id": "caliza:citizenship",
+      "@type": "xsd:string"
+    },
+    "profession": {
+      "@id": "caliza:profession",
+      "@type": "xsd:string"
+    },
+    "gender": {
+      "@id": "caliza:gender",
+      "@type": "xsd:string"
+    },
+    "maritalStatus": {
+      "@id": "caliza:maritalStatus",
+      "@type": "xsd:string"
+    },
+    "mothersName": {
+      "@id": "caliza:mothersName",
+      "@type": "xsd:string"
+    },
+    "industry": {
+      "@id": "caliza:industry",
+      "@type": "xsd:string"
+    },
+    "incomeSource": {
+      "@id": "caliza:incomeSource",
+      "@type": "xsd:string"
+    },
+    "annualIncome": {
+      "@id": "caliza:annualIncome",
+      "@type": "xsd:decimal"
+    },
+    "wealthSource": {
+      "@id": "caliza:wealthSource",
+      "@type": "xsd:string"
+    },
+    "AddressRequest": "caliza:AddressRequest",
+    "BeneficiaryRequest": "caliza:BeneficiaryRequest",
+    "localCalizaOwnedBankAccountId": {
+      "@id": "caliza:localCalizaOwnedBankAccountId",
+      "@type": "xsd:string"
+    },
+    "BusinessRequest": "caliza:BusinessRequest",
+    "website": {
+      "@id": "caliza:website",
+      "@type": "xsd:string"
+    },
+    "description": {
+      "@id": "caliza:description",
+      "@type": "xsd:string"
+    },
+    "legalStructure": {
+      "@id": "caliza:legalStructure",
+      "@type": "xsd:string"
+    },
+    "LocalTargetBankAccountRequest": "caliza:LocalTargetBankAccountRequest",
+    "PersonRequest": "caliza:PersonRequest",
+    "DetailedBalanceResponse": "caliza:DetailedBalanceResponse",
+    "total": {
+      "@id": "caliza:total",
+      "@type": "xsd:decimal"
+    },
+    "pending": {
+      "@id": "caliza:pending",
+      "@type": "xsd:decimal"
+    },
+    "available": {
+      "@id": "caliza:available",
+      "@type": "xsd:decimal"
+    },
+    "VirtualAccountDomain": "caliza:VirtualAccountDomain",
+    "label": {
+      "@id": "caliza:label",
+      "@type": "xsd:string"
+    },
+    "BeneficiaryVirtualAccountRequest": "caliza:BeneficiaryVirtualAccountRequest",
+    "suffix": {
+      "@id": "caliza:suffix",
+      "@type": "xsd:string"
+    },
+    "defaultPayor": {
+      "@id": "caliza:defaultPayor",
+      "@type": "xsd:boolean"
+    },
+    "BalanceResponse": "caliza:BalanceResponse",
+    "Pageable": "caliza:Pageable",
+    "page": {
+      "@id": "caliza:page",
+      "@type": "xsd:integer"
+    },
+    "PageBeneficiaryResponse": "caliza:PageBeneficiaryResponse",
+    "RelatedPersonResponse": "caliza:RelatedPersonResponse",
+    "ContractResponse": "caliza:ContractResponse",
+    "price": {
+      "@id": "caliza:price",
+      "@type": "xsd:decimal"
+    },
+    "transactionFee": {
+      "@id": "caliza:transactionFee",
+      "@type": "xsd:decimal"
+    },
+    "transactionFeeMode": {
+      "@id": "caliza:transactionFeeMode",
+      "@type": "xsd:string"
+    },
+    "CredentialsResponse": "caliza:CredentialsResponse",
+    "clientId": {
+      "@id": "caliza:clientId",
+      "@type": "xsd:string"
+    },
+    "clientSecret": {
+      "@id": "caliza:clientSecret",
+      "@type": "xsd:string"
+    },
+    "IntegratorBankingResponse": "caliza:IntegratorBankingResponse",
+    "code": {
+      "@id": "caliza:code",
+      "@type": "xsd:integer"
+    },
+    "account": {
+      "@id": "caliza:account",
+      "@type": "xsd:string"
+    },
+    "pixKeyType": {
+      "@id": "caliza:pixKeyType",
+      "@type": "xsd:string"
+    },
+    "IntegratorDeviationConfigResponse": "caliza:IntegratorDeviationConfigResponse",
+    "percentDeviationDelayedTransactions": {
+      "@id": "caliza:percentDeviationDelayedTransactions",
+      "@type": "xsd:decimal"
+    },
+    "IntegratorResponse": "caliza:IntegratorResponse",
+    "document": {
+      "@id": "caliza:document",
+      "@type": "xsd:string"
+    },
+    "telephones": {
+      "@id": "caliza:telephones",
+      "@container": "@list"
+    },
+    "contract": {
+      "@id": "caliza:contract",
+      "@type": "@id"
+    },
+    "callbackUrl": {
+      "@id": "caliza:callbackUrl",
+      "@type": "xsd:string"
+    },
+    "contactEmails": {
+      "@id": "caliza:contactEmails",
+      "@container": "@list"
+    },
+    "credentials": {
+      "@id": "caliza:credentials",
+      "@type": "@id"
+    },
+    "banking": {
+      "@id": "caliza:banking",
+      "@type": "@id"
+    },
+    "webhookSecret": {
+      "@id": "caliza:webhookSecret",
+      "@type": "xsd:string"
+    },
+    "deviationConfig": {
+      "@id": "caliza:deviationConfig",
+      "@type": "@id"
+    },
+    "customerSignupId": {
+      "@id": "caliza:customerSignupId",
+      "@type": "xsd:string"
+    },
+    "ContractRequest": "caliza:ContractRequest",
+    "IntegratorAddressRequest": "caliza:IntegratorAddressRequest",
+    "IntegratorBankingRequest": "caliza:IntegratorBankingRequest",
+    "IntegratorDeviationConfigRequest": "caliza:IntegratorDeviationConfigRequest",
+    "IntegratorRequest": "caliza:IntegratorRequest",
+    "WebhookInfoRequest": "caliza:WebhookInfoRequest",
+    "url": {
+      "@id": "caliza:url",
+      "@type": "xsd:string"
+    },
+    "CapabilityDto": "caliza:CapabilityDto",
+    "IntegratorCapabilityResponse": "caliza:IntegratorCapabilityResponse",
+    "capability": {
+      "@id": "caliza:capability",
+      "@type": "@id"
+    },
+    "PageIntegratorCapabilityResponse": "caliza:PageIntegratorCapabilityResponse",
+    "RecipientResponse": "caliza:RecipientResponse",
+    "individualName": {
+      "@id": "caliza:individualName",
+      "@type": "xsd:string"
+    },
+    "businessName": {
+      "@id": "caliza:businessName",
+      "@type": "xsd:string"
+    },
+    "internalTransfer": {
+      "@id": "caliza:internalTransfer",
+      "@type": "xsd:boolean"
+    },
+    "countryOfIncorporation": {
+      "@id": "caliza:countryOfIncorporation",
+      "@type": "xsd:string"
+    },
+    "contactId": {
+      "@id": "caliza:contactId",
+      "@type": "xsd:string"
+    },
+    "PageRecipientResponse": "caliza:PageRecipientResponse",
+    "RecipientRequest": "caliza:RecipientRequest",
+    "VaspResponse": "caliza:VaspResponse",
+    "PageVaspResponse": "caliza:PageVaspResponse",
+    "TravelRuleDelegateTokenRequest": "caliza:TravelRuleDelegateTokenRequest",
+    "TravelRuleDelegateTokenResponse": "caliza:TravelRuleDelegateTokenResponse",
+    "accessToken": {
+      "@id": "caliza:accessToken",
+      "@type": "xsd:string"
+    },
+    "tokenType": {
+      "@id": "caliza:tokenType",
+      "@type": "xsd:string"
+    },
+    "delegateDid": {
+      "@id": "caliza:delegateDid",
+      "@type": "xsd:string"
+    },
+    "TravelRuleProofRequest": "caliza:TravelRuleProofRequest",
+    "proof": {
+      "@id": "caliza:proof",
+      "@type": "xsd:string"
+    },
+    "attestation": {
+      "@id": "caliza:attestation",
+      "@type": "xsd:string"
+    },
+    "walletProvider": {
+      "@id": "caliza:walletProvider",
+      "@type": "xsd:string"
+    },
+    "TravelRuleProofResponse": "caliza:TravelRuleProofResponse",
+    "method": {
+      "@id": "caliza:method",
+      "@type": "xsd:string"
+    },
+    "verifiedAt": {
+      "@id": "caliza:verifiedAt",
+      "@type": "xsd:dateTime"
+    },
+    "expectedAmount": {
+      "@id": "caliza:expectedAmount",
+      "@type": "xsd:decimal"
+    },
+    "expectedCurrency": {
+      "@id": "caliza:expectedCurrency",
+      "@type": "xsd:string"
+    },
+    "destinationAddress": {
+      "@id": "caliza:destinationAddress",
+      "@type": "xsd:string"
+    },
+    "TravelRuleManualAttestationRequest": "caliza:TravelRuleManualAttestationRequest",
+    "TravelRuleManualAttestationResponse": "caliza:TravelRuleManualAttestationResponse",
+    "TravelRuleMicrotransferTestRequest": "caliza:TravelRuleMicrotransferTestRequest",
+    "TravelRuleDepositInfoResponse": "caliza:TravelRuleDepositInfoResponse",
+    "vaspName": {
+      "@id": "caliza:vaspName",
+      "@type": "xsd:string"
+    },
+    "vaspDid": {
+      "@id": "caliza:vaspDid",
+      "@type": "xsd:string"
+    },
+    "VerificationRequest": "caliza:VerificationRequest",
+    "verificationMode": {
+      "@id": "caliza:verificationMode",
+      "@type": "xsd:string"
+    },
+    "VerificationResponse": "caliza:VerificationResponse",
+    "verificationType": {
+      "@id": "caliza:verificationType",
+      "@type": "xsd:string"
+    },
+    "verificationUrl": {
+      "@id": "caliza:verificationUrl",
+      "@type": "xsd:string"
+    },
+    "SandboxApproveRequest": "caliza:SandboxApproveRequest",
+    "workflowId": {
+      "@id": "caliza:workflowId",
+      "@type": "xsd:string"
+    },
+    "SandboxApproveResponse": "caliza:SandboxApproveResponse"
+  },
+  "@type": "schema:Dataset",
+  "schema:name": "Caliza API JSON-LD context",
+  "schema:description": "A JSON-LD @context for the objects Caliza's own API contract declares: one class per component schema, one property per declared field, typed from the contract. Derived by script (derive-json-ld.py, 2026-10-14) from openapi/caliza-api-documentation-reference-openapi.yml.",
+  "dcterms:created": "2026-10-14",
+  "dcterms:source": [
+    "openapi/caliza-api-documentation-reference-openapi.yml"
+  ]
+}

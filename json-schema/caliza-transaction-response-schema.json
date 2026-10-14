@@ -1,0 +1,1853 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/caliza/main/json-schema/caliza-transaction-response-schema.json",
+  "title": "TransactionResponse",
+  "description": "Complete transaction information including status, amounts, blockchain info, and timestamps.",
+  "x-generated": "2026-10-14",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/caliza-api-documentation-reference-openapi.yml#/components/schemas/TransactionResponse",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique transaction identifier."
+    },
+    "simulationId": {
+      "type": "string",
+      "description": "ID of the simulation used to create this transaction."
+    },
+    "integratorId": {
+      "type": "string",
+      "description": "ID of the integrator who initiated the transaction."
+    },
+    "beneficiaryId": {
+      "type": "string",
+      "description": "ID of the beneficiary involved in the transaction."
+    },
+    "from": {
+      "$ref": "#/$defs/AmountDto"
+    },
+    "to": {
+      "$ref": "#/$defs/AmountDto"
+    },
+    "status": {
+      "type": "string",
+      "description": "Current status of the transaction.",
+      "enum": [
+        "CREATED",
+        "PENDING",
+        "PROCESSING",
+        "SUCCEEDED",
+        "WAITING_WEBHOOK",
+        "FAILED",
+        "EXPIRED",
+        "CANCELLED",
+        "REJECTED",
+        "DEPOSIT_RECEIVED",
+        "DEPOSIT_COMPLETED",
+        "INTERNAL_TRANSFER_SENT",
+        "INTERNAL_TRANSFER_COMPLETED",
+        "EXCHANGE_SENT",
+        "EXCHANGE_COMPLETED",
+        "PAYMENT_SENT",
+        "PAYMENT_COMPLETED",
+        "PAYMENT_UNDER_REVIEW",
+        "PROCESSED_BY_BANK",
+        "PROCESSED_BY_INTERMEDIARY_BANK",
+        "RECEIVED_BY_INTERMEDIARY_BANK",
+        "RECEIVED_BY_BENEFICIARY_BANK",
+        "UNKNOWN"
+      ]
+    },
+    "blockchainInfo": {
+      "$ref": "#/$defs/NFBlockchainInfoDto"
+    },
+    "localInfo": {
+      "$ref": "#/$defs/NFLocalInfoDto"
+    },
+    "beneficiaryIp": {
+      "type": "string"
+    },
+    "flowOfFundsId": {
+      "type": "string"
+    },
+    "targetInfo": {
+      "$ref": "#/$defs/TargetInfoResponse"
+    },
+    "transactionDetails": {
+      "$ref": "#/$defs/TransactionDetailsResponse"
+    },
+    "settledAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "createdDate": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "lastModifiedDate": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "payInSender": {
+      "$ref": "#/$defs/PayInSenderResponse"
+    }
+  },
+  "$defs": {
+    "AccountDetailsDto": {
+      "type": "object",
+      "description": "Container for different types of bank account details supporting multiple payment rails. Each property corresponds to a specific payment method:\n- wireDetails: Wire transfer account details for domestic U.S. transfers\n- achDetails: ACH (Automated Clearing House) account details for U.S. electronic transfers\n- swiftDetails: SWIFT international wire transfer account details\n- pixDetails: PIX account details for instant payments in Brazil\n- copDetails: Colombian Peso (COP) account details for transfers in Colombia\n- speiDetails: SPEI account details for electronic transfers in Mexico\n- cvuDetails: CVU (Clave Virtual Uniforme) account details for transfers in Argentina\n",
+      "properties": {
+        "wireDetails": {
+          "$ref": "#/$defs/WireAccountDto"
+        },
+        "achDetails": {
+          "$ref": "#/$defs/AchAccountDto"
+        },
+        "swiftDetails": {
+          "$ref": "#/$defs/SwiftAccountDto"
+        },
+        "pixDetails": {
+          "$ref": "#/$defs/PixAccountDto"
+        },
+        "copDetails": {
+          "$ref": "#/$defs/CopAccountDto"
+        },
+        "speiDetails": {
+          "$ref": "#/$defs/SpeiAccountDto"
+        },
+        "cvuDetails": {
+          "$ref": "#/$defs/CvuAccountDto"
+        }
+      }
+    },
+    "AchAccountDto": {
+      "required": [
+        "bankInfo"
+      ],
+      "type": "object",
+      "description": "ACH account information for electronic fund transfers in the United States.\n- personInfo: Personal information for individual account holders\n- bankInfo: Bank identification and routing information (required)\n- businessInfo: Business information for corporate account holders\n",
+      "properties": {
+        "personInfo": {
+          "$ref": "#/$defs/AchPersonInfo"
+        },
+        "bankInfo": {
+          "$ref": "#/$defs/AchBankInfo"
+        },
+        "businessInfo": {
+          "$ref": "#/$defs/AchBusinessInfo"
+        }
+      }
+    },
+    "AchBankInfo": {
+      "required": [
+        "city",
+        "country",
+        "name",
+        "postalCode",
+        "routingNumber",
+        "state",
+        "street1"
+      ],
+      "type": "object",
+      "description": "Bank information for ACH transfers including routing details and bank address.",
+      "properties": {
+        "routingNumber": {
+          "type": "string",
+          "description": "9-digit ABA routing number identifying the bank.",
+          "pattern": "^[0-9]{9}$"
+        },
+        "name": {
+          "type": "string",
+          "description": "Full legal name of the financial institution."
+        },
+        "street1": {
+          "type": "string",
+          "description": "Primary street address of the bank."
+        },
+        "street2": {
+          "type": "string",
+          "description": "Secondary address line (suite, floor, etc.)."
+        },
+        "postalCode": {
+          "type": "string",
+          "description": "ZIP or postal code."
+        },
+        "city": {
+          "type": "string",
+          "description": "City name."
+        },
+        "state": {
+          "type": "string",
+          "description": "State or province code (2 letters)."
+        },
+        "country": {
+          "maxLength": 2,
+          "minLength": 2,
+          "type": "string",
+          "description": "ISO 3166-1 alpha-2 country code.",
+          "pattern": "^[A-Z]{2}$"
+        }
+      }
+    },
+    "AchBusinessInfo": {
+      "required": [
+        "accountNumber",
+        "accountType",
+        "address",
+        "city",
+        "country",
+        "name",
+        "postalCode",
+        "routingNumber",
+        "state"
+      ],
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Legal business name of the company."
+        },
+        "address": {
+          "type": "string",
+          "description": "Street address of the business."
+        },
+        "city": {
+          "type": "string",
+          "description": "City where the business is located."
+        },
+        "state": {
+          "type": "string",
+          "description": "State or province code (2 letters)."
+        },
+        "country": {
+          "maxLength": 2,
+          "minLength": 2,
+          "type": "string",
+          "description": "ISO 3166-1 alpha-2 country code."
+        },
+        "postalCode": {
+          "type": "string",
+          "description": "ZIP or postal code."
+        },
+        "accountNumber": {
+          "type": "string",
+          "description": "Bank account number for ACH transfers."
+        },
+        "accountType": {
+          "type": "string",
+          "enum": [
+            "CHECKING"
+          ]
+        },
+        "routingNumber": {
+          "type": "string"
+        },
+        "registrationNumber": {
+          "type": "string"
+        },
+        "phoneNumber": {
+          "type": "string"
+        },
+        "registrationType": {
+          "type": "string"
+        },
+        "registrationDate": {
+          "type": "string"
+        },
+        "registrationExpiryDate": {
+          "type": "string"
+        },
+        "mobileNumber": {
+          "type": "string"
+        },
+        "businessNature": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        }
+      }
+    },
+    "AchPersonInfo": {
+      "required": [
+        "accountNumber",
+        "accountType",
+        "city",
+        "country",
+        "name",
+        "postalCode",
+        "routingKey",
+        "state",
+        "street1",
+        "type"
+      ],
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Full name of the account holder."
+        },
+        "street1": {
+          "type": "string",
+          "description": "Primary street address."
+        },
+        "postalCode": {
+          "type": "string",
+          "description": "ZIP or postal code."
+        },
+        "city": {
+          "type": "string",
+          "description": "City name."
+        },
+        "state": {
+          "type": "string",
+          "description": "State or province code (2 letters)."
+        },
+        "country": {
+          "maxLength": 2,
+          "minLength": 2,
+          "type": "string",
+          "description": "ISO 3166-1 alpha-2 country code."
+        },
+        "routingKey": {
+          "type": "string",
+          "description": "Routing key for the account (routing number)."
+        },
+        "accountNumber": {
+          "type": "string",
+          "description": "Bank account number."
+        },
+        "accountType": {
+          "type": "string",
+          "description": "Type of account.",
+          "enum": [
+            "CHECKING"
+          ]
+        },
+        "type": {
+          "type": "string",
+          "description": "Account holder type.",
+          "enum": [
+            "NATURAL_PERSON",
+            "COMPANY"
+          ]
+        }
+      }
+    },
+    "AmountDto": {
+      "type": "object",
+      "description": "Represents a monetary amount with currency code and value.",
+      "required": [
+        "currencyCode",
+        "value"
+      ],
+      "properties": {
+        "currencyCode": {
+          "type": "string",
+          "description": "ISO 4217 currency code or cryptocurrency ticker symbol.",
+          "enum": [
+            "USDT",
+            "USDC",
+            "USD",
+            "BRL",
+            "MXN",
+            "COP",
+            "EUR",
+            "EURT",
+            "HKD",
+            "SGD",
+            "CNY",
+            "CNH",
+            "ARS",
+            "ANY"
+          ]
+        },
+        "value": {
+          "type": "number",
+          "description": "The monetary amount in the specified currency. Precision depends on the currency (typically 2 decimal places for fiat, up to 8 for crypto).",
+          "minimum": 0
+        }
+      }
+    },
+    "AmountFourDecimalPlacesResponse": {
+      "type": "object",
+      "description": "Monetary amount with up to four decimal places precision, typically used for fee calculations and exchange rate conversions.",
+      "properties": {
+        "currencyCode": {
+          "type": "string",
+          "description": "ISO 4217 currency code or cryptocurrency ticker symbol.",
+          "enum": [
+            "USDT",
+            "USDC",
+            "USD",
+            "BRL",
+            "MXN",
+            "COP",
+            "EUR",
+            "EURT",
+            "HKD",
+            "SGD",
+            "CNY",
+            "CNH",
+            "ARS",
+            "ANY"
+          ]
+        },
+        "value": {
+          "type": "number",
+          "description": "The monetary amount with up to 4 decimal places of precision.",
+          "minimum": 0
+        }
+      }
+    },
+    "BankInfo": {
+      "required": [
+        "bic",
+        "city",
+        "country",
+        "name",
+        "postalCode",
+        "state",
+        "street1"
+      ],
+      "type": "object",
+      "description": "Bank information including BIC/SWIFT code and address details for international wire transfers.",
+      "properties": {
+        "bic": {
+          "type": "string",
+          "description": "Bank Identifier Code (BIC) or SWIFT code - 8 or 11 character code identifying the bank.",
+          "pattern": "^[A-Z]{6}[A-Z0-9]{2}([A-Z0-9]{3})?$",
+          "minLength": 8,
+          "maxLength": 11
+        },
+        "name": {
+          "type": "string",
+          "description": "Full legal name of the bank."
+        },
+        "street1": {
+          "type": "string",
+          "description": "Primary street address line of the bank."
+        },
+        "street2": {
+          "type": "string",
+          "description": "Secondary street address line (optional)."
+        },
+        "postalCode": {
+          "type": "string",
+          "description": "Postal or ZIP code."
+        },
+        "city": {
+          "type": "string",
+          "description": "City name."
+        },
+        "state": {
+          "type": "string",
+          "description": "State, province, or region."
+        },
+        "country": {
+          "maxLength": 2,
+          "minLength": 2,
+          "type": "string",
+          "description": "ISO 3166-1 alpha-2 country code.",
+          "pattern": "^[A-Z]{2}$"
+        }
+      }
+    },
+    "BusinessInfo": {
+      "required": [
+        "accountNumber",
+        "accountType",
+        "address",
+        "city",
+        "country",
+        "name",
+        "postalCode",
+        "routingNumber",
+        "state"
+      ],
+      "type": "object",
+      "description": "Business account information for wire transfers including company details and bank account information.",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Legal business name of the company."
+        },
+        "address": {
+          "type": "string",
+          "description": "Street address of the business headquarters."
+        },
+        "city": {
+          "type": "string",
+          "description": "City where the business is located."
+        },
+        "state": {
+          "type": "string",
+          "description": "State or province code (2 letters)."
+        },
+        "country": {
+          "maxLength": 2,
+          "minLength": 2,
+          "type": "string",
+          "description": "ISO 3166-1 alpha-2 country code."
+        },
+        "postalCode": {
+          "type": "string",
+          "description": "ZIP or postal code."
+        },
+        "accountNumber": {
+          "type": "string",
+          "description": "Business bank account number for wire transfers."
+        },
+        "accountType": {
+          "type": "string",
+          "description": "Type of bank account.",
+          "enum": [
+            "CHECKING"
+          ]
+        },
+        "routingNumber": {
+          "type": "string",
+          "description": "9-digit ABA routing number or SWIFT code."
+        },
+        "registrationNumber": {
+          "type": "string",
+          "description": "Business registration or tax ID number (EIN/Tax ID)."
+        },
+        "phoneNumber": {
+          "type": "string",
+          "description": "Business contact phone number."
+        },
+        "registrationType": {
+          "type": "string",
+          "description": "Type of business registration document."
+        },
+        "registrationDate": {
+          "type": "string",
+          "description": "Date when the business was registered.",
+          "format": "date"
+        },
+        "registrationExpiryDate": {
+          "type": "string",
+          "description": "Expiry date of business registration (if applicable).",
+          "format": "date"
+        },
+        "mobileNumber": {
+          "type": "string",
+          "description": "Mobile phone number for business contact."
+        },
+        "businessNature": {
+          "type": "string",
+          "description": "Nature or type of business activity/industry."
+        },
+        "email": {
+          "type": "string",
+          "description": "Business email address for correspondence."
+        }
+      }
+    },
+    "ConversionDetails": {
+      "type": "object",
+      "description": "Detailed breakdown of currency conversion including exchange rates and amounts for multi-currency transactions.",
+      "properties": {
+        "effectiveTransactionValue": {
+          "type": "number",
+          "description": "The final value of the transaction after all conversions and fees."
+        },
+        "marketExchangeRate": {
+          "type": "number",
+          "description": "The current market exchange rate between the source and destination currencies."
+        },
+        "clientRate": {
+          "type": "number",
+          "description": "The exchange rate offered to the client (may include markup)."
+        },
+        "calizaRate": {
+          "type": "number",
+          "description": "The exchange rate component retained by Caliza."
+        },
+        "integratorRate": {
+          "type": "number",
+          "description": "The exchange rate component allocated to the integrator."
+        },
+        "amountToBeConverted": {
+          "$ref": "#/$defs/AmountFourDecimalPlacesResponse"
+        }
+      }
+    },
+    "CopAccountDto": {
+      "type": "object",
+      "description": "Colombian Peso (COP) bank account details for transfers in Colombia.",
+      "properties": {
+        "firstName": {
+          "type": "string",
+          "description": "Account holder's first name."
+        },
+        "lastName": {
+          "type": "string",
+          "description": "Account holder's last name."
+        },
+        "accountType": {
+          "type": "integer",
+          "format": "int32",
+          "description": "Type of bank account (1 = Savings, 2 = Checking)."
+        },
+        "bankAccount": {
+          "type": "string",
+          "description": "Bank account number."
+        },
+        "bankCode": {
+          "type": "string",
+          "description": "Colombian bank code identifying the financial institution."
+        },
+        "thirdPartyWithdrawal": {
+          "type": "boolean",
+          "description": "Indicates if withdrawals to third parties are allowed."
+        },
+        "documentId": {
+          "type": "string",
+          "description": "Identification document number."
+        },
+        "documentType": {
+          "type": "string",
+          "description": "Type of identification document.",
+          "enum": [
+            "CC",
+            "CE",
+            "NIT",
+            "PASS",
+            "PEP"
+          ]
+        },
+        "email": {
+          "type": "string",
+          "description": "Email address associated with the account.",
+          "format": "email"
+        },
+        "bitsoContactId": {
+          "type": "string",
+          "description": "Bitso platform contact identifier (if applicable)."
+        }
+      }
+    },
+    "CvuAccountDto": {
+      "type": "object",
+      "description": "CVU (Clave Virtual Uniforme) account details for instant transfers in Argentina.",
+      "properties": {
+        "recipientName": {
+          "type": "string",
+          "description": "Full name of the account holder as registered with the CVU."
+        },
+        "cvu": {
+          "type": "string",
+          "description": "22-digit CVU identifier for the recipient account.",
+          "pattern": "^[0-9]{22}$"
+        }
+      }
+    },
+    "ExpectedSettlementTimeDetails": {
+      "type": "object",
+      "description": "Information about expected settlement time for a transaction.",
+      "properties": {
+        "expectedTime": {
+          "type": "string",
+          "description": "Standardized settlement time category.",
+          "enum": [
+            "INSTANT_MARKET_HOURS",
+            "INSTANT",
+            "WITHIN_5_MINUTES",
+            "WITHIN_15_MINUTES",
+            "SAME_DAY_BEFORE_CUTOFF",
+            "ONE_TO_TWO_DAYS",
+            "ONE_TO_THREE_DAYS",
+            "UNKNOWN"
+          ]
+        },
+        "displayText": {
+          "type": "string",
+          "description": "Human-readable settlement time description to display to end users."
+        },
+        "additionalInfo": {
+          "type": "string",
+          "description": "Additional context or conditions affecting settlement time."
+        },
+        "cutoffTime": {
+          "type": "string",
+          "description": "Cutoff time for same-day settlement in ISO 8601 format.",
+          "format": "date-time"
+        }
+      }
+    },
+    "FeeDetails": {
+      "type": "object",
+      "description": "Comprehensive breakdown of all fees applied to a transaction:\n- taxes: Tax amount charged on the transaction (e.g., IOF in Brazil, VAT, etc.)\n- integratorFee: Fee amount allocated to the integrator\n- fixedFees: List of fixed fees charged regardless of transaction amount\n- percentageFees: List of fees calculated as a percentage of the transaction amount\n- spreadFees: List of fees derived from exchange rate spreads in currency conversions\n- oldFees: Legacy fee structure (deprecated)\n- totalFees: Sum of all fees charged on this transaction\n- vet: VET (Valor Efetivo Total) - Brazilian total effective value including all costs\n",
+      "properties": {
+        "taxes": {
+          "$ref": "#/$defs/AmountFourDecimalPlacesResponse"
+        },
+        "integratorFee": {
+          "$ref": "#/$defs/AmountFourDecimalPlacesResponse"
+        },
+        "fixedFees": {
+          "type": "array",
+          "description": "List of fixed fees charged regardless of transaction amount.",
+          "items": {
+            "$ref": "#/$defs/FixedFeeItemResponse"
+          }
+        },
+        "percentageFees": {
+          "type": "array",
+          "description": "List of fees calculated as a percentage of the transaction amount.",
+          "items": {
+            "$ref": "#/$defs/PercentageFeeItemResponse"
+          }
+        },
+        "spreadFees": {
+          "type": "array",
+          "description": "List of fees derived from exchange rate spreads in currency conversions.",
+          "items": {
+            "$ref": "#/$defs/SpreadFeeItemResponse"
+          }
+        },
+        "oldFees": {
+          "type": "array",
+          "description": "Legacy fee structure (deprecated).",
+          "items": {
+            "$ref": "#/$defs/OldFeeItemResponse"
+          }
+        },
+        "totalFees": {
+          "$ref": "#/$defs/AmountFourDecimalPlacesResponse"
+        },
+        "vet": {
+          "type": "number",
+          "description": "VET (Valor Efetivo Total) - Brazilian total effective value including all costs."
+        }
+      }
+    },
+    "FiatAccountDto": {
+      "type": "object",
+      "description": "Fiat currency bank account information including account type, ownership, and detailed banking information for various payment rails.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier of the fiat account."
+        },
+        "name": {
+          "type": "string",
+          "description": "Display name or nickname for the account."
+        },
+        "beneficiaryId": {
+          "type": "string",
+          "description": "ID of the beneficiary who owns this account (if applicable)."
+        },
+        "integratorId": {
+          "type": "string",
+          "description": "ID of the integrator associated with this account."
+        },
+        "belongsToBeneficiary": {
+          "type": "boolean",
+          "description": "Indicates whether this account belongs to a beneficiary (true) or integrator (false)."
+        },
+        "fiatAccountType": {
+          "type": "string",
+          "description": "Type of fiat account/payment rail.",
+          "enum": [
+            "WIRE",
+            "SWIFT",
+            "ACH",
+            "PIX",
+            "COP",
+            "SPEI",
+            "CVU"
+          ]
+        },
+        "accountDetails": {
+          "$ref": "#/$defs/AccountDetailsDto"
+        },
+        "owner": {
+          "type": "string",
+          "enum": [
+            "BENEFICIARY",
+            "INTEGRATOR"
+          ]
+        }
+      }
+    },
+    "FixedFeeItemResponse": {
+      "type": "object",
+      "description": "Details of a fixed fee charged on a transaction, independent of transaction amount.",
+      "properties": {
+        "block": {
+          "type": "string",
+          "description": "Fee category or grouping identifier."
+        },
+        "type": {
+          "type": "string",
+          "description": "Type of fee being charged."
+        },
+        "value": {
+          "type": "number",
+          "description": "Fixed fee amount."
+        },
+        "currencyCode": {
+          "type": "string",
+          "description": "Currency in which the fee is charged."
+        },
+        "concept": {
+          "type": "string",
+          "description": "Human-readable description of what the fee covers."
+        },
+        "paymentRail": {
+          "type": "string",
+          "description": "Payment method this fee applies to."
+        },
+        "chargeMode": {
+          "type": "string",
+          "description": "How the fee is applied (DEDUCT = deducted from amount, ADD = added to total).",
+          "enum": [
+            "DEDUCT",
+            "ADD"
+          ]
+        }
+      }
+    },
+    "LocalTargetBankAccountDto": {
+      "type": "object",
+      "description": "Local bank account details for a beneficiary in their domestic country, supporting multiple countries and payment systems.",
+      "properties": {
+        "targetCountry": {
+          "type": "string",
+          "enum": [
+            "AF",
+            "AX",
+            "AL",
+            "DZ",
+            "AS",
+            "AD",
+            "AO",
+            "AI",
+            "AQ",
+            "AG",
+            "AR",
+            "AM",
+            "AW",
+            "AU",
+            "AT",
+            "AZ",
+            "BH",
+            "BD",
+            "BB",
+            "BY",
+            "BE",
+            "BZ",
+            "BJ",
+            "BM",
+            "BT",
+            "BO",
+            "BQ",
+            "BA",
+            "BW",
+            "BV",
+            "BR",
+            "IO",
+            "BN",
+            "BG",
+            "BF",
+            "BI",
+            "KH",
+            "CM",
+            "CA",
+            "CV",
+            "KY",
+            "CF",
+            "TD",
+            "CL",
+            "CN",
+            "CX",
+            "CC",
+            "CO",
+            "KM",
+            "CG",
+            "CK",
+            "CR",
+            "CI",
+            "HR",
+            "CU",
+            "CW",
+            "CY",
+            "CZ",
+            "CD",
+            "DK",
+            "DJ",
+            "DM",
+            "DO",
+            "EC",
+            "EG",
+            "SV",
+            "GQ",
+            "ER",
+            "EE",
+            "SZ",
+            "ET",
+            "FK",
+            "FO",
+            "FJ",
+            "FI",
+            "FR",
+            "GF",
+            "PF",
+            "TF",
+            "GA",
+            "GE",
+            "DE",
+            "GH",
+            "GI",
+            "GR",
+            "GL",
+            "GD",
+            "GP",
+            "GU",
+            "GT",
+            "GG",
+            "GN",
+            "GW",
+            "GY",
+            "HT",
+            "HM",
+            "HN",
+            "HK",
+            "HU",
+            "IS",
+            "IN",
+            "ID",
+            "IR",
+            "IQ",
+            "IE",
+            "IL",
+            "IT",
+            "JM",
+            "JP",
+            "JE",
+            "JO",
+            "KZ",
+            "KE",
+            "KI",
+            "XK",
+            "KW",
+            "KG",
+            "LA",
+            "LV",
+            "LB",
+            "LS",
+            "LR",
+            "LY",
+            "LI",
+            "LT",
+            "LU",
+            "MO",
+            "MG",
+            "MW",
+            "MY",
+            "MV",
+            "ML",
+            "MT",
+            "IM",
+            "MH",
+            "MQ",
+            "MR",
+            "MU",
+            "YT",
+            "MX",
+            "FM",
+            "MD",
+            "MC",
+            "MN",
+            "ME",
+            "MS",
+            "MA",
+            "MZ",
+            "MM",
+            "NA",
+            "NR",
+            "NP",
+            "NL",
+            "NC",
+            "NZ",
+            "NI",
+            "NE",
+            "NG",
+            "NU",
+            "NF",
+            "KP",
+            "MK",
+            "MP",
+            "NO",
+            "OM",
+            "PK",
+            "PW",
+            "PS",
+            "PA",
+            "PG",
+            "PY",
+            "PE",
+            "PH",
+            "PN",
+            "PL",
+            "PT",
+            "PR",
+            "QA",
+            "RE",
+            "RO",
+            "RU",
+            "RW",
+            "SH",
+            "KN",
+            "LC",
+            "PM",
+            "VC",
+            "BL",
+            "MF",
+            "WS",
+            "SM",
+            "ST",
+            "SA",
+            "SN",
+            "RS",
+            "SC",
+            "SL",
+            "SG",
+            "SX",
+            "SK",
+            "SI",
+            "SB",
+            "SO",
+            "ZA",
+            "GS",
+            "KR",
+            "SS",
+            "ES",
+            "LK",
+            "SD",
+            "SR",
+            "SJ",
+            "SE",
+            "CH",
+            "SY",
+            "TW",
+            "TJ",
+            "TZ",
+            "TH",
+            "BS",
+            "GM",
+            "TL",
+            "TG",
+            "TK",
+            "TO",
+            "TT",
+            "TN",
+            "TR",
+            "TM",
+            "TC",
+            "TV",
+            "UG",
+            "UA",
+            "AE",
+            "GB",
+            "US",
+            "UM",
+            "UY",
+            "UZ",
+            "VU",
+            "VA",
+            "VE",
+            "VN",
+            "VG",
+            "VI",
+            "WF",
+            "EH",
+            "YE",
+            "ZM",
+            "ZW",
+            "ALL"
+          ]
+        },
+        "accountDetails": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "NFBlockchainInfoDto": {
+      "type": "object",
+      "description": "Blockchain network information for crypto transactions including transaction hashes and wallet addresses.",
+      "properties": {
+        "depositTransactionHash": {
+          "type": "string",
+          "description": "Blockchain transaction hash for the deposit transaction."
+        },
+        "withdrawalTransactionHash": {
+          "type": "string",
+          "description": "Blockchain transaction hash for the withdrawal/payout transaction."
+        },
+        "fundingWallet": {
+          "type": "string",
+          "description": "Wallet address used to fund the transaction."
+        },
+        "targetWallet": {
+          "$ref": "#/$defs/NFTransferWalletDto"
+        }
+      }
+    },
+    "NFLocalInfoDto": {
+      "type": "object",
+      "description": "Local payment network information for SPEI, PIX, and other domestic payment systems.",
+      "properties": {
+        "speiInClabe": {
+          "type": "string",
+          "description": "CLABE (Clave Bancaria Estandarizada) for incoming SPEI transfers in Mexico.",
+          "pattern": "^[0-9]{18}$"
+        },
+        "speiInBankName": {
+          "type": "string",
+          "description": "Name of the bank for incoming SPEI transfers."
+        },
+        "speiInBeneficiaryName": {
+          "type": "string",
+          "description": "Beneficiary name for incoming SPEI transfers."
+        },
+        "speiOutClabe": {
+          "type": "string",
+          "description": "CLABE for outgoing SPEI transfers.",
+          "pattern": "^[0-9]{18}$"
+        },
+        "pixCopyAndPaste": {
+          "type": "string",
+          "description": "PIX copy-and-paste code (QR code text equivalent) for payment."
+        },
+        "pixExpiresAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Expiration date and time for the PIX payment code."
+        },
+        "targetPixKey": {
+          "type": "string",
+          "description": "PIX key (CPF, CNPJ, email, phone, or random key) for the recipient."
+        },
+        "targetAccount": {
+          "$ref": "#/$defs/LocalTargetBankAccountDto"
+        },
+        "destinationFiatAccount": {
+          "$ref": "#/$defs/FiatAccountDto"
+        },
+        "pixOutSearchableId": {
+          "type": "string",
+          "description": "Searchable identifier for outgoing PIX transactions."
+        },
+        "speiOutSearchableId": {
+          "type": "string",
+          "description": "Searchable identifier for outgoing SPEI transactions."
+        },
+        "fundingDetails": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "uetr": {
+          "type": "string",
+          "description": "Unique End-to-end Transaction Reference for SWIFT/wire transfers (ISO 20022).",
+          "pattern": "^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$"
+        },
+        "achTraceNumber": {
+          "type": "string",
+          "description": "Nacha trace number for ACH transfers. Fifteen digits: an 8-digit ODFI routing prefix followed by a 7-digit sequence. For inbound ACH it carries the originating bank's prefix.",
+          "pattern": "^[0-9]{15}$"
+        },
+        "achSecCode": {
+          "type": "string",
+          "description": "ACH Standard Entry Class code identifying the type of ACH entry (e.g. CCD for business, PPD for consumer)."
+        },
+        "achEffectiveDate": {
+          "type": "string",
+          "format": "date",
+          "description": "The effective settlement date for the ACH entry."
+        }
+      }
+    },
+    "NFTransferWalletDto": {
+      "type": "object",
+      "description": "Cryptocurrency wallet information for blockchain-based transfers.",
+      "properties": {
+        "address": {
+          "type": "string",
+          "description": "Blockchain wallet address (cryptocurrency public address)."
+        },
+        "tag": {
+          "type": "string",
+          "description": "Destination tag or memo (required for some networks like Stellar, XRP)."
+        },
+        "chain": {
+          "type": "string",
+          "description": "Blockchain network identifier.",
+          "enum": [
+            "SOL",
+            "XLM",
+            "POLY",
+            "TRX",
+            "MATIC",
+            "BASE"
+          ]
+        },
+        "provider": {
+          "type": "string",
+          "description": "Wallet service provider or custody solution."
+        },
+        "type": {
+          "type": "string",
+          "description": "Type of wallet integration.",
+          "enum": [
+            "CALIZA_BRIDGE",
+            "EXTERNAL_BRIDGE",
+            "RENTAL_PAYMENT",
+            "CUSTODY"
+          ]
+        }
+      }
+    },
+    "OldFeeItemResponse": {
+      "type": "object",
+      "description": "Legacy fee structure format (deprecated). Use FixedFeeItemResponse, PercentageFeeItemResponse, or SpreadFeeItemResponse for new integrations.",
+      "deprecated": true,
+      "properties": {
+        "block": {
+          "type": "string",
+          "description": "Fee category identifier."
+        },
+        "type": {
+          "type": "string",
+          "description": "Type of fee."
+        },
+        "fromCurrency": {
+          "type": "string",
+          "description": "Source currency (for conversion fees)."
+        },
+        "toCurrency": {
+          "type": "string",
+          "description": "Target currency (for conversion fees)."
+        },
+        "feeValue": {
+          "type": "number",
+          "description": "Fee amount or percentage value."
+        },
+        "feeCurrency": {
+          "type": "string",
+          "description": "Currency in which the fee is charged."
+        },
+        "marketRate": {
+          "type": "number",
+          "description": "Market exchange rate (for FX fees)."
+        },
+        "effectiveRate": {
+          "type": "number",
+          "description": "Effective rate after spread (for FX fees)."
+        },
+        "calizaRate": {
+          "type": "number",
+          "description": "Caliza's rate component."
+        },
+        "baseCurrency": {
+          "type": "string",
+          "description": "Base currency for calculations."
+        },
+        "baseAmount": {
+          "type": "number",
+          "description": "Base amount for percentage calculations."
+        },
+        "concept": {
+          "type": "string",
+          "description": "Fee description."
+        },
+        "chargeMode": {
+          "type": "string",
+          "description": "How the fee is applied."
+        }
+      }
+    },
+    "PayInSenderResponse": {
+      "type": "object",
+      "description": "Information about the payment rail and sender details for pay-in transactions.",
+      "properties": {
+        "paymentRails": {
+          "type": "string",
+          "description": "Payment method or rail used for the transaction.",
+          "enum": [
+            "PIX",
+            "SPEI",
+            "WIRE",
+            "RTP",
+            "COP",
+            "CVU",
+            "LOCAL_EXCHANGE",
+            "CRYPTO_INTERNAL_TRANSFER",
+            "POLYGON",
+            "ETH",
+            "TRON",
+            "STELLAR",
+            "UNKNOWN",
+            "ACH",
+            "SWIFT",
+            "BASE",
+            "SOLANA",
+            "CALIZA_WALLET",
+            "MAIN_CALIZA_WALLET",
+            "ANY"
+          ]
+        },
+        "details": {
+          "type": "object",
+          "description": "Additional sender-specific details (structure varies by payment rail).",
+          "additionalProperties": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "PercentageFeeItemResponse": {
+      "type": "object",
+      "description": "Details of a percentage-based fee calculated as a portion of the transaction amount.",
+      "properties": {
+        "block": {
+          "type": "string",
+          "description": "Fee category or grouping identifier."
+        },
+        "type": {
+          "type": "string",
+          "description": "Type of fee being charged."
+        },
+        "percentageRate": {
+          "type": "number",
+          "description": "Fee percentage rate in decimal form (e.g., 0.025 = 2.5%)."
+        },
+        "baseAmount": {
+          "type": "number",
+          "description": "Transaction amount used as the base for percentage calculation."
+        },
+        "baseCurrency": {
+          "type": "string",
+          "description": "Currency of the base amount."
+        },
+        "calculatedFee": {
+          "type": "number",
+          "description": "Calculated fee amount based on the percentage and base amount."
+        },
+        "feeCurrency": {
+          "type": "string",
+          "description": "Currency in which the fee is charged."
+        },
+        "concept": {
+          "type": "string",
+          "description": "Human-readable description of what the fee covers."
+        },
+        "paymentRail": {
+          "type": "string"
+        },
+        "chargeMode": {
+          "type": "string"
+        }
+      }
+    },
+    "PersonInfo": {
+      "required": [
+        "accountNumber",
+        "accountType",
+        "city",
+        "country",
+        "name",
+        "postalCode",
+        "routingKey",
+        "state",
+        "street1",
+        "type"
+      ],
+      "type": "object",
+      "description": "Individual person account information for wire transfers including personal details and bank account information.",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "street1": {
+          "type": "string"
+        },
+        "postalCode": {
+          "type": "string"
+        },
+        "city": {
+          "type": "string"
+        },
+        "state": {
+          "type": "string"
+        },
+        "country": {
+          "maxLength": 2,
+          "minLength": 2,
+          "type": "string"
+        },
+        "routingKey": {
+          "type": "string"
+        },
+        "accountNumber": {
+          "type": "string"
+        },
+        "accountType": {
+          "type": "string",
+          "enum": [
+            "CHECKING"
+          ]
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "NATURAL_PERSON",
+            "COMPANY"
+          ]
+        }
+      }
+    },
+    "PixAccountDto": {
+      "type": "object",
+      "description": "PIX account details for instant payments in Brazil.",
+      "properties": {
+        "pixKey": {
+          "type": "string",
+          "description": "PIX key identifier. Can be CPF, CNPJ, email, phone number (+55...), or random key (UUID)."
+        }
+      }
+    },
+    "SpeiAccountDto": {
+      "required": [
+        "bankCode",
+        "clabe",
+        "receiverName"
+      ],
+      "type": "object",
+      "description": "SPEI (Sistema de Pagos Electrónicos Interbancarios) account details for electronic transfers in Mexico.",
+      "properties": {
+        "clabe": {
+          "type": "string",
+          "description": "18-digit CLABE (Clave Bancaria Estandarizada) number identifying the Mexican bank account.",
+          "pattern": "^[0-9]{18}$"
+        },
+        "bankCode": {
+          "type": "string",
+          "description": "3-digit Mexican bank code.",
+          "pattern": "^[0-9]{3}$"
+        },
+        "receiverName": {
+          "type": "string",
+          "description": "Full name of the account holder as registered with the bank."
+        }
+      }
+    },
+    "SpreadFeeItemResponse": {
+      "type": "object",
+      "description": "Details of fees derived from exchange rate spread in currency conversion transactions.",
+      "properties": {
+        "block": {
+          "type": "string",
+          "description": "Fee category or grouping identifier."
+        },
+        "type": {
+          "type": "string",
+          "description": "Type of fee being charged."
+        },
+        "fromCurrency": {
+          "type": "string",
+          "description": "Source currency being converted from."
+        },
+        "toCurrency": {
+          "type": "string",
+          "description": "Target currency being converted to."
+        },
+        "marketRate": {
+          "type": "number",
+          "description": "Current market exchange rate between the two currencies."
+        },
+        "spreadBasisPoint": {
+          "type": "number",
+          "description": "Spread markup in basis points (1 bp = 0.01%)."
+        },
+        "effectiveRate": {
+          "type": "number",
+          "description": "Final exchange rate applied after spread."
+        },
+        "calizaRate": {
+          "type": "number",
+          "description": "Exchange rate component retained by Caliza."
+        },
+        "baseCurrency": {
+          "type": "string",
+          "description": "Base currency for fee calculation."
+        },
+        "baseAmount": {
+          "type": "number",
+          "description": "Amount in base currency used for fee calculation."
+        },
+        "calculatedFee": {
+          "type": "number",
+          "description": "Calculated spread fee amount."
+        },
+        "feeCurrency": {
+          "type": "string",
+          "description": "Currency in which the spread fee is expressed."
+        },
+        "concept": {
+          "type": "string",
+          "description": "Human-readable description of the spread fee."
+        },
+        "chargeMode": {
+          "type": "string",
+          "description": "How the fee is applied to the transaction.",
+          "enum": [
+            "EMBEDDED",
+            "DEDUCT",
+            "ADD"
+          ]
+        }
+      }
+    },
+    "SwiftAccountDto": {
+      "required": [
+        "bankInfo"
+      ],
+      "type": "object",
+      "description": "SWIFT international wire transfer account details supporting both individual and business accounts.",
+      "properties": {
+        "personInfo": {
+          "$ref": "#/$defs/SwiftPersonInfo"
+        },
+        "bankInfo": {
+          "$ref": "#/$defs/SwiftBankInfo"
+        },
+        "businessInfo": {
+          "$ref": "#/$defs/SwiftBusinessInfo"
+        },
+        "isPobo": {
+          "type": "boolean",
+          "description": "Indicates if this account uses Pay-on-Behalf-Of (POBO) arrangement where payments are made on behalf of another entity."
+        },
+        "pobo": {
+          "type": "boolean",
+          "description": "Indicates if POBO (Pay-on-Behalf-Of) services are enabled for this account."
+        }
+      }
+    },
+    "SwiftBankInfo": {
+      "required": [
+        "city",
+        "country",
+        "name",
+        "postalCode",
+        "state",
+        "street1",
+        "swiftCode"
+      ],
+      "type": "object",
+      "description": "Bank information for SWIFT international wire transfers including SWIFT code and bank address.",
+      "properties": {
+        "swiftCode": {
+          "type": "string",
+          "description": "SWIFT/BIC code identifying the bank (8 or 11 characters).",
+          "pattern": "^[A-Z]{6}[A-Z0-9]{2}([A-Z0-9]{3})?$"
+        },
+        "name": {
+          "type": "string",
+          "description": "Full legal name of the bank."
+        },
+        "street1": {
+          "type": "string",
+          "description": "Primary street address of the bank."
+        },
+        "street2": {
+          "type": "string",
+          "description": "Secondary address line (optional)."
+        },
+        "postalCode": {
+          "type": "string",
+          "description": "Postal or ZIP code."
+        },
+        "city": {
+          "type": "string",
+          "description": "City name."
+        },
+        "state": {
+          "type": "string",
+          "description": "State or province."
+        },
+        "country": {
+          "maxLength": 2,
+          "minLength": 2,
+          "type": "string",
+          "description": "ISO 3166-1 alpha-2 country code."
+        }
+      }
+    },
+    "SwiftBusinessInfo": {
+      "required": [
+        "accountNumber",
+        "accountType",
+        "address",
+        "city",
+        "country",
+        "name",
+        "postalCode",
+        "routingNumber",
+        "state"
+      ],
+      "type": "object",
+      "description": "Business account information for SWIFT international wire transfers.",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Legal business name."
+        },
+        "address": {
+          "type": "string",
+          "description": "Business street address."
+        },
+        "city": {
+          "type": "string",
+          "description": "City where the business is located."
+        },
+        "state": {
+          "type": "string",
+          "description": "State or region."
+        },
+        "country": {
+          "maxLength": 2,
+          "minLength": 2,
+          "type": "string",
+          "description": "ISO 3166-1 alpha-2 country code."
+        },
+        "postalCode": {
+          "type": "string",
+          "description": "Postal code."
+        },
+        "registrationNumber": {
+          "type": "string",
+          "description": "Company registration number."
+        },
+        "accountNumber": {
+          "type": "string",
+          "description": "Bank account number or IBAN."
+        },
+        "accountType": {
+          "type": "string",
+          "description": "Type of account.",
+          "enum": [
+            "CHECKING"
+          ]
+        },
+        "routingNumber": {
+          "type": "string",
+          "description": "Bank routing number or sort code."
+        },
+        "phoneNumber": {
+          "type": "string",
+          "description": "Business contact phone number."
+        },
+        "registrationType": {
+          "type": "string",
+          "description": "Type of business registration."
+        },
+        "registrationDate": {
+          "type": "string",
+          "description": "Date of business registration.",
+          "format": "date"
+        },
+        "registrationExpiryDate": {
+          "type": "string",
+          "description": "Registration expiry date (if applicable).",
+          "format": "date"
+        },
+        "mobileNumber": {
+          "type": "string",
+          "description": "Mobile contact number."
+        },
+        "businessNature": {
+          "type": "string",
+          "description": "Nature of business operations."
+        },
+        "email": {
+          "type": "string",
+          "description": "Business email address."
+        }
+      }
+    },
+    "SwiftPersonInfo": {
+      "required": [
+        "accountType",
+        "city",
+        "country",
+        "iban",
+        "name",
+        "postalCode",
+        "routingKey",
+        "state",
+        "street1",
+        "type"
+      ],
+      "type": "object",
+      "description": "Individual person account information for SWIFT international wire transfers including IBAN details.",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Full name of the account holder."
+        },
+        "street1": {
+          "type": "string",
+          "description": "Primary street address."
+        },
+        "postalCode": {
+          "type": "string",
+          "description": "Postal code."
+        },
+        "city": {
+          "type": "string",
+          "description": "City name."
+        },
+        "state": {
+          "type": "string",
+          "description": "State or region."
+        },
+        "country": {
+          "maxLength": 2,
+          "minLength": 2,
+          "type": "string",
+          "description": "ISO 3166-1 alpha-2 country code."
+        },
+        "routingKey": {
+          "type": "string",
+          "description": "Bank routing key or sort code."
+        },
+        "iban": {
+          "type": "string",
+          "description": "International Bank Account Number.",
+          "pattern": "^[A-Z]{2}[0-9]{2}[A-Z0-9]+$"
+        },
+        "accountType": {
+          "type": "string",
+          "description": "Type of account.",
+          "enum": [
+            "CHECKING"
+          ]
+        },
+        "type": {
+          "type": "string",
+          "description": "Account holder type.",
+          "enum": [
+            "NATURAL_PERSON",
+            "COMPANY"
+          ]
+        },
+        "email": {
+          "type": "string",
+          "description": "Email address of the account holder."
+        },
+        "dateOfBirth": {
+          "type": "string",
+          "description": "Date of birth of the account holder.",
+          "format": "date"
+        },
+        "mobileNumber": {
+          "type": "string",
+          "description": "Mobile phone number."
+        },
+        "identificationType": {
+          "type": "string",
+          "description": "Type of identification document (e.g., PASSPORT, ID_CARD, DRIVING_LICENSE)."
+        },
+        "identificationNumber": {
+          "type": "string",
+          "description": "Identification document number."
+        },
+        "identificationIssuer": {
+          "type": "string",
+          "description": "Issuing authority or country of the identification document."
+        },
+        "occupation": {
+          "type": "string",
+          "description": "Occupation or profession of the account holder."
+        }
+      }
+    },
+    "TargetInfoResponse": {
+      "type": "object",
+      "description": "Information about the target account and source of funds for a transaction.",
+      "properties": {
+        "targetId": {
+          "type": "string",
+          "description": "Identifier of the target account receiving the funds."
+        },
+        "fundsTarget": {
+          "type": "string",
+          "description": "Specifies which account type is the destination for the funds.",
+          "enum": [
+            "BENEFICIARY_FUNDS",
+            "INTEGRATOR_FUNDS",
+            "CALIZA_FUNDS",
+            "RETURN_DEPOSIT_FUNDS"
+          ]
+        }
+      }
+    },
+    "TransactionDetailsResponse": {
+      "type": "object",
+      "description": "Detailed information about a transaction including conversion details, fees, and settlement expectations.",
+      "properties": {
+        "conversionDetails": {
+          "$ref": "#/$defs/ConversionDetails"
+        },
+        "feeDetails": {
+          "$ref": "#/$defs/FeeDetails"
+        },
+        "transferPurpose": {
+          "type": "string",
+          "description": "Purpose or reason for the transfer."
+        },
+        "paymentReference": {
+          "type": "string",
+          "description": "Reference number or code for the payment."
+        },
+        "memo": {
+          "type": "string",
+          "description": "Additional notes or memo for the transaction."
+        },
+        "expectedSettlementTimeDetails": {
+          "$ref": "#/$defs/ExpectedSettlementTimeDetails"
+        }
+      }
+    },
+    "WireAccountDto": {
+      "required": [
+        "bankInfo"
+      ],
+      "type": "object",
+      "description": "Domestic wire transfer account details for U.S. transfers supporting both individual and business accounts.",
+      "properties": {
+        "personInfo": {
+          "$ref": "#/$defs/PersonInfo"
+        },
+        "bankInfo": {
+          "$ref": "#/$defs/BankInfo"
+        },
+        "businessInfo": {
+          "$ref": "#/$defs/BusinessInfo"
+        }
+      }
+    }
+  }
+}

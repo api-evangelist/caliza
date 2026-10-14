@@ -1,19 +1,17 @@
 aid: caliza
+
 name: Caliza
-description: >-
-  Caliza is a financial infrastructure company providing compliant, real-time
-  cross-border payments and USD account infrastructure for global businesses.
-  The Caliza Core API lets integrators create individual and business
-  beneficiaries (with KYC/KYB verification), issue named USD digital-dollar and
-  multi-currency virtual accounts, simulate and execute transactions and
-  payments across fiat and stablecoin rails (ACH, WIRE, SWIFT, RTP, PIX, SPEI,
-  and blockchain networks including Ethereum, Polygon, Tron, Stellar, Base and
-  Solana), run batch and sweep payouts, lock FX rates, manage recipients, and
-  receive HMAC-signed webhook notifications for the full transaction and
-  beneficiary lifecycle. Authentication is OAuth 2.0 (OpenID Connect / Keycloak)
-  and a full sandbox environment with mock deposit simulators is provided. Caliza
-  is backed by Initialized Capital and QED Investors.
+
+description: Caliza is a financial infrastructure company providing compliant, real-time cross-border payments and USD account infrastructure
+  for global businesses. The Caliza Core API lets integrators create individual and business beneficiaries (with KYC/KYB verification), issue
+  named USD digital-dollar and multi-currency virtual accounts, simulate and execute transactions and payments across fiat and stablecoin rails
+  (ACH, WIRE, SWIFT, RTP, PIX, SPEI, and blockchain networks including Ethereum, Polygon, Tron, Stellar, Base and Solana), run batch and sweep
+  payouts, lock FX rates, manage recipients, and receive HMAC-signed webhook notifications for the full transaction and beneficiary lifecycle.
+  Authentication is OAuth 2.0 (OpenID Connect / Keycloak) and a full sandbox environment with mock deposit simulators is provided. Caliza is backed
+  by Initialized Capital and QED Investors.
+
 url: https://raw.githubusercontent.com/api-evangelist/caliza/refs/heads/main/apis.yml
+
 deliveryModel:
   model: saas
   open_source: false
@@ -25,6 +23,7 @@ deliveryModel:
   - pricing
   generated: '2026-08-28'
   method: derived
+
 accessModel:
   pricing: unknown
   onboarding: self-serve
@@ -37,20 +36,33 @@ accessModel:
   - authentication
   generated: '2026-07-22'
   method: derived
+
 image: https://cdn.prod.website-files.com/677ed676bd7257ea423799b4/6787817b276b304d33d8dd2f_caliza-logo.png
+
 x-type: company
+
 x-source: vc-portfolio
+
 x-backed-by:
 - initialized-capital
 - qed-investors
+
 x-tier: profiled
+
 x-tier-reason: enriched-from-provider-docs
+
 specificationVersion: '0.23'
+
 created: '2026-07-17'
+
 modified: '2026-07-18'
+
 x-docs-platform: readme
+
 x-docs-platform-confidence: high
+
 x-docs-platform-checked: 2026-09-21
+
 tags:
 - Company
 - Fintech
@@ -63,36 +75,30 @@ tags:
 - Payouts
 - KYC
 - Latin America
-apis:
-- name: Caliza Core API
-  description: >-
-    Compliant, real-time cross-border payments and USD account infrastructure:
-    beneficiaries and KYC/KYB, USD and multi-currency virtual accounts,
-    transaction/payment simulation and execution, batch and sweep payouts, FX
-    rate locks, recipients, and webhooks. OAuth 2.0 (OIDC) authenticated.
-  humanURL: https://docs.caliza.com
-  baseURL: https://api.caliza.com/core-api/v1
-  tags:
-  - Payments
-  - Cross-Border Payments
-  - Stablecoins
-  - Foreign Exchange
-  - Virtual Accounts
-  properties:
-  - type: Documentation
-    url: https://docs.caliza.com
-  - type: APIReference
-    url: https://docs.caliza.com/reference/overview
-  - type: Authentication
-    url: https://docs.caliza.com/docs/authenticate
-  - type: Webhooks
-    url: https://docs.caliza.com/docs/webhooks
+
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
 - FN: APIs.json
   email: info@apis.io
+
 common:
+- type: AgenticAccess
+  url: agentic-access/caliza-agentic-access.yml
+- type: Spectral
+  url: rules/caliza-rules.yml
+- type: JSONLD
+  url: json-ld/caliza-context.jsonld
+- type: Vocabulary
+  url: vocabulary/caliza-vocabulary.yml
+- type: TrustCenter
+  url: security/caliza-trust-center.yml
+- type: Deprecation
+  url: lifecycle/caliza-lifecycle.yml
+- type: Hosts
+  url: hosts/caliza-hosts.yml
+- type: Vendors
+  url: vendors/caliza-vendors.yml
 - type: Website
   url: https://www.caliza.com/
 - type: DeveloperPortal
@@ -135,7 +141,9 @@ common:
   url: data-model/caliza-data-model.yml
 - type: X-MCPServerCandidate
   url: mcp/caliza-mcp.yml
-  note: 'Renamed from MCPServer 2026-09-03 (roadmap#247): the manifest self-describes as status: candidate — a tool list derived from the published API contracts, not an existing server. The scorer already read the manifest and reported mcp_server correctly; the MCPServer type was crediting the artifact-type surfaces with a server that does not exist.'
+  note: 'Renamed from MCPServer 2026-09-03 (roadmap#247): the manifest self-describes as status: candidate — a tool list derived from the published
+    API contracts, not an existing server. The scorer already read the manifest and reported mcp_server correctly; the MCPServer type was crediting
+    the artifact-type surfaces with a server that does not exist.'
 - type: LLMsTxt
   url: llms/caliza-llms.txt
 - type: Conformance
@@ -146,8 +154,53 @@ common:
   url: asyncapi/caliza-webhooks.yml
 - type: AgentSkill
   url: skills/_index.yml
+
+apis:
+- name: Caliza Core API
+  description: 'Compliant, real-time cross-border payments and USD account infrastructure: beneficiaries and KYC/KYB, USD and multi-currency virtual
+    accounts, transaction/payment simulation and execution, batch and sweep payouts, FX rate locks, recipients, and webhooks. OAuth 2.0 (OIDC)
+    authenticated.'
+  humanURL: https://docs.caliza.com
+  baseURL: https://api.caliza.com/core-api/v1
+  tags:
+  - Payments
+  - Cross-Border Payments
+  - Stablecoins
+  - Foreign Exchange
+  - Virtual Accounts
+  properties:
+  - url: openapi/caliza-api-documentation-reference-openapi.yml
+    type: OpenAPI
+  - type: Documentation
+    url: https://docs.caliza.com
+  - type: APIReference
+    url: https://docs.caliza.com/reference/overview
+  - type: Authentication
+    url: https://docs.caliza.com/docs/authenticate
+  - type: Webhooks
+    url: https://docs.caliza.com/docs/webhooks
+  - type: JSONSchema
+    url: json-schema/caliza-recipient-response-schema.json
+  - type: JSONSchema
+    url: json-schema/caliza-person-request-schema.json
+  - type: JSONSchema
+    url: json-schema/caliza-simulation-v2-request-schema.json
+  - type: JSONSchema
+    url: json-schema/caliza-transaction-response-schema.json
+  - type: JSONSchema
+    url: json-schema/caliza-simulation-request-schema.json
+  - type: JSONSchema
+    url: json-schema/caliza-travel-rule-proof-response-schema.json
+  aid: caliza:caliza-core-api
+
 x-enrichment:
   date: '2026-07-19'
   status: backfilled
   pass: local-v1
   note: backfilled from .gitignore signal + verified work evidence
+
+x-readme-harvest:
+  date: '2026-10-14'
+  ops: 68
+  tool: harvest-readme-openapi.py
+  portal: https://docs.caliza.com

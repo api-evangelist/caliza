@@ -1,0 +1,16 @@
+generated: '2026-10-14'
+method: none
+source:
+- https://zapier.com/apps/caliza/integrations
+- https://n8n.io/integrations/caliza/
+- https://composio.dev/toolkits/caliza
+- https://monid.ai/tools/caliza
+checked:
+- https://composio.dev/toolkits/caliza
+- https://monid.ai/tools/caliza
+- https://n8n.io/integrations/caliza/
+- https://zapier.com/apps/caliza/integrations
+summary: null
+marketplace_apps: []
+edges: []
+templates: []
