@@ -1,0 +1,30 @@
+{
+  "provider": "caliza",
+  "sources": [
+    "caliza-api-documentation-reference-openapi.yml"
+  ],
+  "outputs": [
+    "caliza-beneficiary-v1-api-openapi.yml",
+    "caliza-integrator-capabilities-v1-api-openapi.yml",
+    "caliza-integrator-v1-api-openapi.yml",
+    "caliza-kyc-kyb-v1-api-openapi.yml",
+    "caliza-payment-v1-api-openapi.yml",
+    "caliza-recipient-v1-api-openapi.yml",
+    "caliza-related-person-api-openapi.yml",
+    "caliza-terms-and-conditions-v1-api-openapi.yml",
+    "caliza-transaction-v1-api-openapi.yml",
+    "caliza-transaction-v1-sandbox-api-openapi.yml",
+    "caliza-travel-rule-v1-api-openapi.yml"
+  ],
+  "archived": [
+    "archived openapi/caliza-api-documentation-reference-openapi.yml"
+  ],
+  "errors": [],
+  "warnings": [],
+  "notes": [
+    "sourced from openapi/_original/ (0 archived document(s)); previously refined output at the top level was skipped rather than re-split",
+    "caliza-api-documentation-reference-openapi.yml: upgraded openapi 3.0.1 -> OpenAPI 3.2.0",
+    "apis.yml register: written (+11 apis, 11 total)"
+  ],
+  "skipped": []
+}

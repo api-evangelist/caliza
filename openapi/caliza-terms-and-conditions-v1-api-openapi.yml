@@ -1,0 +1,134 @@
+openapi: 3.2.0
+info:
+  title: Caliza API documentation reference Terms and Conditions V1…
+  description: The Caliza API enables seamless integration of financial services including payments, payouts, currency conversions, and compliance workflows.
+  version: v1
+  contact:
+    name: Caliza API Support
+    email: api-support@caliza.com
+    url: https://docs.caliza.com
+  termsOfService: https://caliza.com/terms
+servers:
+- url: https://api.sandbox.com
+  description: Sandbox Environment
+- url: https://api.caliza.com
+  description: Production Environment
+- url: https://api.sandbox.caliza.com
+  description: Sandbox Environment (backoffice)
+security:
+- bearerAuth: []
+tags:
+- name: Terms and Conditions V1
+  description: Retrieve the current terms & conditions document and record user acceptance. Use these endpoints to present legal terms to users and store auditable acceptance (timestamp, IP, version) required for compliance.
+paths:
+  /v1/terms-and-conditions:
+    get:
+      tags:
+      - Terms and Conditions V1
+      summary: Retrieve terms and conditions document
+      description: Retrieves the current version of the platform's terms and conditions document in PDF or HTML format. The response includes the version number and effective date for compliance tracking and audit purposes. Use this to display terms to users before they accept, or to retrieve the specific version that a user accepted for regulatory record-keeping.
+      operationId: getTermsAndConditions
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+                format: binary
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      description: 'JWT Bearer token authentication. Include your access token in the Authorization header:
+
+
+        `Authorization: Bearer YOUR_ACCESS_TOKEN`
+
+
+        Tokens are obtained through the Caliza authentication flow and typically expire after 24 hours.
+
+        Refresh your token before expiration to maintain uninterrupted access.
+
+        '
+      scheme: bearer
+      bearerFormat: JWT
+x-provenance:
+  method: searched
+  source: https://docs.caliza.com/reference
+  harvested: '2026-10-14'
+  tool: harvest-readme-openapi.py
+  note: Assembled verbatim from the OpenAPI definition ReadMe embeds in each operation page of the provider's developer portal; paths and components merged by API title, nothing authored.
+  assembled_from:
+  - https://docs.caliza.com/reference/accepttermsandconditions.md
+  - https://docs.caliza.com/reference/addrelatedpersondocument.md
+  - https://docs.caliza.com/reference/approveverificationsandbox.md
+  - https://docs.caliza.com/reference/createfakecryptodeposit.md
+  - https://docs.caliza.com/reference/createfakepixindeposit.md
+  - https://docs.caliza.com/reference/createfakepixindeposit_1.md
+  - https://docs.caliza.com/reference/createfakespeiindeposit.md
+  - https://docs.caliza.com/reference/createfakeusddeposit.md
+  - https://docs.caliza.com/reference/createpayment.md
+  - https://docs.caliza.com/reference/createpaymentwithdocuments.md
+  - https://docs.caliza.com/reference/createrecipient.md
+  - https://docs.caliza.com/reference/createrelatedperson.md
+  - https://docs.caliza.com/reference/createsimulation.md
+  - https://docs.caliza.com/reference/createsimulation_1.md
+  - https://docs.caliza.com/reference/createtransaction.md
+  - https://docs.caliza.com/reference/createtransaction_1.md
+  - https://docs.caliza.com/reference/createverification.md
+  - https://docs.caliza.com/reference/createvirtualaccount.md
+  - https://docs.caliza.com/reference/deletebeneficiary.md
+  - https://docs.caliza.com/reference/deleterecipient.md
+  - https://docs.caliza.com/reference/deleterelatedperson.md
+  - https://docs.caliza.com/reference/disablebeneficiary.md
+  - https://docs.caliza.com/reference/enablebeneficiary.md
+  - https://docs.caliza.com/reference/findorcreatewallet.md
+  - https://docs.caliza.com/reference/getall.md
+  - https://docs.caliza.com/reference/getalltransactions.md
+  - https://docs.caliza.com/reference/getbeneficiary.md
+  - https://docs.caliza.com/reference/getbeneficiarybalance.md
+  - https://docs.caliza.com/reference/getbeneficiarydetailedbalance.md
+  - https://docs.caliza.com/reference/getbeneficiarydetailedbalancebycurrencies.md
+  - https://docs.caliza.com/reference/getcapabilitiesbyintegratorid.md
+  - https://docs.caliza.com/reference/getdepositinfo.md
+  - https://docs.caliza.com/reference/getdepositinstructions.md
+  - https://docs.caliza.com/reference/getintegratorbalances.md
+  - https://docs.caliza.com/reference/getintegratorwebhooks.md
+  - https://docs.caliza.com/reference/getintegratorwebhooksecret.md
+  - https://docs.caliza.com/reference/getme.md
+  - https://docs.caliza.com/reference/getpaymentinstructions.md
+  - https://docs.caliza.com/reference/getproof.md
+  - https://docs.caliza.com/reference/getrecipient.md
+  - https://docs.caliza.com/reference/getrecipients.md
+  - https://docs.caliza.com/reference/getrelatedperson.md
+  - https://docs.caliza.com/reference/getsimulationbyid.md
+  - https://docs.caliza.com/reference/getsimulationbyidv2.md
+  - https://docs.caliza.com/reference/gettermsandconditions.md
+  - https://docs.caliza.com/reference/gettransactionbyid.md
+  - https://docs.caliza.com/reference/gettransactionbyid_1.md
+  - https://docs.caliza.com/reference/gettransactionbyidwithdocuments.md
+  - https://docs.caliza.com/reference/gettransactionproofofpayment.md
+  - https://docs.caliza.com/reference/getverificationstatus.md
+  - https://docs.caliza.com/reference/issuedelegatetoken.md
+  - https://docs.caliza.com/reference/issuemanualattestation.md
+  - https://docs.caliza.com/reference/listrelatedpersons.md
+  - https://docs.caliza.com/reference/listvirtualaccounts.md
+  - https://docs.caliza.com/reference/payouts.md
+  - https://docs.caliza.com/reference/savebeneficiary.md
+  - https://docs.caliza.com/reference/searchvasps.md
+  - https://docs.caliza.com/reference/simulatetravelruleclearance.md
+  - https://docs.caliza.com/reference/startmicrotransfertest.md
+  - https://docs.caliza.com/reference/submitproof.md
+  - https://docs.caliza.com/reference/sweeppayouts.md
+  - https://docs.caliza.com/reference/updatebeneficiary.md
+  - https://docs.caliza.com/reference/updateintegratorwebhooksecret.md
+  - https://docs.caliza.com/reference/updateme.md
+  - https://docs.caliza.com/reference/updaterecipient.md
+  - https://docs.caliza.com/reference/updaterelatedperson.md
+  - https://docs.caliza.com/reference/updatewebhookconfig.md
+  - https://docs.caliza.com/reference/uploaddocument.md
+  merge:
+    pages: 68
+    deduped: 414
+    conflicts_kept_first: 0

@@ -1,0 +1,1271 @@
+openapi: 3.2.0
+info:
+  title: Caliza API documentation reference Beneficiary V1 API
+  description: The Caliza API enables seamless integration of financial services including payments, payouts, currency conversions, and compliance workflows.
+  version: v1
+  contact:
+    name: Caliza API Support
+    email: api-support@caliza.com
+    url: https://docs.caliza.com
+  termsOfService: https://caliza.com/terms
+servers:
+- url: https://api.sandbox.com
+  description: Sandbox Environment
+- url: https://api.caliza.com
+  description: Production Environment
+- url: https://api.sandbox.caliza.com
+  description: Sandbox Environment (backoffice)
+security:
+- bearerAuth: []
+tags:
+- name: Beneficiary V1
+  description: Manage beneficiaries (individuals and businesses) and their related resources. Endpoints cover creating, updating, enabling/disabling, deleting beneficiaries, managing wallets, virtual accounts, files, balances and recording terms acceptance. Use these to onboard and maintain pay-in/payout recipients.
+paths:
+  /v1/beneficiaries:
+    get:
+      tags:
+      - Beneficiary V1
+      summary: List all beneficiaries
+      description: Retrieves a paginated list of all beneficiaries associated with your integrator account. Beneficiaries are the individuals or businesses that can send or receive funds through your platform. Results can be filtered by status (active, inactive, pending verification), type (individual, business), creation date range, or search by name/email. Each result includes beneficiary ID, name, type, status, KYC/KYB verification state, and creation date. Use this for beneficiary management interfaces or to search for specific users.
+      operationId: getAll
+      parameters:
+      - name: filterOr
+        in: query
+        description: Find beneficiaries with names that match ANY of the defined criteria
+        required: false
+        schema:
+          type: string
+        example: person.firstName:test,business.name:test,active:true
+      - name: filterEq
+        in: query
+        description: Find beneficiaries with names that match ALL of the defined criteria
+        required: false
+        schema:
+          type: string
+        example: person.firstName:test,active:true
+      - name: name
+        in: query
+        description: Case-insensitive substring match against person.firstName, person.lastName, or business.name
+        required: false
+        schema:
+          type: string
+        example: John
+      - name: type
+        in: query
+        description: Exact match on beneficiary type
+        required: false
+        schema:
+          type: string
+          enum:
+          - INDIVIDUAL
+          - BUSINESS
+        example: INDIVIDUAL
+      - name: fromDate
+        in: query
+        description: ISO-8601 datetime in UTC (inclusive lower bound on createdDate)
+        required: false
+        schema:
+          type: string
+          format: date-time
+        example: '2025-01-01T00:00:00Z'
+      - name: toDate
+        in: query
+        description: ISO-8601 datetime in UTC (inclusive upper bound on createdDate)
+        required: false
+        schema:
+          type: string
+          format: date-time
+        example: '2025-12-31T23:59:59Z'
+      - name: pageable
+        in: query
+        description: Pagination parameters including page number, size, and sorting options.
+        required: true
+        schema:
+          $ref: '#/components/schemas/Pageable'
+      - name: withoutPagination
+        in: query
+        description: When true, returns all results without pagination
+        required: false
+        schema:
+          type: boolean
+          default: false
+        example: false
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageBeneficiaryResponse'
+    post:
+      tags:
+      - Beneficiary V1
+      summary: Register new beneficiary
+      description: Creates a new beneficiary record for an individual or business with initial KYC/KYB information and account settings. For individuals, provide personal details (name, date of birth, ID number, address). For businesses, include company information (business name, tax ID, incorporation details, beneficial owners). This triggers identity verification workflows based on beneficiary type, transaction thresholds, and regulatory requirements for their jurisdiction. The beneficiary must be verified before they can transact.
+      operationId: saveBeneficiary
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BeneficiaryRequest'
+        required: true
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BeneficiaryResponse'
+  /v1/beneficiaries/{beneficiaryId}:
+    get:
+      tags:
+      - Beneficiary V1
+      summary: Retrieve beneficiary details
+      description: Retrieves all information about a specific beneficiary including personal or business details, KYC/KYB verification status, account status, balances, and associated metadata. Use this to check a beneficiary's current state, verification progress, or account information before initiating transactions.
+      operationId: getBeneficiary
+      parameters:
+      - name: beneficiaryId
+        in: path
+        description: Unique identifier of the beneficiary to retrieve.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BeneficiaryResponse'
+    put:
+      tags:
+      - Beneficiary V1
+      summary: Update beneficiary information
+      description: Modifies existing beneficiary details such as contact information, addresses, identification documents, or business data. Use this when a beneficiary's information changes (such as a new address, phone number, or business registration details). All updates undergo validation and may trigger additional compliance checks if sensitive fields are modified.
+      operationId: updateBeneficiary
+      parameters:
+      - name: beneficiaryId
+        in: path
+        description: Unique identifier of the beneficiary to update.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BeneficiaryRequest'
+        required: true
+      responses:
+        '204':
+          description: No Content
+    delete:
+      tags:
+      - Beneficiary V1
+      summary: Remove beneficiary
+      description: Permanently deletes a beneficiary from the system. This action cannot be undone and will remove all associated data including virtual accounts, wallet addresses, and preferences, except for transaction history and audit records required by regulation. Beneficiaries with pending transactions or non-zero balances cannot be deleted.
+      operationId: deleteBeneficiary
+      parameters:
+      - name: beneficiaryId
+        in: path
+        description: Unique identifier of the beneficiary to delete.
+        required: true
+        schema:
+          type: string
+      responses:
+        '204':
+          description: No Content
+  /v1/beneficiaries/{beneficiaryId}/balances:
+    get:
+      tags:
+      - Beneficiary V1
+      summary: Retrieve beneficiary account balance
+      description: Returns the current balance for a beneficiary's account in the specified currency. The balance includes available funds (ready for withdrawal or payment) and may also show pending transactions that will affect the balance once settled. Use this before initiating transactions to verify sufficient funds or to display balance information in your user interface.
+      operationId: getBeneficiaryBalance
+      parameters:
+      - name: beneficiaryId
+        in: path
+        description: Unique identifier of the beneficiary to retrieve balance for.
+        required: true
+        schema:
+          type: string
+      - name: currency
+        in: query
+        description: Currency code (e.g., USD, BRL, MXN) to retrieve balance for.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BalanceResponse'
+  /v1/beneficiaries/{beneficiaryId}/balances/details:
+    get:
+      tags:
+      - Beneficiary V1
+      summary: Retrieve detailed balance breakdown
+      description: Provides a comprehensive, itemized breakdown of a beneficiary's balance in the specified currency. This includes available balance (funds that can be withdrawn immediately), pending balance (deposits or transactions being processed), reserved balance (funds held for pending outgoing transactions), recent transaction history affecting the balance, and projected available balance after pending items settle. Use this for detailed balance reconciliation or to explain balance discrepancies to users.
+      operationId: getBeneficiaryDetailedBalance
+      parameters:
+      - name: beneficiaryId
+        in: path
+        description: Unique identifier of the beneficiary to retrieve detailed balance for.
+        required: true
+        schema:
+          type: string
+      - name: currency
+        in: query
+        description: Currency code (e.g., USD, BRL, MXN) to retrieve detailed balance for.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DetailedBalanceResponse'
+  /v1/beneficiaries/{beneficiaryId}/disable:
+    post:
+      tags:
+      - Beneficiary V1
+      summary: Disable beneficiary account
+      description: Temporarily suspends a beneficiary account, immediately preventing new transactions from being initiated while preserving all existing data, transaction history, and pending transactions for compliance and audit purposes. This is reversible via the enable endpoint. Use this for security holds, compliance reviews, or when a user requests account suspension.
+      operationId: disableBeneficiary
+      parameters:
+      - name: beneficiaryId
+        in: path
+        description: Unique identifier of the beneficiary account to disable.
+        required: true
+        schema:
+          type: string
+      responses:
+        '204':
+          description: No Content
+  /v1/beneficiaries/{beneficiaryId}/enable:
+    post:
+      tags:
+      - Beneficiary V1
+      summary: Enable beneficiary account
+      description: Activates a previously disabled beneficiary account, restoring full access to all platform features and transaction capabilities. Use this when re-enabling an account that was temporarily suspended for security review, compliance hold, or at the user's request. Once enabled, the beneficiary can immediately resume transacting.
+      operationId: enableBeneficiary
+      parameters:
+      - name: beneficiaryId
+        in: path
+        description: Unique identifier of the beneficiary account to enable.
+        required: true
+        schema:
+          type: string
+      responses:
+        '204':
+          description: No Content
+  /v1/beneficiaries/{beneficiaryId}/multi-currencies-balances/details:
+    get:
+      tags:
+      - Beneficiary V1
+      summary: Retrieve multi-currency balance details
+      description: Returns comprehensive balance information across multiple currencies for a specific beneficiary. For each requested currency, this endpoint provides available balance (funds ready for withdrawal), pending balance (funds in processing), and reserved balance (funds held for pending transactions). Use this when you need a complete financial overview of a beneficiary across different currencies or before initiating multi-currency operations.
+      operationId: getBeneficiaryDetailedBalanceByCurrencies
+      parameters:
+      - name: beneficiaryId
+        in: path
+        description: Unique identifier of the beneficiary.
+        required: true
+        schema:
+          type: string
+      - name: currency
+        in: query
+        description: Array of currency codes (e.g., USD, BRL, MXN) to retrieve balance details for.
+        required: true
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DetailedBalanceResponse'
+  /v1/beneficiaries/{beneficiaryId}/terms-and-conditions:
+    post:
+      tags:
+      - Beneficiary V1
+      summary: Record terms and conditions acceptance
+      description: Registers a beneficiary's explicit acceptance of the platform's terms and conditions, creating an auditable record of consent with timestamp, IP address, and version information. This is typically required before a beneficiary can initiate their first transaction or access certain platform features. The acceptance is legally binding and stored for regulatory compliance.
+      operationId: acceptTermsAndConditions
+      parameters:
+      - name: beneficiaryId
+        in: path
+        description: Unique identifier of the beneficiary accepting the terms and conditions.
+        required: true
+        schema:
+          type: string
+      responses:
+        '204':
+          description: No Content
+  /v1/beneficiaries/{beneficiaryId}/virtualAccounts:
+    get:
+      tags:
+      - Beneficiary V1
+      summary: List beneficiary virtual accounts
+      description: Retrieves all virtual accounts associated with a beneficiary. Virtual accounts are unique account numbers assigned to a beneficiary for receiving funds in specific currencies. Each virtual account includes account number, routing information, currency, status (active/inactive), and the payment rails it supports (ACH, Wire, PIX, SPEI, etc.). Use this to display deposit instructions to users.
+      operationId: listVirtualAccounts
+      parameters:
+      - name: beneficiaryId
+        in: path
+        description: Unique identifier of the beneficiary to list virtual accounts for.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/VirtualAccountDomain'
+    post:
+      tags:
+      - Beneficiary V1
+      summary: Generate new virtual account
+      description: Creates a new virtual account for the beneficiary in the specified currency and region. Virtual accounts enable beneficiaries to receive funds through unique account identifiers (account number + routing number) without having an actual bank account. Each virtual account is tied to a specific currency and can receive deposits via supported payment rails. You can create multiple virtual accounts per beneficiary for different currencies.
+      operationId: createVirtualAccount
+      parameters:
+      - name: beneficiaryId
+        in: path
+        description: Unique identifier of the beneficiary to create virtual account for.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BeneficiaryVirtualAccountRequest'
+        required: true
+      responses:
+        '204':
+          description: No Content
+  /v1/beneficiaries/{beneficiaryId}/wallets:
+    get:
+      tags:
+      - Beneficiary V1
+      summary: Get or create cryptocurrency wallet
+      description: Retrieves an existing cryptocurrency wallet address for the beneficiary on the specified blockchain network, or automatically creates a new wallet if none exists. Each beneficiary can have multiple wallets (one per blockchain network). The wallet address can be used to receive cryptocurrency deposits. Supported networks include Ethereum (ETH), Polygon, Tron (TRX), Stellar (XLM), Base, and Solana. The wallet is managed by Caliza, so users don't need to manage private keys.
+      operationId: findOrCreateWallet
+      parameters:
+      - name: beneficiaryId
+        in: path
+        description: Unique identifier of the beneficiary to retrieve or create wallet for.
+        required: true
+        schema:
+          type: string
+      - name: chain
+        in: query
+        description: Blockchain network or payment rail for the wallet
+        required: true
+        schema:
+          type: string
+          enum:
+          - PIX
+          - SPEI
+          - WIRE
+          - RTP
+          - COP
+          - CVU
+          - LOCAL_EXCHANGE
+          - CRYPTO_INTERNAL_TRANSFER
+          - POLYGON
+          - ETH
+          - TRON
+          - STELLAR
+          - UNKNOWN
+          - ACH
+          - SWIFT
+          - BASE
+          - SOLANA
+          - CALIZA_WALLET
+          - MAIN_CALIZA_WALLET
+          - ANY
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  walletAddress:
+                    type: string
+                    description: The cryptocurrency wallet address for the specified blockchain network.
+                  currency:
+                    type: string
+                    description: The currency associated with the wallet (e.g., USDC, USDT).
+components:
+  schemas:
+    AddressRequest:
+      required:
+      - city
+      - country
+      - state
+      - streetOne
+      - zipcode
+      type: object
+      description: Physical address request format for beneficiary or integrator registration.
+      properties:
+        streetOne:
+          maxLength: 100
+          minLength: 0
+          type: string
+        streetTwo:
+          maxLength: 100
+          minLength: 0
+          type: string
+        geolocation:
+          type: string
+        city:
+          maxLength: 100
+          minLength: 0
+          type: string
+        zipcode:
+          type: string
+        state:
+          maxLength: 3
+          minLength: 0
+          type: string
+        country:
+          maxLength: 2
+          minLength: 0
+          type: string
+    BeneficiaryResponse:
+      type: object
+      description: Complete beneficiary information including personal/business details, KYC status, and account configuration.
+      properties:
+        id:
+          type: string
+          description: Unique beneficiary identifier.
+          example: ben_123456
+        integratorId:
+          type: string
+          description: ID of the integrator this beneficiary belongs to.
+          example: int_123456
+        integratorBeneficiaryId:
+          type: string
+          description: External beneficiary ID from the integrator's system.
+          example: ext_ben_789
+        type:
+          type: string
+          description: Type of beneficiary.
+          enum:
+          - INDIVIDUAL
+          - BUSINESS
+          example: INDIVIDUAL
+        person:
+          $ref: '#/components/schemas/PersonResponse'
+        business:
+          $ref: '#/components/schemas/BusinessResponse'
+        localTargetBankAccount:
+          $ref: '#/components/schemas/LocalTargetBankAccountResponse'
+        files:
+          type: array
+          items:
+            $ref: '#/components/schemas/FileResponse'
+        active:
+          type: boolean
+        kycVerified:
+          type: boolean
+        status:
+          type: string
+          enum:
+          - CREATED
+          - PENDING
+          - MANUAL_REVIEW
+          - KYC_IN_PROGRESS
+          - DISABLED
+          - FAILED
+        termsAndConditions:
+          type: boolean
+        hasValidPixKey:
+          type: boolean
+        createdDate:
+          type: string
+          format: date-time
+        riskScore:
+          $ref: '#/components/schemas/BeneficiaryRiskDetailsResponse'
+        beneficiaryLifeCycle:
+          type: array
+          items:
+            $ref: '#/components/schemas/BeneficiaryLifeCycleResponse'
+    PageableObject:
+      type: object
+      description: Pagination information object including page number, size, offset, and sorting configuration.
+      properties:
+        offset:
+          type: integer
+          format: int64
+          description: Number of elements to skip from the beginning of the result set.
+          example: 20
+        sort:
+          $ref: '#/components/schemas/Sort'
+        pageNumber:
+          type: integer
+          format: int32
+          description: Zero-based page number (0 = first page).
+          example: 0
+        pageSize:
+          type: integer
+          format: int32
+          description: Number of elements per page.
+          example: 10
+        paged:
+          type: boolean
+          description: Indicates if pagination is enabled.
+          example: true
+        unpaged:
+          type: boolean
+          description: Indicates if pagination is disabled.
+          example: false
+    DetailedBalanceResponse:
+      type: object
+      description: Detailed balance information including available, pending, and reserved amounts by currency.
+      properties:
+        total:
+          type: number
+        pending:
+          type: number
+        available:
+          type: number
+        currencyCode:
+          type: string
+    VirtualAccountDomain:
+      type: object
+      description: Virtual account details including account number and routing information for receiving payments.
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the virtual account.
+        accountNumber:
+          type: string
+        routingNumber:
+          type: string
+        receiverName:
+          type: string
+        receiverAddress:
+          type: string
+        receiverBankName:
+          type: string
+        swiftCode:
+          type: string
+        receiverBankAddress:
+          type: string
+        label:
+          type: string
+          description: Optional label assigned at creation to help distinguish between multiple virtual accounts for the same beneficiary.
+    PersonResponse:
+      type: object
+      description: Individual person information response including identity details and verification status.
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        dateOfBirth:
+          type: string
+          format: date
+        placeOfBirth:
+          type: string
+        citizenship:
+          type: string
+        idNumber:
+          type: string
+        email:
+          type: string
+        phoneNumber:
+          type: string
+        profession:
+          type: string
+        gender:
+          type: string
+          enum:
+          - MALE
+          - FEMALE
+          - OTHER
+        maritalStatus:
+          type: string
+        mothersName:
+          type: string
+        address:
+          $ref: '#/components/schemas/AddressEntity'
+        industry:
+          type: string
+          enum:
+          - agriculture
+          - mining
+          - utilities
+          - construction
+          - manufacturing
+          - chemicalManufacturing
+          - merchantWholesale
+          - automotive
+          - retailFurnishing
+          - retailElectronics
+          - retailHome
+          - retailFood
+          - healthStores
+          - gasoline
+          - retailClothing
+          - retailSporting
+          - retailNonStore
+          - transportation
+          - publishing
+          - finance
+          - realEstate
+          - rentalServices
+          - professionalNonLegal
+          - accounting
+          - travel
+          - educationalMedical
+          - performingArts
+          - recreationGambling
+          - foodService
+          - maintenance
+          - laundry
+          - religiousCharity
+          - publicAdministration
+        incomeSource:
+          type: string
+          enum:
+          - salary
+          - selfEmployed
+          - inheritance
+          - investments
+          - retirement
+          - rentalIncome
+          - governmentBenefits
+          - familySupport
+        annualIncome:
+          type: number
+        occupation:
+          type: string
+          enum:
+          - executive
+          - sales
+          - consulting
+          - government
+          - healthcare
+          - financeAccounting
+          - technology
+          - scienceEngineering
+          - foodServices
+          - legalServices
+          - manufacturing
+          - other
+        wealthSource:
+          type: string
+          enum:
+          - salary
+          - selfEmployed
+          - inheritance
+          - familySupport
+          - investments
+          - retirement
+          - rentalIncome
+          - governmentBenefits
+          - businessSale
+          - other
+    LocalTargetBankAccountRequest:
+      type: object
+      description: Request to set up or update a beneficiary's local bank account for receiving payouts in their domestic currency.
+      properties:
+        accountDetails:
+          type: object
+          additionalProperties:
+            type: string
+        pixKey:
+          type: string
+        clabeAccount:
+          type: string
+    BeneficiaryRequest:
+      required:
+      - integratorBeneficiaryId
+      - type
+      type: object
+      properties:
+        integratorId:
+          type: string
+        integratorBeneficiaryId:
+          type: string
+        type:
+          type: string
+          enum:
+          - INDIVIDUAL
+          - BUSINESS
+        person:
+          $ref: '#/components/schemas/PersonRequest'
+        business:
+          $ref: '#/components/schemas/BusinessRequest'
+        localTargetBankAccount:
+          $ref: '#/components/schemas/LocalTargetBankAccountRequest'
+        localCalizaOwnedBankAccountId:
+          type: string
+        active:
+          type: boolean
+    LocalTargetBankAccountResponse:
+      type: object
+      description: Local bank account details response for a beneficiary in their domestic country.
+      properties:
+        pixKey:
+          type: string
+        ispb:
+          type: string
+        accountNumber:
+          type: string
+        agency:
+          type: string
+        clabeAccount:
+          type: string
+        accountType:
+          type: string
+    BalanceResponse:
+      type: object
+      description: Account balance information including available balance and currency.
+      properties:
+        total:
+          type: number
+        currencyCode:
+          type: string
+    BusinessResponse:
+      type: object
+      description: Business entity information response including incorporation details and verification status.
+      properties:
+        name:
+          type: string
+        dateOfIncorporation:
+          type: string
+          format: date
+        idNumber:
+          type: string
+        address:
+          $ref: '#/components/schemas/AddressResponse'
+        telephone:
+          type: string
+        email:
+          type: string
+        contacts:
+          type: array
+          items:
+            $ref: '#/components/schemas/PersonResponse'
+    BeneficiaryVirtualAccountRequest:
+      type: object
+      description: Request to create a virtual account for a beneficiary to receive payments. Multiple virtual accounts can be created for the same beneficiary with the same title. Use the optional label field to distinguish between them.
+      properties:
+        suffix:
+          type: string
+          description: Optional suffix appended to the beneficiary name to form the account title (e.g., name_suffix). If omitted or empty, the account title will be the beneficiary name only.
+        defaultPayor:
+          type: boolean
+          description: Whether this virtual account should be the default payor for the beneficiary. The first virtual account created is automatically set as the default payor.
+        label:
+          type: string
+          description: Optional label to help distinguish between multiple virtual accounts for the same beneficiary (e.g., "Payroll", "Vendor Payments"). Stored on Caliza's side and returned in GET responses. Not sent to the banking provider.
+    Sort:
+      type: object
+      description: Sorting configuration for paginated results including order direction and property to sort by.
+      properties:
+        empty:
+          type: boolean
+          description: Indicates if no sorting is applied.
+          example: false
+        sorted:
+          type: boolean
+          description: Indicates if results are sorted.
+          example: true
+        unsorted:
+          type: boolean
+          description: Indicates if results are not sorted.
+          example: false
+    AddressEntity:
+      type: object
+      description: Physical address information with geolocation support.
+      properties:
+        streetOne:
+          type: string
+          description: Primary street address line.
+          example: 123 Main Street
+        streetTwo:
+          type: string
+          description: Secondary address line (apartment, suite, etc.).
+          example: Apt 4B
+        geolocation:
+          type: string
+          description: Geographic coordinates or location identifier.
+          example: 40.7128,-74.0060
+        city:
+          type: string
+          description: City name.
+          example: New York
+        zipcode:
+          type: string
+          description: Postal or ZIP code.
+          example: '10001'
+        state:
+          type: string
+          description: State or province.
+          example: NY
+        country:
+          type: string
+          description: Country name or ISO code.
+          example: United States
+    FileResponse:
+      type: object
+      description: Uploaded file information including file ID, type, and storage details.
+      properties:
+        name:
+          type: string
+        key:
+          type: string
+        classifier:
+          type: string
+          enum:
+          - FRONT
+          - BACK
+          - PREPARED_DATA
+          - FACE
+        category:
+          type: string
+          enum:
+          - ID
+          - DATA
+          - FACEMAP
+          - SELFIE
+        identification:
+          type: string
+        type:
+          type: string
+          enum:
+          - ID
+          - INCORPORATION_CERTIFICATE
+          - TAX_REGISTRATION
+          - BUSINESS_BANK_ACCOUNT
+          - PROOF_OF_ADDRESS
+        documentOwnerType:
+          type: string
+          enum:
+          - INDIVIDUAL
+          - BUSINESS
+    PersonRequest:
+      required:
+      - address
+      - citizenship
+      - dateOfBirth
+      - email
+      - firstName
+      - idNumber
+      - lastName
+      - phoneNumber
+      type: object
+      description: Individual person information for beneficiary registration including identity documents, contact details, and compliance information.
+      properties:
+        firstName:
+          maxLength: 100
+          minLength: 0
+          type: string
+        lastName:
+          maxLength: 100
+          minLength: 0
+          type: string
+        dateOfBirth:
+          type: string
+          format: date
+        placeOfBirth:
+          type: string
+        citizenship:
+          type: string
+        idNumber:
+          type: string
+        email:
+          type: string
+        phoneNumber:
+          maxLength: 21
+          minLength: 0
+          pattern: ^(\+)[0-9\s.]{6,20}$
+          type: string
+        profession:
+          type: string
+        gender:
+          type: string
+          enum:
+          - MALE
+          - FEMALE
+          - OTHER
+        address:
+          $ref: '#/components/schemas/AddressRequest'
+        maritalStatus:
+          type: string
+        mothersName:
+          type: string
+        industry:
+          type: string
+          enum:
+          - agriculture
+          - mining
+          - utilities
+          - construction
+          - manufacturing
+          - chemicalManufacturing
+          - merchantWholesale
+          - automotive
+          - retailFurnishing
+          - retailElectronics
+          - retailHome
+          - retailFood
+          - healthStores
+          - gasoline
+          - retailClothing
+          - retailSporting
+          - retailNonStore
+          - transportation
+          - publishing
+          - finance
+          - realEstate
+          - rentalServices
+          - professionalNonLegal
+          - accounting
+          - travel
+          - educationalMedical
+          - performingArts
+          - recreationGambling
+          - foodService
+          - maintenance
+          - laundry
+          - religiousCharity
+          - publicAdministration
+        incomeSource:
+          type: string
+          enum:
+          - salary
+          - selfEmployed
+          - inheritance
+          - investments
+          - retirement
+          - rentalIncome
+          - governmentBenefits
+          - familySupport
+        annualIncome:
+          type: number
+        occupation:
+          type: string
+          enum:
+          - executive
+          - sales
+          - consulting
+          - government
+          - healthcare
+          - financeAccounting
+          - technology
+          - scienceEngineering
+          - foodServices
+          - legalServices
+          - manufacturing
+          - other
+        wealthSource:
+          type: string
+          enum:
+          - salary
+          - selfEmployed
+          - inheritance
+          - familySupport
+          - investments
+          - retirement
+          - rentalIncome
+          - governmentBenefits
+          - businessSale
+          - other
+    PageBeneficiaryResponse:
+      type: object
+      description: Paginated list of beneficiaries including pagination metadata and beneficiary details.
+      properties:
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+          format: int32
+        first:
+          type: boolean
+        last:
+          type: boolean
+        size:
+          type: integer
+          format: int32
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/BeneficiaryResponse'
+        number:
+          type: integer
+          format: int32
+        sort:
+          $ref: '#/components/schemas/Sort'
+        numberOfElements:
+          type: integer
+          format: int32
+        pageable:
+          $ref: '#/components/schemas/PageableObject'
+        empty:
+          type: boolean
+    BeneficiaryLifeCycleResponse:
+      type: object
+      description: Records lifecycle events for a beneficiary account (activation, deactivation, etc.).
+      properties:
+        type:
+          type: string
+          description: Type of lifecycle event.
+          enum:
+          - ACTIVE
+          - INACTIVE
+          example: ACTIVE
+        timestamp:
+          type: string
+          format: date-time
+          description: When this lifecycle event occurred.
+          example: '2025-12-17T10:30:00Z'
+    BusinessRequest:
+      required:
+      - address
+      - contacts
+      - dateOfIncorporation
+      - email
+      - idNumber
+      - name
+      - phoneNumber
+      type: object
+      properties:
+        name:
+          maxLength: 60
+          minLength: 0
+          type: string
+        dateOfIncorporation:
+          type: string
+          format: date
+        idNumber:
+          type: string
+        address:
+          $ref: '#/components/schemas/AddressRequest'
+        phoneNumber:
+          maxLength: 21
+          minLength: 0
+          pattern: ^(\+)[0-9\s.]{6,20}$
+          type: string
+        email:
+          type: string
+        website:
+          maxLength: 100
+          minLength: 0
+          type: string
+        contacts:
+          type: array
+          items:
+            $ref: '#/components/schemas/PersonRequest'
+        description:
+          type: string
+        legalStructure:
+          type: string
+          enum:
+          - MEI
+          - ME
+          - EI
+          - SLU
+          - LTDA
+          - SS
+          - SA
+          - SOLE_PROP
+          - SINGLE_MEMBER_LLC
+          - LLC
+          - GP
+          - LP
+          - LLP
+          - S_CORP
+          - C_CORP
+          - PC
+          - NONPROFIT
+          - B_CORP
+    BeneficiaryRiskDetailsResponse:
+      type: object
+      description: Risk assessment details for a beneficiary including risk rating, score, and calculation timestamp.
+      properties:
+        riskRating:
+          type: string
+          description: Overall risk rating category.
+          enum:
+          - LOW
+          - MEDIUM
+          - HIGH
+          example: LOW
+        riskScore:
+          type: integer
+          format: int32
+          description: Numerical risk score (higher values indicate higher risk).
+          example: 25
+        riskScoreVersion:
+          type: integer
+          format: int32
+          description: Version of the risk scoring algorithm used.
+          example: 2
+        calculatedAt:
+          type: string
+          format: date-time
+          description: Timestamp when the risk score was calculated.
+          example: '2025-12-17T10:00:00Z'
+        riskScoreSnapshot:
+          type: integer
+          format: int64
+          description: Snapshot ID for audit trail purposes.
+          example: 1234567890
+    AddressResponse:
+      type: object
+      description: Physical address information for a beneficiary or integrator including all address components.
+      properties:
+        streetOne:
+          type: string
+        streetTwo:
+          type: string
+        geolocation:
+          type: string
+        city:
+          type: string
+        zipcode:
+          type: string
+        state:
+          type: string
+        country:
+          type: string
+    Pageable:
+      type: object
+      description: Pagination parameters for list requests including page number, size, and sort order.
+      properties:
+        page:
+          minimum: 0
+          type: integer
+          format: int32
+          description: Zero-based page number to retrieve (0 = first page).
+          example: 0
+        size:
+          minimum: 1
+          type: integer
+          format: int32
+          description: Number of items per page (minimum 1).
+          example: 20
+        sort:
+          type: array
+          description: Array of sort criteria in format 'property,direction' (e.g., 'createdDate,desc').
+          example:
+          - createdDate,desc
+          - id,asc
+          items:
+            type: string
+  securitySchemes:
+    bearerAuth:
+      type: http
+      description: 'JWT Bearer token authentication. Include your access token in the Authorization header:
+
+
+        `Authorization: Bearer YOUR_ACCESS_TOKEN`
+
+
+        Tokens are obtained through the Caliza authentication flow and typically expire after 24 hours.
+
+        Refresh your token before expiration to maintain uninterrupted access.
+
+        '
+      scheme: bearer
+      bearerFormat: JWT
+x-provenance:
+  method: searched
+  source: https://docs.caliza.com/reference
+  harvested: '2026-10-14'
+  tool: harvest-readme-openapi.py
+  note: Assembled verbatim from the OpenAPI definition ReadMe embeds in each operation page of the provider's developer portal; paths and components merged by API title, nothing authored.
+  assembled_from:
+  - https://docs.caliza.com/reference/accepttermsandconditions.md
+  - https://docs.caliza.com/reference/addrelatedpersondocument.md
+  - https://docs.caliza.com/reference/approveverificationsandbox.md
+  - https://docs.caliza.com/reference/createfakecryptodeposit.md
+  - https://docs.caliza.com/reference/createfakepixindeposit.md
+  - https://docs.caliza.com/reference/createfakepixindeposit_1.md
+  - https://docs.caliza.com/reference/createfakespeiindeposit.md
+  - https://docs.caliza.com/reference/createfakeusddeposit.md
+  - https://docs.caliza.com/reference/createpayment.md
+  - https://docs.caliza.com/reference/createpaymentwithdocuments.md
+  - https://docs.caliza.com/reference/createrecipient.md
+  - https://docs.caliza.com/reference/createrelatedperson.md
+  - https://docs.caliza.com/reference/createsimulation.md
+  - https://docs.caliza.com/reference/createsimulation_1.md
+  - https://docs.caliza.com/reference/createtransaction.md
+  - https://docs.caliza.com/reference/createtransaction_1.md
+  - https://docs.caliza.com/reference/createverification.md
+  - https://docs.caliza.com/reference/createvirtualaccount.md
+  - https://docs.caliza.com/reference/deletebeneficiary.md
+  - https://docs.caliza.com/reference/deleterecipient.md
+  - https://docs.caliza.com/reference/deleterelatedperson.md
+  - https://docs.caliza.com/reference/disablebeneficiary.md
+  - https://docs.caliza.com/reference/enablebeneficiary.md
+  - https://docs.caliza.com/reference/findorcreatewallet.md
+  - https://docs.caliza.com/reference/getall.md
+  - https://docs.caliza.com/reference/getalltransactions.md
+  - https://docs.caliza.com/reference/getbeneficiary.md
+  - https://docs.caliza.com/reference/getbeneficiarybalance.md
+  - https://docs.caliza.com/reference/getbeneficiarydetailedbalance.md
+  - https://docs.caliza.com/reference/getbeneficiarydetailedbalancebycurrencies.md
+  - https://docs.caliza.com/reference/getcapabilitiesbyintegratorid.md
+  - https://docs.caliza.com/reference/getdepositinfo.md
+  - https://docs.caliza.com/reference/getdepositinstructions.md
+  - https://docs.caliza.com/reference/getintegratorbalances.md
+  - https://docs.caliza.com/reference/getintegratorwebhooks.md
+  - https://docs.caliza.com/reference/getintegratorwebhooksecret.md
+  - https://docs.caliza.com/reference/getme.md
+  - https://docs.caliza.com/reference/getpaymentinstructions.md
+  - https://docs.caliza.com/reference/getproof.md
+  - https://docs.caliza.com/reference/getrecipient.md
+  - https://docs.caliza.com/reference/getrecipients.md
+  - https://docs.caliza.com/reference/getrelatedperson.md
+  - https://docs.caliza.com/reference/getsimulationbyid.md
+  - https://docs.caliza.com/reference/getsimulationbyidv2.md
+  - https://docs.caliza.com/reference/gettermsandconditions.md
+  - https://docs.caliza.com/reference/gettransactionbyid.md
+  - https://docs.caliza.com/reference/gettransactionbyid_1.md
+  - https://docs.caliza.com/reference/gettransactionbyidwithdocuments.md
+  - https://docs.caliza.com/reference/gettransactionproofofpayment.md
+  - https://docs.caliza.com/reference/getverificationstatus.md
+  - https://docs.caliza.com/reference/issuedelegatetoken.md
+  - https://docs.caliza.com/reference/issuemanualattestation.md
+  - https://docs.caliza.com/reference/listrelatedpersons.md
+  - https://docs.caliza.com/reference/listvirtualaccounts.md
+  - https://docs.caliza.com/reference/payouts.md
+  - https://docs.caliza.com/reference/savebeneficiary.md
+  - https://docs.caliza.com/reference/searchvasps.md
+  - https://docs.caliza.com/reference/simulatetravelruleclearance.md
+  - https://docs.caliza.com/reference/startmicrotransfertest.md
+  - https://docs.caliza.com/reference/submitproof.md
+  - https://docs.caliza.com/reference/sweeppayouts.md
+  - https://docs.caliza.com/reference/updatebeneficiary.md
+  - https://docs.caliza.com/reference/updateintegratorwebhooksecret.md
+  - https://docs.caliza.com/reference/updateme.md
+  - https://docs.caliza.com/reference/updaterecipient.md
+  - https://docs.caliza.com/reference/updaterelatedperson.md
+  - https://docs.caliza.com/reference/updatewebhookconfig.md
+  - https://docs.caliza.com/reference/uploaddocument.md
+  merge:
+    pages: 68
+    deduped: 414
+    conflicts_kept_first: 0

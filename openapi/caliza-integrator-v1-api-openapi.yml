@@ -1,0 +1,516 @@
+openapi: 3.2.0
+info:
+  title: Caliza API documentation reference Integrator V1 API
+  description: The Caliza API enables seamless integration of financial services including payments, payouts, currency conversions, and compliance workflows.
+  version: v1
+  contact:
+    name: Caliza API Support
+    email: api-support@caliza.com
+    url: https://docs.caliza.com
+  termsOfService: https://caliza.com/terms
+servers:
+- url: https://api.sandbox.com
+  description: Sandbox Environment
+- url: https://api.caliza.com
+  description: Production Environment
+- url: https://api.sandbox.caliza.com
+  description: Sandbox Environment (backoffice)
+security:
+- bearerAuth: []
+tags:
+- name: Integrator V1
+  description: 'Integrator-level configuration and profile endpoints: manage integrator profile, credentials, webhook configuration and secrets, view integrator balances and perform integrator-scoped operations.'
+paths:
+  /v1/integrators/me:
+    get:
+      tags:
+      - Integrator V1
+      summary: Get current integrator profile
+      description: Retrieves complete profile information for the currently authenticated integrator including business details, contact information, configuration settings, enabled features, webhook URLs, and account status. Use this to display integrator information in your application, verify configuration, or check account capabilities before initiating operations.
+      operationId: getMe
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IntegratorResponse'
+    put:
+      tags:
+      - Integrator V1
+      summary: Update integrator profile
+      description: Modifies integrator account information such as business details, contact information (email, phone), banking preferences, notification settings, and webhook configurations. Some fields may require additional verification if they impact compliance or financial operations. Changes to critical fields may trigger a review process before taking effect.
+      operationId: updateMe
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IntegratorRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+  /v1/integrators/{integratorId}/balances:
+    get:
+      tags:
+      - Integrator V1
+      summary: Retrieve integrator account balances
+      description: Returns current balance information across all currencies and accounts associated with the integrator. For each currency, this shows available balance (funds ready for use), pending balance (funds being processed), and reserved balance (funds held for pending transactions). Use this to monitor your platform's liquidity, track fund flows, or implement balance alerts and treasury management.
+      operationId: getIntegratorBalances
+      parameters:
+      - name: currency
+        in: query
+        description: Currency code (e.g., USD, BRL, MXN) to filter balances. Use 'ALL' to retrieve all currencies.
+        required: true
+        schema:
+          type: string
+      - name: integratorId
+        in: path
+        description: Unique identifier of the integrator account.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BalanceResponse'
+  /v1/integrators/{integratorId}/update-webhook-secret:
+    post:
+      tags:
+      - Integrator V1
+      summary: Rotate webhook secret key
+      description: 'Generates and sets a new webhook secret for enhanced security. Use this periodically to rotate secrets as a security best practice or immediately if you suspect the current secret has been compromised. Warning: After rotation, all webhook signatures using the previous secret will become invalid, so update your webhook verification code immediately after calling this endpoint.'
+      operationId: updateIntegratorWebhookSecret
+      parameters:
+      - name: integratorId
+        in: path
+        description: Unique identifier of the integrator account.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+  /v1/integrators/{integratorId}/webhook-secret:
+    get:
+      tags:
+      - Integrator V1
+      summary: Retrieve webhook secret key
+      description: Retrieves the current webhook secret key used to validate webhook signatures from Caliza. Use this secret to verify that webhook notifications genuinely originate from Caliza and haven't been tampered with. Store this secret securely and use it to compute HMAC signatures when validating incoming webhook requests.
+      operationId: getIntegratorWebhookSecret
+      parameters:
+      - name: integratorId
+        in: path
+        description: Unique identifier of the integrator account.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+  /v1/integrators/{integratorId}/webhooks:
+    get:
+      tags:
+      - Integrator V1
+      summary: Get webhook configuration
+      description: Retrieves the currently configured webhook URL and event subscription settings. Webhooks enable real-time event notifications from the Caliza platform to your application. The configuration includes the webhook endpoint URL, enabled event types (transaction status changes, KYC updates, balance changes, etc.), retry settings, and last delivery status. Use this to verify your webhook configuration or debug delivery issues.
+      operationId: getIntegratorWebhooks
+      parameters:
+      - name: integratorId
+        in: path
+        description: Unique identifier of the integrator account.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookInfoRequest'
+    patch:
+      tags:
+      - Integrator V1
+      summary: Configure webhook endpoint
+      description: Sets or updates the webhook URL and event subscription preferences for receiving automated, real-time notifications about platform events. Configure which events trigger webhooks (transaction completed, beneficiary verified, payment failed, balance updated, etc.), the HTTPS endpoint URL where notifications should be sent, and retry behavior. Your webhook endpoint must respond with 200 OK within 5 seconds and should validate webhook signatures using your webhook secret.
+      operationId: updateWebhookConfig
+      parameters:
+      - name: integratorId
+        in: path
+        description: Unique identifier of the integrator account.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WebhookInfoRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+components:
+  schemas:
+    ContractRequest:
+      required:
+      - price
+      - transactionFee
+      - transactionFeeMode
+      type: object
+      description: Contract configuration for pricing and fee structure between integrator and Caliza.
+      properties:
+        price:
+          type: number
+        transactionFee:
+          type: number
+        transactionFeeMode:
+          type: string
+          enum:
+          - PERCENT
+          - BPS
+          - FIXED
+          - SPREAD
+    IntegratorAddressRequest:
+      required:
+      - city
+      - country
+      - state
+      - streetOne
+      - zipcode
+      type: object
+      description: Address information for integrator registration and compliance.
+      properties:
+        streetOne:
+          type: string
+        streetTwo:
+          type: string
+        geolocation:
+          type: string
+        city:
+          type: string
+        zipcode:
+          type: string
+        state:
+          maxLength: 3
+          minLength: 0
+          type: string
+        country:
+          maxLength: 2
+          minLength: 0
+          type: string
+    CredentialsResponse:
+      type: object
+      description: API credentials for integrator including API keys and authentication details.
+      properties:
+        clientId:
+          type: string
+        clientSecret:
+          type: string
+    IntegratorDeviationConfigResponse:
+      type: object
+      description: Transaction deviation configuration for the integrator including tolerance thresholds.
+      properties:
+        percentDeviationDelayedTransactions:
+          type: number
+    IntegratorRequest:
+      required:
+      - address
+      - banking
+      - document
+      - email
+      - name
+      - telephones
+      type: object
+      description: Complete integrator account information for registration including business details, banking, and configuration.
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+        address:
+          $ref: '#/components/schemas/IntegratorAddressRequest'
+        telephones:
+          type: array
+          items:
+            type: string
+        document:
+          type: string
+        banking:
+          $ref: '#/components/schemas/IntegratorBankingRequest'
+        contract:
+          $ref: '#/components/schemas/ContractRequest'
+        files:
+          type: array
+          items:
+            type: string
+        active:
+          type: boolean
+        callbackUrl:
+          type: string
+        contactEmails:
+          type: array
+          items:
+            type: string
+        deviationConfig:
+          $ref: '#/components/schemas/IntegratorDeviationConfigRequest'
+        marketExecutionType:
+          type: string
+          enum:
+          - NONE
+          - EXECUTE_IMMEDIATELY
+          - MARKET_OPEN_TIME
+    BalanceResponse:
+      type: object
+      description: Account balance information including available balance and currency.
+      properties:
+        total:
+          type: number
+        currencyCode:
+          type: string
+    ContractResponse:
+      type: object
+      description: Contract details including pricing and fee structure between integrator and Caliza.
+      properties:
+        price:
+          type: number
+        transactionFee:
+          type: number
+        transactionFeeMode:
+          type: string
+          enum:
+          - PERCENT
+          - BPS
+          - FIXED
+          - SPREAD
+    IntegratorDeviationConfigRequest:
+      required:
+      - percentDeviationDelayedTransactions
+      type: object
+      description: Configuration for transaction deviation tolerance and delayed transaction thresholds.
+      properties:
+        percentDeviationDelayedTransactions:
+          type: number
+    AddressResponse:
+      type: object
+      description: Physical address information for a beneficiary or integrator including all address components.
+      properties:
+        streetOne:
+          type: string
+        streetTwo:
+          type: string
+        geolocation:
+          type: string
+        city:
+          type: string
+        zipcode:
+          type: string
+        state:
+          type: string
+        country:
+          type: string
+    IntegratorResponse:
+      type: object
+      description: Complete integrator information including business details, banking, configuration, and status.
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        address:
+          $ref: '#/components/schemas/AddressResponse'
+        document:
+          type: string
+        telephones:
+          type: array
+          items:
+            type: string
+        contract:
+          $ref: '#/components/schemas/ContractResponse'
+        files:
+          type: array
+          items:
+            type: string
+        active:
+          type: boolean
+        callbackUrl:
+          type: string
+        contactEmails:
+          type: array
+          items:
+            type: string
+        credentials:
+          $ref: '#/components/schemas/CredentialsResponse'
+        banking:
+          $ref: '#/components/schemas/IntegratorBankingResponse'
+        webhookSecret:
+          type: string
+        deviationConfig:
+          $ref: '#/components/schemas/IntegratorDeviationConfigResponse'
+        customerSignupId:
+          type: string
+        marketExecutionType:
+          type: string
+          enum:
+          - NONE
+          - EXECUTE_IMMEDIATELY
+          - MARKET_OPEN_TIME
+    IntegratorBankingResponse:
+      type: object
+      description: Banking information for integrator including PIX key and account details.
+      properties:
+        code:
+          type: integer
+          format: int64
+          description: Bank code number (Brazilian bank identifier).
+          example: 341
+        agency:
+          type: integer
+          format: int64
+          description: Bank agency/branch number.
+          example: 1234
+        account:
+          type: string
+          description: Bank account number.
+          example: 12345-6
+        pixKey:
+          type: string
+        pixKeyType:
+          type: string
+    IntegratorBankingRequest:
+      required:
+      - pixKey
+      type: object
+      description: Banking information for integrator including PIX key for Brazilian payments.
+      properties:
+        pixKey:
+          type: string
+    WebhookInfoRequest:
+      type: object
+      description: Request to configure webhook endpoint URL for receiving event notifications.
+      properties:
+        integratorId:
+          type: string
+          description: Unique identifier of the integrator.
+          example: int_123456
+        url:
+          type: string
+          description: HTTPS URL endpoint to receive webhook notifications.
+          example: https://api.yourcompany.com/webhooks/caliza
+  securitySchemes:
+    bearerAuth:
+      type: http
+      description: 'JWT Bearer token authentication. Include your access token in the Authorization header:
+
+
+        `Authorization: Bearer YOUR_ACCESS_TOKEN`
+
+
+        Tokens are obtained through the Caliza authentication flow and typically expire after 24 hours.
+
+        Refresh your token before expiration to maintain uninterrupted access.
+
+        '
+      scheme: bearer
+      bearerFormat: JWT
+x-provenance:
+  method: searched
+  source: https://docs.caliza.com/reference
+  harvested: '2026-10-14'
+  tool: harvest-readme-openapi.py
+  note: Assembled verbatim from the OpenAPI definition ReadMe embeds in each operation page of the provider's developer portal; paths and components merged by API title, nothing authored.
+  assembled_from:
+  - https://docs.caliza.com/reference/accepttermsandconditions.md
+  - https://docs.caliza.com/reference/addrelatedpersondocument.md
+  - https://docs.caliza.com/reference/approveverificationsandbox.md
+  - https://docs.caliza.com/reference/createfakecryptodeposit.md
+  - https://docs.caliza.com/reference/createfakepixindeposit.md
+  - https://docs.caliza.com/reference/createfakepixindeposit_1.md
+  - https://docs.caliza.com/reference/createfakespeiindeposit.md
+  - https://docs.caliza.com/reference/createfakeusddeposit.md
+  - https://docs.caliza.com/reference/createpayment.md
+  - https://docs.caliza.com/reference/createpaymentwithdocuments.md
+  - https://docs.caliza.com/reference/createrecipient.md
+  - https://docs.caliza.com/reference/createrelatedperson.md
+  - https://docs.caliza.com/reference/createsimulation.md
+  - https://docs.caliza.com/reference/createsimulation_1.md
+  - https://docs.caliza.com/reference/createtransaction.md
+  - https://docs.caliza.com/reference/createtransaction_1.md
+  - https://docs.caliza.com/reference/createverification.md
+  - https://docs.caliza.com/reference/createvirtualaccount.md
+  - https://docs.caliza.com/reference/deletebeneficiary.md
+  - https://docs.caliza.com/reference/deleterecipient.md
+  - https://docs.caliza.com/reference/deleterelatedperson.md
+  - https://docs.caliza.com/reference/disablebeneficiary.md
+  - https://docs.caliza.com/reference/enablebeneficiary.md
+  - https://docs.caliza.com/reference/findorcreatewallet.md
+  - https://docs.caliza.com/reference/getall.md
+  - https://docs.caliza.com/reference/getalltransactions.md
+  - https://docs.caliza.com/reference/getbeneficiary.md
+  - https://docs.caliza.com/reference/getbeneficiarybalance.md
+  - https://docs.caliza.com/reference/getbeneficiarydetailedbalance.md
+  - https://docs.caliza.com/reference/getbeneficiarydetailedbalancebycurrencies.md
+  - https://docs.caliza.com/reference/getcapabilitiesbyintegratorid.md
+  - https://docs.caliza.com/reference/getdepositinfo.md
+  - https://docs.caliza.com/reference/getdepositinstructions.md
+  - https://docs.caliza.com/reference/getintegratorbalances.md
+  - https://docs.caliza.com/reference/getintegratorwebhooks.md
+  - https://docs.caliza.com/reference/getintegratorwebhooksecret.md
+  - https://docs.caliza.com/reference/getme.md
+  - https://docs.caliza.com/reference/getpaymentinstructions.md
+  - https://docs.caliza.com/reference/getproof.md
+  - https://docs.caliza.com/reference/getrecipient.md
+  - https://docs.caliza.com/reference/getrecipients.md
+  - https://docs.caliza.com/reference/getrelatedperson.md
+  - https://docs.caliza.com/reference/getsimulationbyid.md
+  - https://docs.caliza.com/reference/getsimulationbyidv2.md
+  - https://docs.caliza.com/reference/gettermsandconditions.md
+  - https://docs.caliza.com/reference/gettransactionbyid.md
+  - https://docs.caliza.com/reference/gettransactionbyid_1.md
+  - https://docs.caliza.com/reference/gettransactionbyidwithdocuments.md
+  - https://docs.caliza.com/reference/gettransactionproofofpayment.md
+  - https://docs.caliza.com/reference/getverificationstatus.md
+  - https://docs.caliza.com/reference/issuedelegatetoken.md
+  - https://docs.caliza.com/reference/issuemanualattestation.md
+  - https://docs.caliza.com/reference/listrelatedpersons.md
+  - https://docs.caliza.com/reference/listvirtualaccounts.md
+  - https://docs.caliza.com/reference/payouts.md
+  - https://docs.caliza.com/reference/savebeneficiary.md
+  - https://docs.caliza.com/reference/searchvasps.md
+  - https://docs.caliza.com/reference/simulatetravelruleclearance.md
+  - https://docs.caliza.com/reference/startmicrotransfertest.md
+  - https://docs.caliza.com/reference/submitproof.md
+  - https://docs.caliza.com/reference/sweeppayouts.md
+  - https://docs.caliza.com/reference/updatebeneficiary.md
+  - https://docs.caliza.com/reference/updateintegratorwebhooksecret.md
+  - https://docs.caliza.com/reference/updateme.md
+  - https://docs.caliza.com/reference/updaterecipient.md
+  - https://docs.caliza.com/reference/updaterelatedperson.md
+  - https://docs.caliza.com/reference/updatewebhookconfig.md
+  - https://docs.caliza.com/reference/uploaddocument.md
+  merge:
+    pages: 68
+    deduped: 414
+    conflicts_kept_first: 0

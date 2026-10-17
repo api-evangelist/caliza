@@ -1,0 +1,3148 @@
+openapi: 3.2.0
+info:
+  title: Caliza API documentation reference Transaction V1 API
+  description: The Caliza API enables seamless integration of financial services including payments, payouts, currency conversions, and compliance workflows.
+  version: v1
+  contact:
+    name: Caliza API Support
+    email: api-support@caliza.com
+    url: https://docs.caliza.com
+  termsOfService: https://caliza.com/terms
+servers:
+- url: https://api.sandbox.com
+  description: Sandbox Environment
+- url: https://api.caliza.com
+  description: Production Environment
+- url: https://api.sandbox.caliza.com
+  description: Sandbox Environment (backoffice)
+security:
+- bearerAuth: []
+tags:
+- name: Transaction V1
+  description: 'Create, simulate, inspect and manage financial transactions. Includes endpoints to create transactions and simulations, retrieve transaction details, update metadata (e.g. blockchain hashes), export results, and run batch or sweep payouts. Use these for the full transaction lifecycle: preview costs, execute, and track status.'
+paths:
+  /v1/simulations:
+    post:
+      tags:
+      - Transaction V1
+      summary: Simulate transaction or payment
+      description: Creates a simulation to preview and calculate all costs associated with a transaction before executing it. The simulation returns estimated total costs, itemized fees, exchange rates (if currency conversion is involved), expected settlement time, and any compliance requirements. Simulations are typically valid for 24 hours, after which exchange rates may change and a new simulation should be created. Always create a simulation before executing a transaction to show users accurate costs and get a simulation ID required for transaction creation. For more detailed breakdowns, consider using the v2 simulation endpoint.
+      operationId: createSimulation_1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SimulationRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimulationResponse'
+  /v1/simulations/{id}:
+    get:
+      tags:
+      - Transaction V1
+      summary: Retrieve transaction simulation
+      description: Retrieves the details of a previously created transaction simulation including estimated fees, exchange rates, settlement times, and total costs. Use this to review simulation parameters before executing the actual transaction. Simulations are typically valid for 24 hours from creation.
+      operationId: getSimulationById
+      parameters:
+      - name: id
+        in: path
+        description: Unique identifier of the transaction simulation.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimulationResponse'
+  /v1/transactions:
+    post:
+      tags:
+      - Transaction V1
+      summary: Create new transaction
+      description: Initiates a new financial transaction including payments, payouts, or currency conversions between accounts. Before calling this endpoint, you must create a simulation to preview fees and exchange rates. The simulation ID is required and must be valid (not expired, typically valid for 24 hours). Once created, the transaction moves through various statuses (CREATED, PROCESSING, COMPLETED, FAILED) which can be tracked via webhooks or polling.
+      operationId: createTransaction
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransactionRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionResponse'
+    get:
+      tags:
+      - Transaction V1
+      summary: List transactions
+      description: Retrieves a paginated list of transactions associated with your integrator account. Use query parameters to filter by beneficiary, currency, status, date range, and amount range. Results are returned in a paginated format with sorting support. This endpoint is useful for building transaction history views, reconciliation workflows, and monitoring transaction statuses.
+      operationId: getAllTransactions
+      parameters:
+      - name: beneficiaryId
+        in: query
+        description: Filter transactions by beneficiary ID.
+        required: false
+        schema:
+          type: string
+        example: 69261109adcc7b2db705a123
+      - name: fromCurrency
+        in: query
+        description: Filter by source currency codes. Pass multiple values as repeated query parameters (e.g., fromCurrency=USDC&fromCurrency=USD).
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - USDT
+            - USDC
+            - USD
+            - BRL
+            - MXN
+            - COP
+            - EUR
+            - EURT
+            - HKD
+            - SGD
+            - CNY
+            - CNH
+            - ARS
+      - name: toCurrency
+        in: query
+        description: Filter by destination currency codes. Pass multiple values as repeated query parameters (e.g., toCurrency=USD&toCurrency=BRL).
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - USDT
+            - USDC
+            - USD
+            - BRL
+            - MXN
+            - COP
+            - EUR
+            - EURT
+            - HKD
+            - SGD
+            - CNY
+            - CNH
+            - ARS
+      - name: status
+        in: query
+        description: Filter by transaction status.
+        required: false
+        schema:
+          type: string
+          enum:
+          - CREATED
+          - PROCESSING
+          - SUCCEEDED
+          - FAILED
+          - EXPIRED
+          - PAYMENT_SENT
+          - PAYMENT_COMPLETED
+          - PROCESSED_BY_INTERMEDIARY_BANK
+      - name: transactionId
+        in: query
+        description: Filter by a specific transaction ID.
+        required: false
+        schema:
+          type: string
+      - name: fromDate
+        in: query
+        description: Start date for the date range filter (e.g., 2025-01-01).
+        required: false
+        schema:
+          type: string
+        example: '2025-01-01'
+      - name: toDate
+        in: query
+        description: End date for the date range filter (e.g., 2025-12-31).
+        required: false
+        schema:
+          type: string
+        example: '2025-12-31'
+      - name: minAmount
+        in: query
+        description: Minimum transaction amount to filter by.
+        required: false
+        schema:
+          type: number
+      - name: maxAmount
+        in: query
+        description: Maximum transaction amount to filter by.
+        required: false
+        schema:
+          type: number
+      - name: page
+        in: query
+        description: Page number to retrieve (zero-based, default 0).
+        required: false
+        schema:
+          type: integer
+          default: 0
+        example: 0
+      - name: size
+        in: query
+        description: Number of items per page (default 20).
+        required: false
+        schema:
+          type: integer
+          default: 20
+        example: 20
+      - name: sort
+        in: query
+        description: Sort criteria in the format property,direction (e.g., createdDate,desc).
+        required: false
+        schema:
+          type: string
+        example: createdDate,desc
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageTransactionResponse'
+  /v1/transactions/:withDocuments:
+    post:
+      tags:
+      - Transaction V1
+      summary: Create transaction with supporting documents
+      description: Initiates a new transaction and simultaneously attaches required supporting documentation. This is particularly important for high-value transactions, cross-border payments, or transactions requiring compliance documentation. Accepted documents include invoices (for goods/services payment proof), contracts (for agreement evidence), proof of goods/services delivery, import/export licenses, or regulatory certificates. Documents should be uploaded as multipart form-data. Maximum file size and supported formats depend on your integrator configuration.
+      operationId: createTransaction_1
+      parameters:
+      - name: request
+        in: query
+        description: Transaction request parameters including simulation ID, beneficiary, amount, and transaction details.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                files:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionResponse'
+  /v1/transactions/deposit-instructions:
+    get:
+      tags:
+      - Transaction V1
+      summary: Get deposit instructions
+      description: Retrieves detailed, step-by-step instructions for a beneficiary to deposit funds using the specified payment rail. Returns beneficiary-specific bank account details (account number, routing number), reference codes that must be included in the transfer, required documentation, transfer amount limits, expected processing times, any fees charged by intermediary banks, and special notes for the selected payment method. These instructions can be displayed to users or sent via email to guide them through the deposit process. For MXN deposits over the SPEI payment rail, the response includes the beneficiary's 18-digit `clabe` account.
+      operationId: getDepositInstructions
+      parameters:
+      - name: beneficiaryId
+        in: query
+        description: Unique identifier of the beneficiary to get deposit instructions for.
+        required: true
+        schema:
+          type: string
+      - name: paymentRail
+        in: query
+        description: Payment rail to use for the deposit instructions.
+        required: true
+        schema:
+          type: string
+          enum:
+          - PIX
+          - SPEI
+          - WIRE
+          - RTP
+          - COP
+          - CVU
+          - LOCAL_EXCHANGE
+          - CRYPTO_INTERNAL_TRANSFER
+          - POLYGON
+          - ETH
+          - TRON
+          - STELLAR
+          - UNKNOWN
+          - ACH
+          - SWIFT
+          - BASE
+          - SOLANA
+          - CALIZA_WALLET
+          - MAIN_CALIZA_WALLET
+          - ANY
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentInstructionsResponse'
+  /v1/transactions/payouts:
+    post:
+      tags:
+      - Transaction V1
+      summary: Execute batch payout
+      description: Processes multiple payout transactions in a single batch operation, efficiently distributing funds to multiple recipients according to defined amounts and settlement methods. This is ideal for use cases like payroll, affiliate commissions, marketplace seller payments, or any scenario where you need to pay multiple parties simultaneously. Batch processing typically results in lower fees and faster processing compared to individual transactions.
+      operationId: payouts
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PayoutRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+  /v1/transactions/sandbox/crypto-deposit:
+    post:
+      tags:
+      - Transaction V1
+      summary: Simulate crypto deposit (sandbox)
+      description: Creates a simulated cryptocurrency deposit arriving at a DFNS wallet in the sandbox environment. Use this to test crypto deposit detection, balance updates, webhook notifications, and any custom business logic that triggers on incoming blockchain transactions. Specify the beneficiary, wallet address, amount, blockchain network, and currency. Only available in sandbox mode.
+      operationId: createFakeCryptoDeposit
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MockCryptoDepositRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+  /v1/transactions/sandbox/pix:
+    post:
+      tags:
+      - Transaction V1
+      summary: Simulate PIX deposit (sandbox)
+      description: Creates a simulated PIX (Pix Instant Payment - Brazilian instant payment system) deposit for testing deposit flows, balance updates, and webhook notifications in the sandbox environment. PIX is Brazil's instant payment infrastructure. This endpoint allows you to test the complete deposit lifecycle without real funds or connecting to the Brazilian Central Bank's PIX network. Only available in sandbox mode.
+      operationId: createFakePixInDeposit
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MockDepositRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+  /v1/transactions/sandbox/pixOutConfirmation:
+    post:
+      tags:
+      - Transaction V1
+      summary: Simulate PIX payout confirmation (sandbox)
+      description: Triggers a simulated webhook event notification for PIX payout confirmation in the sandbox environment. Use this to test your webhook handlers for successful payout completion, verify your webhook processing logic handles PIX payout confirmations correctly, and test your user notification flows without waiting for real PIX network confirmations. This simulates the webhook that would be sent when a real PIX payout is confirmed by the Brazilian payment infrastructure. Only available in sandbox mode.
+      operationId: createFakePixInDeposit_1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MockWithdrawalRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+  /v1/transactions/sandbox/spei:
+    post:
+      tags:
+      - Transaction V1
+      summary: Simulate SPEI deposit (sandbox)
+      description: Creates a simulated SPEI (Sistema de Pagos Electrónicos Interbancarios - Mexican interbank electronic payment system) deposit for testing purposes in the sandbox environment. This allows you to test deposit flows, balance updates, and webhook notifications without processing real funds or connecting to actual Mexican banking infrastructure. Provide `transactionId` to settle an existing pending deposit (matched mode), or `clabe` and `amount` to simulate an unmatched deposit that auto-creates a transaction. Only available in sandbox mode.
+      operationId: createFakeSpeiInDeposit
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MockSpeiDepositRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+  /v1/transactions/sandbox/travel-rule-clearance:
+    post:
+      tags:
+      - Transaction V1
+      summary: Simulate Travel Rule clearance (sandbox)
+      description: Resolves the Travel Rule decision a transaction is waiting on in the sandbox environment, standing in for the counterparty that never responds there. For a crypto payout paused on Travel Rule clearance, AUTHORIZED lets the withdrawal resume and REJECTED keeps it under compliance review; for a crypto deposit held on its inbound Travel Rule message, AUTHORIZED credits the deposit and REJECTED keeps it held. Only available in sandbox mode.
+      operationId: simulateTravelRuleClearance
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MockTravelRuleClearanceRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: The transaction has no Travel Rule to resolve (`travel-rule.transfer_not_found`)
+        '422':
+          description: The transaction's Travel Rule was already resolved (`travel-rule.clearance_not_applicable`)
+  /v1/transactions/sandbox/usd-deposit:
+    post:
+      tags:
+      - Transaction V1
+      summary: Simulate USD deposit (sandbox)
+      description: Creates a simulated USD deposit via wire transfer for testing international payment flows, balance updates, and webhook notifications in the sandbox environment. This simulates deposits from U.S. banks or international wire transfers. Use this to test your deposit handling logic, webhook processing, and balance reconciliation without processing actual funds or connecting to real banking infrastructure. Only available in sandbox mode.
+      operationId: createFakeUSDDeposit
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MockUSDepositRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+  /v1/transactions/sweep-payouts:
+    post:
+      tags:
+      - Transaction V1
+      summary: Execute account sweep payout
+      description: Automatically consolidates and transfers available balances from multiple beneficiary accounts to a designated destination account in a single operation. This is commonly used for treasury management, revenue collection, or balance consolidation. You can sweep all beneficiaries or specify a subset. The destination can be a master account, external bank account, or cryptocurrency wallet. Sweep operations are atomic - either all transfers succeed or all fail. Useful for end-of-day settlements, collecting marketplace fees, or pooling funds.
+      operationId: sweepPayouts
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SweepPayoutRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SweepPayoutResponse'
+  /v1/transactions/{id}:
+    get:
+      tags:
+      - Transaction V1
+      summary: Retrieve transaction details
+      description: Retrieves comprehensive information about a specific transaction including current status with timestamp (created, processing, completed, failed, cancelled), source and destination details, original amount and currency, converted amount if applicable, all applied fees with breakdown, exchange rates used, payment method/rail, blockchain transaction hash if crypto, expected and actual settlement times, error messages and codes if failed, and full audit trail of status changes. Use this for transaction tracking, customer support, accounting reconciliation, or displaying transaction history.
+      operationId: getTransactionById
+      parameters:
+      - name: id
+        in: path
+        description: Unique identifier of the transaction to retrieve.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionResponse'
+  /v1/transactions/{id}/:withDocuments:
+    get:
+      tags:
+      - Transaction V1
+      summary: Retrieve transaction with documents
+      description: Retrieves complete transaction details along with all attached supporting documents including invoices, receipts, contracts, proof of payment PDFs, and any compliance-related files. Use this when you need to download transaction records with full documentation for audit purposes, accounting reconciliation, or customer support inquiries. Documents are returned as metadata with a short-lived presigned download URL each — never as inline or base64-encoded file content.
+      operationId: getTransactionByIdWithDocuments
+      parameters:
+      - name: id
+        in: path
+        description: Unique identifier of the transaction to retrieve with all supporting documents.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DashboardTransactionWithDocumentsDto'
+  /v1/transactions/{id}/documents:
+    post:
+      tags:
+      - Transaction V1
+      summary: Upload supporting documents to a transaction
+      description: Attaches one or more supporting documents to an existing transaction and triggers document validation. Use this to provide documentation after a transaction has been created — most importantly to satisfy or retry a transaction that is held for document review. Send a single file or several at once under the `files` form field. Accepted documents include invoices, contracts, proof of goods or services, and regulatory certificates, uploaded as multipart form-data. Supported formats and maximum file size depend on your integrator configuration. Documents cannot be uploaded once a transaction has reached a final state.
+      operationId: uploadDocument
+      parameters:
+      - name: id
+        in: path
+        description: Unique identifier of the transaction to attach the document to.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              required:
+              - files
+              type: object
+              properties:
+                files:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+                  description: One or more files to attach to the transaction. The field is named `files` even when sending exactly one.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DocumentDto'
+        '404':
+          description: The transaction was not found.
+        '409':
+          description: The transaction is in a final state and no longer accepts documents.
+  /v1/transactions/{id}/proof-of-payment:
+    get:
+      tags:
+      - Transaction V1
+      summary: Download proof of payment document
+      description: Downloads the proof of payment document for a specific transaction in the specified format. If no format type is specified, the system will auto-detect the appropriate format based on transaction properties.
+      operationId: getTransactionProofOfPayment
+      parameters:
+      - name: id
+        in: path
+        description: Unique identifier of the transaction.
+        required: true
+        schema:
+          type: string
+      - name: type
+        in: query
+        description: Format type for the proof of payment document.
+        required: false
+        schema:
+          type: string
+          enum:
+          - PAYMENT_CONFIRMATION
+          - DETAILED_PAYMENT_CONFIRMATION
+          - COMPROVANTE_OPERACAO
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+                  format: byte
+  /v2/simulations:
+    post:
+      tags:
+      - Transaction V1
+      summary: Simulate transaction or payment (v2)
+      description: Creates an enhanced v2 transaction simulation that calculates and previews all costs, exchange rates, and requirements before executing a transaction. The v2 version provides more detailed breakdowns including itemized fees (network fees, service fees, FX fees), step-by-step multi-currency conversion paths for complex transactions, compliance requirements based on amount and destination, and improved exchange rate accuracy. Simulations are valid for 24 hours and should be used to show users exact costs before they confirm a transaction. Use v2 for better transparency and accuracy, especially for cross-border or multi-hop currency conversions.
+      operationId: createSimulation
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SimulationV2Request'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimulationResponse'
+  /v2/simulations/{id}:
+    get:
+      tags:
+      - Transaction V1
+      summary: Retrieve transaction simulation (v2)
+      description: Retrieves the details of a previously created transaction simulation with enhanced v2 data including detailed fee breakdown by type (network fees, service fees, conversion fees), step-by-step conversion details for multi-hop currency paths, and specific compliance requirements. Use v2 simulations when you need more granular cost transparency or are working with complex multi-currency conversion scenarios.
+      operationId: getSimulationByIdV2
+      parameters:
+      - name: id
+        in: path
+        description: Unique identifier of the transaction simulation (v2).
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimulationResponse'
+components:
+  schemas:
+    TargetInfoResponse:
+      type: object
+      description: Information about the target account and source of funds for a transaction.
+      properties:
+        targetId:
+          type: string
+          description: Identifier of the target account receiving the funds.
+          example: target_123456
+        fundsTarget:
+          type: string
+          description: Specifies which account type is the destination for the funds.
+          enum:
+          - BENEFICIARY_FUNDS
+          - INTEGRATOR_FUNDS
+          - CALIZA_FUNDS
+          - RETURN_DEPOSIT_FUNDS
+          example: BENEFICIARY_FUNDS
+    MockUSDepositRequest:
+      type: object
+      description: Mock request to simulate a U.S. deposit for testing purposes in the sandbox environment.
+      properties:
+        beneficiaryId:
+          type: string
+        amount:
+          type: number
+        accountNumber:
+          type: string
+        paymentRail:
+          type: string
+          enum:
+          - PIX
+          - SPEI
+          - WIRE
+          - RTP
+          - COP
+          - CVU
+          - LOCAL_EXCHANGE
+          - CRYPTO_INTERNAL_TRANSFER
+          - POLYGON
+          - ETH
+          - TRON
+          - STELLAR
+          - UNKNOWN
+          - ACH
+          - SWIFT
+          - BASE
+          - SOLANA
+          - CALIZA_WALLET
+          - MAIN_CALIZA_WALLET
+          - ANY
+    SimulationResponse:
+      type: object
+      description: Response with simulated payment details including exchange rates, fees breakdown, and final amounts for both funding and payout.
+      properties:
+        id:
+          type: string
+        integratorId:
+          type: string
+        beneficiaryId:
+          type: string
+        from:
+          $ref: '#/components/schemas/AmountDto'
+        to:
+          $ref: '#/components/schemas/AmountDto'
+        flowOfFundsId:
+          type: string
+        transactionDetails:
+          $ref: '#/components/schemas/TransactionDetailsResponse'
+        amountValidation:
+          type: string
+          description: Validation status of the transaction amount.
+          example: VALID
+        executed:
+          type: boolean
+          description: Indicates whether the transaction has been executed.
+          example: true
+        guaranteedRate:
+          type: boolean
+          description: Indicates if the exchange rate is locked/guaranteed for this transaction.
+          example: true
+        rateValidityInMinutes:
+          type: integer
+          format: int32
+          description: Number of minutes the quoted exchange rate remains valid.
+          example: 30
+        createdDate:
+          type: string
+          format: date-time
+        lastModifiedDate:
+          type: string
+          format: date-time
+        expiresAt:
+          type: string
+          format: date-time
+        achSameDay:
+          type: boolean
+          description: Indicates whether same-day ACH settlement was requested for this simulation.
+        payorId:
+          type: string
+          description: The sponsor beneficiary that funds the payment when this is a Payment On Behalf Of (POBO) simulation — your integrator's main beneficiary. Null for a standard payment.
+    MockCryptoDepositTravelRule:
+      type: object
+      description: Optional Travel Rule scenario for a simulated crypto deposit. With withMessage true, the sender VASP's Travel Rule message is simulated for the deposit; false (or omitting the block) simulates a self-hosted origin with no message, which clears via the hold's timeout path when at or above the threshold.
+      properties:
+        withMessage:
+          type: boolean
+          default: true
+          description: Whether the sender's VASP transmits a Travel Rule message for the deposit.
+        originatorName:
+          type: string
+          description: The sender name declared in the Travel Rule message. Defaults to a test value.
+        beneficiaryName:
+          type: string
+          description: The recipient name the sender's VASP declares in the Travel Rule message. Defaults to the account's registered name (name check passes); a divergent value fails the beneficiary name check and the deposit stays held for review.
+    CvuAccountDto:
+      type: object
+      description: CVU (Clave Virtual Uniforme) account details for instant transfers in Argentina.
+      properties:
+        recipientName:
+          type: string
+          description: Full name of the account holder as registered with the CVU.
+          example: María Fernández
+        cvu:
+          type: string
+          description: 22-digit CVU identifier for the recipient account.
+          example: '0000003100010000000001'
+          pattern: ^[0-9]{22}$
+    SweepPayoutResponse:
+      type: object
+      description: Response from a sweep payout operation indicating success and details of the automated payout.
+      properties:
+        id:
+          type: string
+        currency:
+          type: string
+          enum:
+          - USDT
+          - USDC
+          - USD
+          - BRL
+          - MXN
+          - COP
+          - EUR
+          - EURT
+          - HKD
+          - SGD
+          - CNY
+          - CNH
+          - ARS
+          - ANY
+        payoutBeneficiaryFilter:
+          type: string
+          enum:
+          - ALL
+          - SUBSET
+        sweepDestination:
+          type: string
+        withdrawalMethod:
+          type: string
+          enum:
+          - PIX
+          - SPEI
+          - WIRE
+          - RTP
+          - COP
+          - CVU
+          - LOCAL_EXCHANGE
+          - CRYPTO_INTERNAL_TRANSFER
+          - POLYGON
+          - ETH
+          - TRON
+          - STELLAR
+          - UNKNOWN
+          - ACH
+          - SWIFT
+          - BASE
+          - SOLANA
+          - CALIZA_WALLET
+          - MAIN_CALIZA_WALLET
+          - ANY
+    BankInfo:
+      required:
+      - bic
+      - city
+      - country
+      - name
+      - postalCode
+      - state
+      - street1
+      type: object
+      description: Bank information including BIC/SWIFT code and address details for international wire transfers.
+      properties:
+        bic:
+          type: string
+          description: Bank Identifier Code (BIC) or SWIFT code - 8 or 11 character code identifying the bank.
+          example: CHASUS33XXX
+          pattern: ^[A-Z]{6}[A-Z0-9]{2}([A-Z0-9]{3})?$
+          minLength: 8
+          maxLength: 11
+        name:
+          type: string
+          description: Full legal name of the bank.
+          example: JPMorgan Chase Bank N.A.
+        street1:
+          type: string
+          description: Primary street address line of the bank.
+          example: 270 Park Avenue
+        street2:
+          type: string
+          description: Secondary street address line (optional).
+          example: Floor 12
+        postalCode:
+          type: string
+          description: Postal or ZIP code.
+          example: '10017'
+        city:
+          type: string
+          description: City name.
+          example: New York
+        state:
+          type: string
+          description: State, province, or region.
+          example: NY
+        country:
+          maxLength: 2
+          minLength: 2
+          type: string
+          description: ISO 3166-1 alpha-2 country code.
+          example: US
+          pattern: ^[A-Z]{2}$
+    PayoutRequest:
+      required:
+      - source
+      - sourceType
+      - transactions
+      type: object
+      properties:
+        source:
+          type: string
+        sourceType:
+          type: string
+          enum:
+          - BENEFICIARY
+          - INTEGRATOR
+          - WALLET
+        transactions:
+          type: array
+          items:
+            $ref: '#/components/schemas/PayoutTransaction'
+    PageableObject:
+      type: object
+      description: Pagination information object including page number, size, offset, and sorting configuration.
+      properties:
+        offset:
+          type: integer
+          format: int64
+          description: Number of elements to skip from the beginning of the result set.
+          example: 20
+        sort:
+          $ref: '#/components/schemas/Sort'
+        pageNumber:
+          type: integer
+          format: int32
+          description: Zero-based page number (0 = first page).
+          example: 0
+        pageSize:
+          type: integer
+          format: int32
+          description: Number of elements per page.
+          example: 10
+        paged:
+          type: boolean
+          description: Indicates if pagination is enabled.
+          example: true
+        unpaged:
+          type: boolean
+          description: Indicates if pagination is disabled.
+          example: false
+    FixedFeeItemResponse:
+      type: object
+      description: Details of a fixed fee charged on a transaction, independent of transaction amount.
+      properties:
+        block:
+          type: string
+          description: Fee category or grouping identifier.
+          example: NETWORK_FEE
+        type:
+          type: string
+          description: Type of fee being charged.
+          example: FIXED
+        value:
+          type: number
+          description: Fixed fee amount.
+          example: 2.5
+        currencyCode:
+          type: string
+          description: Currency in which the fee is charged.
+          example: USD
+        concept:
+          type: string
+          description: Human-readable description of what the fee covers.
+          example: Wire transfer processing fee
+        paymentRail:
+          type: string
+          description: Payment method this fee applies to.
+          example: WIRE
+        chargeMode:
+          type: string
+          description: How the fee is applied (DEDUCT = deducted from amount, ADD = added to total).
+          example: ADD
+          enum:
+          - DEDUCT
+          - ADD
+    BusinessInfo:
+      required:
+      - accountNumber
+      - accountType
+      - address
+      - city
+      - country
+      - name
+      - postalCode
+      - routingNumber
+      - state
+      type: object
+      description: Business account information for wire transfers including company details and bank account information.
+      properties:
+        name:
+          type: string
+          description: Legal business name of the company.
+          example: Tech Solutions Corp.
+        address:
+          type: string
+          description: Street address of the business headquarters.
+          example: 500 Corporate Plaza
+        city:
+          type: string
+          description: City where the business is located.
+          example: San Francisco
+        state:
+          type: string
+          description: State or province code (2 letters).
+          example: CA
+        country:
+          maxLength: 2
+          minLength: 2
+          type: string
+          description: ISO 3166-1 alpha-2 country code.
+          example: US
+        postalCode:
+          type: string
+          description: ZIP or postal code.
+          example: '94105'
+        accountNumber:
+          type: string
+          description: Business bank account number for wire transfers.
+          example: '1234567890'
+        accountType:
+          type: string
+          description: Type of bank account.
+          example: CHECKING
+          enum:
+          - CHECKING
+        routingNumber:
+          type: string
+          description: 9-digit ABA routing number or SWIFT code.
+          example: '121000248'
+        registrationNumber:
+          type: string
+          description: Business registration or tax ID number (EIN/Tax ID).
+          example: 98-7654321
+        phoneNumber:
+          type: string
+          description: Business contact phone number.
+          example: '+14155551234'
+        registrationType:
+          type: string
+          description: Type of business registration document.
+          example: EIN
+        registrationDate:
+          type: string
+          description: Date when the business was registered.
+          example: '2015-03-20'
+          format: date
+        registrationExpiryDate:
+          type: string
+          description: Expiry date of business registration (if applicable).
+          example: '2035-03-20'
+          format: date
+        mobileNumber:
+          type: string
+          description: Mobile phone number for business contact.
+          example: '+14155559999'
+        businessNature:
+          type: string
+          description: Nature or type of business activity/industry.
+          example: Financial technology services
+        email:
+          type: string
+          description: Business email address for correspondence.
+          example: treasury@techsolutions.com
+    ExpectedSettlementTimeDetails:
+      type: object
+      description: Information about expected settlement time for a transaction.
+      properties:
+        expectedTime:
+          type: string
+          description: Standardized settlement time category.
+          enum:
+          - INSTANT_MARKET_HOURS
+          - INSTANT
+          - WITHIN_5_MINUTES
+          - WITHIN_15_MINUTES
+          - SAME_DAY_BEFORE_CUTOFF
+          - ONE_TO_TWO_DAYS
+          - ONE_TO_THREE_DAYS
+          - UNKNOWN
+        displayText:
+          type: string
+          description: Human-readable settlement time description to display to end users.
+          example: Instant (during market hours)
+        additionalInfo:
+          type: string
+          description: Additional context or conditions affecting settlement time.
+          example: Settlements outside business hours will be processed on the next business day.
+        cutoffTime:
+          type: string
+          description: Cutoff time for same-day settlement in ISO 8601 format.
+          example: '2025-12-05T17:00:00Z'
+          format: date-time
+    NFLocalInfoDto:
+      type: object
+      description: Local payment network information for SPEI, PIX, and other domestic payment systems.
+      properties:
+        speiInClabe:
+          type: string
+          description: CLABE (Clave Bancaria Estandarizada) for incoming SPEI transfers in Mexico.
+          example: 012345678901234567
+          pattern: ^[0-9]{18}$
+        speiInBankName:
+          type: string
+          description: Name of the bank for incoming SPEI transfers.
+          example: Banco Santander
+        speiInBeneficiaryName:
+          type: string
+          description: Beneficiary name for incoming SPEI transfers.
+          example: Juan Pérez
+        speiOutClabe:
+          type: string
+          description: CLABE for outgoing SPEI transfers.
+          example: 098765432109876543
+          pattern: ^[0-9]{18}$
+        pixCopyAndPaste:
+          type: string
+          description: PIX copy-and-paste code (QR code text equivalent) for payment.
+          example: 00020126580014br.gov.bcb.pix...
+        pixExpiresAt:
+          type: string
+          format: date-time
+          description: Expiration date and time for the PIX payment code.
+          example: '2025-12-17T23:59:59Z'
+        targetPixKey:
+          type: string
+          description: PIX key (CPF, CNPJ, email, phone, or random key) for the recipient.
+          example: '+5511999999999'
+        targetAccount:
+          $ref: '#/components/schemas/LocalTargetBankAccountDto'
+        destinationFiatAccount:
+          $ref: '#/components/schemas/FiatAccountDto'
+        pixOutSearchableId:
+          type: string
+          description: Searchable identifier for outgoing PIX transactions.
+          example: PIX_OUT_123456
+        speiOutSearchableId:
+          type: string
+          description: Searchable identifier for outgoing SPEI transactions.
+          example: SPEI_OUT_789012
+        fundingDetails:
+          type: object
+          additionalProperties:
+            type: string
+        uetr:
+          type: string
+          description: Unique End-to-end Transaction Reference for SWIFT/wire transfers (ISO 20022).
+          example: 97ed4827-7b6f-4491-a06f-b548d5a7512d
+          pattern: ^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$
+        achTraceNumber:
+          type: string
+          description: 'Nacha trace number for ACH transfers. Fifteen digits: an 8-digit ODFI routing prefix followed by a 7-digit sequence. For inbound ACH it carries the originating bank''s prefix.'
+          example: 091311220037464
+          pattern: ^[0-9]{15}$
+        achSecCode:
+          type: string
+          description: ACH Standard Entry Class code identifying the type of ACH entry (e.g. CCD for business, PPD for consumer).
+          example: CCD
+        achEffectiveDate:
+          type: string
+          format: date
+          description: The effective settlement date for the ACH entry.
+          example: '2026-08-05'
+    ConversionDetails:
+      type: object
+      description: Detailed breakdown of currency conversion including exchange rates and amounts for multi-currency transactions.
+      properties:
+        effectiveTransactionValue:
+          type: number
+          description: The final value of the transaction after all conversions and fees.
+          example: 95.25
+        marketExchangeRate:
+          type: number
+          description: The current market exchange rate between the source and destination currencies.
+          example: 5.42
+        clientRate:
+          type: number
+          description: The exchange rate offered to the client (may include markup).
+          example: 5.35
+        calizaRate:
+          type: number
+          description: The exchange rate component retained by Caliza.
+          example: 5.4
+        integratorRate:
+          type: number
+          description: The exchange rate component allocated to the integrator.
+          example: 5.38
+        amountToBeConverted:
+          $ref: '#/components/schemas/AmountFourDecimalPlacesResponse'
+    SwiftAccountDto:
+      required:
+      - bankInfo
+      type: object
+      description: SWIFT international wire transfer account details supporting both individual and business accounts.
+      properties:
+        personInfo:
+          $ref: '#/components/schemas/SwiftPersonInfo'
+        bankInfo:
+          $ref: '#/components/schemas/SwiftBankInfo'
+        businessInfo:
+          $ref: '#/components/schemas/SwiftBusinessInfo'
+        isPobo:
+          type: boolean
+          description: Indicates if this account uses Pay-on-Behalf-Of (POBO) arrangement where payments are made on behalf of another entity.
+        pobo:
+          type: boolean
+          description: Indicates if POBO (Pay-on-Behalf-Of) services are enabled for this account.
+    TransactionDetailsResponse:
+      type: object
+      description: Detailed information about a transaction including conversion details, fees, and settlement expectations.
+      properties:
+        conversionDetails:
+          $ref: '#/components/schemas/ConversionDetails'
+        feeDetails:
+          $ref: '#/components/schemas/FeeDetails'
+        transferPurpose:
+          type: string
+          description: Purpose or reason for the transfer.
+          example: Payment for services
+        paymentReference:
+          type: string
+          description: Reference number or code for the payment.
+          example: INV-2025-001
+        memo:
+          type: string
+          description: Additional notes or memo for the transaction.
+          example: Monthly subscription payment
+        expectedSettlementTimeDetails:
+          $ref: '#/components/schemas/ExpectedSettlementTimeDetails'
+    CopAccountDto:
+      type: object
+      description: Colombian Peso (COP) bank account details for transfers in Colombia.
+      properties:
+        firstName:
+          type: string
+          description: Account holder's first name.
+          example: Juan
+        lastName:
+          type: string
+          description: Account holder's last name.
+          example: Rodriguez
+        accountType:
+          type: integer
+          format: int32
+          description: Type of bank account (1 = Savings, 2 = Checking).
+          example: 1
+        bankAccount:
+          type: string
+          description: Bank account number.
+          example: '1234567890'
+        bankCode:
+          type: string
+          description: Colombian bank code identifying the financial institution.
+          example: '001'
+        thirdPartyWithdrawal:
+          type: boolean
+          description: Indicates if withdrawals to third parties are allowed.
+          example: false
+        documentId:
+          type: string
+          description: Identification document number.
+          example: '1234567890'
+        documentType:
+          type: string
+          description: Type of identification document.
+          enum:
+          - CC
+          - CE
+          - NIT
+          - PASS
+          - PEP
+          example: CC
+        email:
+          type: string
+          description: Email address associated with the account.
+          format: email
+          example: juan.rodriguez@example.com
+        bitsoContactId:
+          type: string
+          description: Bitso platform contact identifier (if applicable).
+          example: btso_123456
+    MockDepositRequest:
+      type: object
+      description: Mock request to simulate a deposit for testing purposes in the sandbox environment.
+      properties:
+        documentId:
+          type: string
+        transactionId:
+          type: string
+    PixAccountDto:
+      type: object
+      description: PIX account details for instant payments in Brazil.
+      properties:
+        pixKey:
+          type: string
+          description: PIX key identifier. Can be CPF, CNPJ, email, phone number (+55...), or random key (UUID).
+          example: '+5511999887766'
+    PageTransactionResponse:
+      type: object
+      description: Paginated list of transactions including pagination metadata and transaction details.
+      properties:
+        totalElements:
+          type: integer
+          format: int64
+          description: Total number of elements across all pages.
+          example: 100
+        totalPages:
+          type: integer
+          format: int32
+          description: Total number of pages available.
+          example: 10
+        first:
+          type: boolean
+          description: Indicates if this is the first page.
+          example: true
+        last:
+          type: boolean
+          description: Indicates if this is the last page.
+          example: false
+        size:
+          type: integer
+          format: int32
+          description: Number of elements per page (page size).
+          example: 10
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/TransactionResponse'
+        number:
+          type: integer
+          format: int32
+          description: Current page number (zero-based).
+          example: 0
+        sort:
+          $ref: '#/components/schemas/Sort'
+        numberOfElements:
+          type: integer
+          format: int32
+          description: Number of elements in this page.
+          example: 10
+        pageable:
+          $ref: '#/components/schemas/PageableObject'
+        empty:
+          type: boolean
+          description: Indicates if the page has no elements.
+          example: false
+    SpreadFeeItemResponse:
+      type: object
+      description: Details of fees derived from exchange rate spread in currency conversion transactions.
+      properties:
+        block:
+          type: string
+          description: Fee category or grouping identifier.
+          example: FX_SPREAD
+        type:
+          type: string
+          description: Type of fee being charged.
+          example: SPREAD
+        fromCurrency:
+          type: string
+          description: Source currency being converted from.
+          example: USD
+        toCurrency:
+          type: string
+          description: Target currency being converted to.
+          example: BRL
+        marketRate:
+          type: number
+          description: Current market exchange rate between the two currencies.
+          example: 5.42
+        spreadBasisPoint:
+          type: number
+          description: Spread markup in basis points (1 bp = 0.01%).
+          example: 150
+        effectiveRate:
+          type: number
+          description: Final exchange rate applied after spread.
+          example: 5.35
+        calizaRate:
+          type: number
+          description: Exchange rate component retained by Caliza.
+          example: 5.4
+        baseCurrency:
+          type: string
+          description: Base currency for fee calculation.
+          example: USD
+        baseAmount:
+          type: number
+          description: Amount in base currency used for fee calculation.
+          example: 100
+        calculatedFee:
+          type: number
+          description: Calculated spread fee amount.
+          example: 0.7
+        feeCurrency:
+          type: string
+          description: Currency in which the spread fee is expressed.
+          example: USD
+        concept:
+          type: string
+          description: Human-readable description of the spread fee.
+          example: Currency conversion spread
+        chargeMode:
+          type: string
+          description: How the fee is applied to the transaction.
+          example: EMBEDDED
+          enum:
+          - EMBEDDED
+          - DEDUCT
+          - ADD
+    FiatAccountDto:
+      type: object
+      description: Fiat currency bank account information including account type, ownership, and detailed banking information for various payment rails.
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the fiat account.
+          example: fiat_acc_123456
+        name:
+          type: string
+          description: Display name or nickname for the account.
+          example: Main USD Account
+        beneficiaryId:
+          type: string
+          description: ID of the beneficiary who owns this account (if applicable).
+          example: ben_123456
+        integratorId:
+          type: string
+          description: ID of the integrator associated with this account.
+          example: int_123456
+        belongsToBeneficiary:
+          type: boolean
+          description: Indicates whether this account belongs to a beneficiary (true) or integrator (false).
+          example: true
+        fiatAccountType:
+          type: string
+          description: Type of fiat account/payment rail.
+          enum:
+          - WIRE
+          - SWIFT
+          - ACH
+          - PIX
+          - COP
+          - SPEI
+          - CVU
+          example: ACH
+        accountDetails:
+          $ref: '#/components/schemas/AccountDetailsDto'
+        owner:
+          type: string
+          enum:
+          - BENEFICIARY
+          - INTEGRATOR
+    SwiftPersonInfo:
+      required:
+      - accountType
+      - city
+      - country
+      - iban
+      - name
+      - postalCode
+      - routingKey
+      - state
+      - street1
+      - type
+      type: object
+      description: Individual person account information for SWIFT international wire transfers including IBAN details.
+      properties:
+        name:
+          type: string
+          description: Full name of the account holder.
+          example: Emma Thompson
+        street1:
+          type: string
+          description: Primary street address.
+          example: 45 Baker Street
+        postalCode:
+          type: string
+          description: Postal code.
+          example: W1U 6TE
+        city:
+          type: string
+          description: City name.
+          example: London
+        state:
+          type: string
+          description: State or region.
+          example: Greater London
+        country:
+          maxLength: 2
+          minLength: 2
+          type: string
+          description: ISO 3166-1 alpha-2 country code.
+          example: GB
+        routingKey:
+          type: string
+          description: Bank routing key or sort code.
+          example: '201029'
+        iban:
+          type: string
+          description: International Bank Account Number.
+          example: GB33BUKB20201555555555
+          pattern: ^[A-Z]{2}[0-9]{2}[A-Z0-9]+$
+        accountType:
+          type: string
+          description: Type of account.
+          example: CHECKING
+          enum:
+          - CHECKING
+        type:
+          type: string
+          description: Account holder type.
+          enum:
+          - NATURAL_PERSON
+          - COMPANY
+        email:
+          type: string
+          description: Email address of the account holder.
+          example: emma.thompson@email.com
+        dateOfBirth:
+          type: string
+          description: Date of birth of the account holder.
+          example: '1985-07-22'
+          format: date
+        mobileNumber:
+          type: string
+          description: Mobile phone number.
+          example: '+447700900456'
+        identificationType:
+          type: string
+          description: Type of identification document (e.g., PASSPORT, ID_CARD, DRIVING_LICENSE).
+          example: PASSPORT
+        identificationNumber:
+          type: string
+          description: Identification document number.
+          example: '987654321'
+        identificationIssuer:
+          type: string
+          description: Issuing authority or country of the identification document.
+          example: GB
+        occupation:
+          type: string
+          description: Occupation or profession of the account holder.
+          example: Software Engineer
+    AmountFourDecimalPlacesResponse:
+      type: object
+      description: Monetary amount with up to four decimal places precision, typically used for fee calculations and exchange rate conversions.
+      properties:
+        currencyCode:
+          type: string
+          description: ISO 4217 currency code or cryptocurrency ticker symbol.
+          example: USD
+          enum:
+          - USDT
+          - USDC
+          - USD
+          - BRL
+          - MXN
+          - COP
+          - EUR
+          - EURT
+          - HKD
+          - SGD
+          - CNY
+          - CNH
+          - ARS
+          - ANY
+        value:
+          type: number
+          description: The monetary amount with up to 4 decimal places of precision.
+          example: 1234.5678
+          minimum: 0
+    SimulationRequest:
+      required:
+      - beneficiaryId
+      - from
+      type: object
+      properties:
+        beneficiaryId:
+          type: string
+        from:
+          $ref: '#/components/schemas/AmountDto'
+        toCurrencyCode:
+          type: string
+          enum:
+          - USDT
+          - USDC
+          - USD
+          - BRL
+          - MXN
+          - COP
+          - EUR
+          - EURT
+          - HKD
+          - SGD
+          - CNY
+          - CNH
+          - ARS
+          - ANY
+        to:
+          $ref: '#/components/schemas/AmountDto'
+        destination:
+          type: string
+        type:
+          type: string
+          enum:
+          - FIAT
+          - CRYPTO
+        dashboardExperience:
+          type: boolean
+        paymentRail:
+          type: string
+          enum:
+          - PIX
+          - SPEI
+          - WIRE
+          - RTP
+          - COP
+          - CVU
+          - LOCAL_EXCHANGE
+          - CRYPTO_INTERNAL_TRANSFER
+          - POLYGON
+          - ETH
+          - TRON
+          - STELLAR
+          - UNKNOWN
+          - ACH
+          - SWIFT
+          - BASE
+          - SOLANA
+          - CALIZA_WALLET
+          - MAIN_CALIZA_WALLET
+          - ANY
+        alias:
+          type: string
+        fundingMethod:
+          type: string
+          enum:
+          - PIX
+          - SPEI
+          - WIRE
+          - RTP
+          - COP
+          - CVU
+          - LOCAL_EXCHANGE
+          - CRYPTO_INTERNAL_TRANSFER
+          - POLYGON
+          - ETH
+          - TRON
+          - STELLAR
+          - UNKNOWN
+          - ACH
+          - SWIFT
+          - BASE
+          - SOLANA
+          - CALIZA_WALLET
+          - MAIN_CALIZA_WALLET
+          - ANY
+        achSameDay:
+          type: boolean
+          description: When true, requests same-day ACH settlement instead of the default 1–2 business day settlement. Only applicable when the payment rail is ACH. When set on the simulation, this value automatically carries over to the transaction without needing to re-specify it in the TransactionRequest.
+        customFees:
+          type: object
+          additionalProperties:
+            type: number
+        payorId:
+          type: string
+          description: 'The ID of the sponsor beneficiary funding the payment — your integrator''s main beneficiary. Provide it to process the payment as Payment On Behalf Of (POBO): Caliza funds the payment from your main beneficiary while it runs through the account named in `beneficiaryId`. Must differ from `beneficiaryId`. Omit it for a standard payment.'
+    AccountDetailsDto:
+      type: object
+      description: 'Container for different types of bank account details supporting multiple payment rails. Each property corresponds to a specific payment method:
+
+        - wireDetails: Wire transfer account details for domestic U.S. transfers
+
+        - achDetails: ACH (Automated Clearing House) account details for U.S. electronic transfers
+
+        - swiftDetails: SWIFT international wire transfer account details
+
+        - pixDetails: PIX account details for instant payments in Brazil
+
+        - copDetails: Colombian Peso (COP) account details for transfers in Colombia
+
+        - speiDetails: SPEI account details for electronic transfers in Mexico
+
+        - cvuDetails: CVU (Clave Virtual Uniforme) account details for transfers in Argentina
+
+        '
+      properties:
+        wireDetails:
+          $ref: '#/components/schemas/WireAccountDto'
+        achDetails:
+          $ref: '#/components/schemas/AchAccountDto'
+        swiftDetails:
+          $ref: '#/components/schemas/SwiftAccountDto'
+        pixDetails:
+          $ref: '#/components/schemas/PixAccountDto'
+        copDetails:
+          $ref: '#/components/schemas/CopAccountDto'
+        speiDetails:
+          $ref: '#/components/schemas/SpeiAccountDto'
+        cvuDetails:
+          $ref: '#/components/schemas/CvuAccountDto'
+    OldFeeItemResponse:
+      type: object
+      description: Legacy fee structure format (deprecated). Use FixedFeeItemResponse, PercentageFeeItemResponse, or SpreadFeeItemResponse for new integrations.
+      deprecated: true
+      properties:
+        block:
+          type: string
+          description: Fee category identifier.
+        type:
+          type: string
+          description: Type of fee.
+        fromCurrency:
+          type: string
+          description: Source currency (for conversion fees).
+        toCurrency:
+          type: string
+          description: Target currency (for conversion fees).
+        feeValue:
+          type: number
+          description: Fee amount or percentage value.
+        feeCurrency:
+          type: string
+          description: Currency in which the fee is charged.
+        marketRate:
+          type: number
+          description: Market exchange rate (for FX fees).
+        effectiveRate:
+          type: number
+          description: Effective rate after spread (for FX fees).
+        calizaRate:
+          type: number
+          description: Caliza's rate component.
+        baseCurrency:
+          type: string
+          description: Base currency for calculations.
+        baseAmount:
+          type: number
+          description: Base amount for percentage calculations.
+        concept:
+          type: string
+          description: Fee description.
+        chargeMode:
+          type: string
+          description: How the fee is applied.
+    NFBlockchainInfoDto:
+      type: object
+      description: Blockchain network information for crypto transactions including transaction hashes and wallet addresses.
+      properties:
+        depositTransactionHash:
+          type: string
+          description: Blockchain transaction hash for the deposit transaction.
+          example: 0xabc123def456...
+        withdrawalTransactionHash:
+          type: string
+          description: Blockchain transaction hash for the withdrawal/payout transaction.
+          example: 0x789ghi012jkl...
+        fundingWallet:
+          type: string
+          description: Wallet address used to fund the transaction.
+          example: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb'
+        targetWallet:
+          $ref: '#/components/schemas/NFTransferWalletDto'
+    PaymentInstructionsResponse:
+      type: object
+      description: Payment instructions for funding a transaction including bank details and reference codes.
+      properties:
+        accountNumber:
+          type: string
+        routingNumber:
+          type: string
+        receiverName:
+          type: string
+        receiverAddress:
+          type: string
+        receiverBankName:
+          type: string
+        swiftCode:
+          type: string
+        receiverBankAddress:
+          type: string
+        reference:
+          type: string
+        clabe:
+          type: string
+          description: 18-digit CLABE account the beneficiary can be funded through. Returned for MXN deposits over the SPEI payment rail.
+          example: '646180123456789012'
+    AmountDto:
+      type: object
+      description: Represents a monetary amount with currency code and value.
+      required:
+      - currencyCode
+      - value
+      properties:
+        currencyCode:
+          type: string
+          description: ISO 4217 currency code or cryptocurrency ticker symbol.
+          example: USD
+          enum:
+          - USDT
+          - USDC
+          - USD
+          - BRL
+          - MXN
+          - COP
+          - EUR
+          - EURT
+          - HKD
+          - SGD
+          - CNY
+          - CNH
+          - ARS
+          - ANY
+        value:
+          type: number
+          description: The monetary amount in the specified currency. Precision depends on the currency (typically 2 decimal places for fiat, up to 8 for crypto).
+          example: 100.5
+          minimum: 0
+    PayInSenderResponse:
+      type: object
+      description: Information about the payment rail and sender details for pay-in transactions.
+      properties:
+        paymentRails:
+          type: string
+          description: Payment method or rail used for the transaction.
+          enum:
+          - PIX
+          - SPEI
+          - WIRE
+          - RTP
+          - COP
+          - CVU
+          - LOCAL_EXCHANGE
+          - CRYPTO_INTERNAL_TRANSFER
+          - POLYGON
+          - ETH
+          - TRON
+          - STELLAR
+          - UNKNOWN
+          - ACH
+          - SWIFT
+          - BASE
+          - SOLANA
+          - CALIZA_WALLET
+          - MAIN_CALIZA_WALLET
+          - ANY
+          example: PIX
+        details:
+          type: object
+          description: Additional sender-specific details (structure varies by payment rail).
+          additionalProperties:
+            type: object
+    AchPersonInfo:
+      required:
+      - accountNumber
+      - accountType
+      - city
+      - country
+      - name
+      - postalCode
+      - routingKey
+      - state
+      - street1
+      - type
+      type: object
+      properties:
+        name:
+          type: string
+          description: Full name of the account holder.
+          example: John Doe
+        street1:
+          type: string
+          description: Primary street address.
+          example: 456 Elm Street
+        postalCode:
+          type: string
+          description: ZIP or postal code.
+          example: '90210'
+        city:
+          type: string
+          description: City name.
+          example: Beverly Hills
+        state:
+          type: string
+          description: State or province code (2 letters).
+          example: CA
+        country:
+          maxLength: 2
+          minLength: 2
+          type: string
+          description: ISO 3166-1 alpha-2 country code.
+          example: US
+        routingKey:
+          type: string
+          description: Routing key for the account (routing number).
+          example: '121000248'
+        accountNumber:
+          type: string
+          description: Bank account number.
+          example: '987654321'
+        accountType:
+          type: string
+          description: Type of account.
+          enum:
+          - CHECKING
+        type:
+          type: string
+          description: Account holder type.
+          enum:
+          - NATURAL_PERSON
+          - COMPANY
+    DashboardTransactionWithDocumentsDto:
+      type: object
+      description: Transaction details with attached documents and complete payment information for dashboard display.
+      properties:
+        id:
+          type: string
+        date:
+          type: string
+        status:
+          type: string
+          enum:
+          - CREATED
+          - PENDING
+          - PROCESSING
+          - SUCCEEDED
+          - WAITING_WEBHOOK
+          - FAILED
+          - EXPIRED
+          - CANCELLED
+          - REJECTED
+          - DEPOSIT_RECEIVED
+          - DEPOSIT_COMPLETED
+          - INTERNAL_TRANSFER_SENT
+          - INTERNAL_TRANSFER_COMPLETED
+          - EXCHANGE_SENT
+          - EXCHANGE_COMPLETED
+          - PAYMENT_SENT
+          - PAYMENT_COMPLETED
+          - PAYMENT_UNDER_REVIEW
+          - PROCESSED_BY_BANK
+          - PROCESSED_BY_INTERMEDIARY_BANK
+          - RECEIVED_BY_INTERMEDIARY_BANK
+          - RECEIVED_BY_BENEFICIARY_BANK
+          - UNKNOWN
+        type:
+          type: string
+          enum:
+          - TRANSFER
+          - WITHDRAWAL
+          - DEPOSIT
+          - EXCHANGE
+          - UNSET
+        paymentType:
+          type: string
+        fromAccount:
+          $ref: '#/components/schemas/FiatAccountDto'
+        fromAmount:
+          $ref: '#/components/schemas/AmountDto'
+        toAccount:
+          $ref: '#/components/schemas/FiatAccountDto'
+        toAmount:
+          $ref: '#/components/schemas/AmountDto'
+        localInfo:
+          $ref: '#/components/schemas/NFLocalInfoDto'
+        transactionDetails:
+          $ref: '#/components/schemas/TransactionDetailsResponse'
+        initiatedBy:
+          type: string
+        documents:
+          type: array
+          items:
+            $ref: '#/components/schemas/DocumentDto'
+        completed:
+          type: boolean
+    TransactionResponse:
+      type: object
+      description: Complete transaction information including status, amounts, blockchain info, and timestamps.
+      properties:
+        id:
+          type: string
+          description: Unique transaction identifier.
+          example: txn_123456789
+        simulationId:
+          type: string
+          description: ID of the simulation used to create this transaction.
+          example: sim_987654321
+        integratorId:
+          type: string
+          description: ID of the integrator who initiated the transaction.
+          example: int_123456
+        beneficiaryId:
+          type: string
+          description: ID of the beneficiary involved in the transaction.
+          example: ben_123456
+        from:
+          $ref: '#/components/schemas/AmountDto'
+        to:
+          $ref: '#/components/schemas/AmountDto'
+        status:
+          type: string
+          description: Current status of the transaction.
+          enum:
+          - CREATED
+          - PENDING
+          - PROCESSING
+          - SUCCEEDED
+          - WAITING_WEBHOOK
+          - FAILED
+          - EXPIRED
+          - CANCELLED
+          - REJECTED
+          - DEPOSIT_RECEIVED
+          - DEPOSIT_COMPLETED
+          - INTERNAL_TRANSFER_SENT
+          - INTERNAL_TRANSFER_COMPLETED
+          - EXCHANGE_SENT
+          - EXCHANGE_COMPLETED
+          - PAYMENT_SENT
+          - PAYMENT_COMPLETED
+          - PAYMENT_UNDER_REVIEW
+          - PROCESSED_BY_BANK
+          - PROCESSED_BY_INTERMEDIARY_BANK
+          - RECEIVED_BY_INTERMEDIARY_BANK
+          - RECEIVED_BY_BENEFICIARY_BANK
+          - UNKNOWN
+          example: SUCCEEDED
+        blockchainInfo:
+          $ref: '#/components/schemas/NFBlockchainInfoDto'
+        localInfo:
+          $ref: '#/components/schemas/NFLocalInfoDto'
+        beneficiaryIp:
+          type: string
+        flowOfFundsId:
+          type: string
+        targetInfo:
+          $ref: '#/components/schemas/TargetInfoResponse'
+        transactionDetails:
+          $ref: '#/components/schemas/TransactionDetailsResponse'
+        settledAt:
+          type: string
+          format: date-time
+        createdDate:
+          type: string
+          format: date-time
+        lastModifiedDate:
+          type: string
+          format: date-time
+        payInSender:
+          $ref: '#/components/schemas/PayInSenderResponse'
+    Sort:
+      type: object
+      description: Sorting configuration for paginated results including order direction and property to sort by.
+      properties:
+        empty:
+          type: boolean
+          description: Indicates if no sorting is applied.
+          example: false
+        sorted:
+          type: boolean
+          description: Indicates if results are sorted.
+          example: true
+        unsorted:
+          type: boolean
+          description: Indicates if results are not sorted.
+          example: false
+    MockCryptoDepositRequest:
+      required:
+      - beneficiaryId
+      - walletAddress
+      - amount
+      - network
+      - currency
+      type: object
+      description: Mock request to simulate a cryptocurrency deposit at a DFNS wallet for testing purposes in the sandbox environment.
+      properties:
+        beneficiaryId:
+          type: string
+          description: Unique identifier of the beneficiary receiving the deposit.
+        walletAddress:
+          type: string
+          description: Destination wallet address for the simulated deposit.
+        amount:
+          type: number
+          description: Amount of cryptocurrency to deposit.
+        network:
+          type: string
+          description: Blockchain network for the deposit.
+          enum:
+          - POLYGON
+          - ETH
+          - TRON
+          - STELLAR
+          - BASE
+          - SOLANA
+        currency:
+          type: string
+          description: Cryptocurrency currency code (e.g. USDT, USDC).
+        fromAddress:
+          type: string
+          description: On-chain origin of the simulated deposit; random when omitted. Passing the address being proven completes a microtransfer (Satoshi) ownership proof.
+        travelRule:
+          $ref: '#/components/schemas/MockCryptoDepositTravelRule'
+    AchAccountDto:
+      required:
+      - bankInfo
+      type: object
+      description: 'ACH account information for electronic fund transfers in the United States.
+
+        - personInfo: Personal information for individual account holders
+
+        - bankInfo: Bank identification and routing information (required)
+
+        - businessInfo: Business information for corporate account holders
+
+        '
+      properties:
+        personInfo:
+          $ref: '#/components/schemas/AchPersonInfo'
+        bankInfo:
+          $ref: '#/components/schemas/AchBankInfo'
+        businessInfo:
+          $ref: '#/components/schemas/AchBusinessInfo'
+    SwiftBusinessInfo:
+      required:
+      - accountNumber
+      - accountType
+      - address
+      - city
+      - country
+      - name
+      - postalCode
+      - routingNumber
+      - state
+      type: object
+      description: Business account information for SWIFT international wire transfers.
+      properties:
+        name:
+          type: string
+          description: Legal business name.
+          example: Global Trading LLC
+        address:
+          type: string
+          description: Business street address.
+          example: 123 Commerce Street
+        city:
+          type: string
+          description: City where the business is located.
+          example: London
+        state:
+          type: string
+          description: State or region.
+          example: Greater London
+        country:
+          maxLength: 2
+          minLength: 2
+          type: string
+          description: ISO 3166-1 alpha-2 country code.
+          example: GB
+        postalCode:
+          type: string
+          description: Postal code.
+          example: EC2N 2DL
+        registrationNumber:
+          type: string
+          description: Company registration number.
+          example: '12345678'
+        accountNumber:
+          type: string
+          description: Bank account number or IBAN.
+          example: GB29NWBK60161331926819
+        accountType:
+          type: string
+          description: Type of account.
+          example: CHECKING
+          enum:
+          - CHECKING
+        routingNumber:
+          type: string
+          description: Bank routing number or sort code.
+          example: '601613'
+        phoneNumber:
+          type: string
+          description: Business contact phone number.
+          example: '+442071234567'
+        registrationType:
+          type: string
+          description: Type of business registration.
+          example: Companies House
+        registrationDate:
+          type: string
+          description: Date of business registration.
+          example: '2010-06-15'
+          format: date
+        registrationExpiryDate:
+          type: string
+          description: Registration expiry date (if applicable).
+          example: '2030-06-15'
+          format: date
+        mobileNumber:
+          type: string
+          description: Mobile contact number.
+          example: '+447700900123'
+        businessNature:
+          type: string
+          description: Nature of business operations.
+          example: International trade and finance
+        email:
+          type: string
+          description: Business email address.
+          example: accounts@globaltrading.com
+    PercentageFeeItemResponse:
+      type: object
+      description: Details of a percentage-based fee calculated as a portion of the transaction amount.
+      properties:
+        block:
+          type: string
+          description: Fee category or grouping identifier.
+          example: SERVICE_FEE
+        type:
+          type: string
+          description: Type of fee being charged.
+          example: PERCENTAGE
+        percentageRate:
+          type: number
+          description: Fee percentage rate in decimal form (e.g., 0.025 = 2.5%).
+          example: 0.025
+        baseAmount:
+          type: number
+          description: Transaction amount used as the base for percentage calculation.
+          example: 1000
+        baseCurrency:
+          type: string
+          description: Currency of the base amount.
+          example: USD
+        calculatedFee:
+          type: number
+          description: Calculated fee amount based on the percentage and base amount.
+          example: 25
+        feeCurrency:
+          type: string
+          description: Currency in which the fee is charged.
+          example: USD
+        concept:
+          type: string
+          description: Human-readable description of what the fee covers.
+          example: Transaction processing fee
+        paymentRail:
+          type: string
+        chargeMode:
+          type: string
+    DocumentDto:
+      type: object
+      description: Document metadata including type, URL, and upload date for transaction-related files.
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        size:
+          type: integer
+          format: int32
+        viewUrl:
+          type: string
+        uploadedBy:
+          type:
+          - string
+          - 'null'
+          description: Who submitted the document — an email address for a dashboard upload, or an identifier for an API upload. Recorded only for documents uploaded on or after 2026-06-25; null for anything attached before that date.
+        uploadedAt:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: When the document was uploaded. Recorded only for documents uploaded on or after 2026-06-25; null for anything attached before that date.
+    SweepPayoutBeneficiary:
+      type: object
+      description: Beneficiary information for sweep payout operations.
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the beneficiary.
+          example: ben_123456
+        amount:
+          type: number
+          description: Specific amount to sweep from this beneficiary (optional, if omitted sweeps full available balance).
+          example: 1000.5
+    SimulationV2Request:
+      type: object
+      description: Request to simulate a payment transaction including amount conversion, fees, and payment rail selection for both funding and payout.
+      properties:
+        beneficiaryId:
+          type: string
+        from:
+          $ref: '#/components/schemas/AmountDto'
+        to:
+          $ref: '#/components/schemas/AmountDto'
+        funding:
+          type: string
+          enum:
+          - PIX
+          - SPEI
+          - WIRE
+          - RTP
+          - COP
+          - CVU
+          - LOCAL_EXCHANGE
+          - CRYPTO_INTERNAL_TRANSFER
+          - POLYGON
+          - ETH
+          - TRON
+          - STELLAR
+          - UNKNOWN
+          - ACH
+          - SWIFT
+          - BASE
+          - SOLANA
+          - CALIZA_WALLET
+          - MAIN_CALIZA_WALLET
+          - ANY
+        payout:
+          type: string
+          enum:
+          - PIX
+          - SPEI
+          - WIRE
+          - RTP
+          - COP
+          - CVU
+          - LOCAL_EXCHANGE
+          - CRYPTO_INTERNAL_TRANSFER
+          - POLYGON
+          - ETH
+          - TRON
+          - STELLAR
+          - UNKNOWN
+          - ACH
+          - SWIFT
+          - BASE
+          - SOLANA
+          - CALIZA_WALLET
+          - MAIN_CALIZA_WALLET
+          - ANY
+        recipientId:
+          type: string
+        achSameDay:
+          type: boolean
+          description: When true, requests same-day ACH settlement instead of the default 1–2 business day settlement. Only applicable when the payment rail is ACH. When set on the simulation, this value automatically carries over to the transaction without needing to re-specify it in the TransactionRequest.
+        customFees:
+          type: object
+          description: 'Optional integrator-defined fees applied on the currency-conversion (FX) leg of the operation. Supply your own spread under the `INTEGRATOR_SPREAD` key (the `INTEGRATOR` alias is also accepted); this spread is added on top of Caliza''s spread and becomes your revenue on the conversion. Values are in basis points (BPS), where `100 BPS = 1%`, and must be `>= 0`. Passing `0` or omitting the field disables your spread, in which case `integratorRate` equals `calizaRate` in the response. Only the FX leg is affected; same-currency flows are unaffected. The resulting rate tiers are returned under `conversionDetails` (`marketExchangeRate`, `calizaRate`, `integratorRate`) and each margin appears as a `spreadFees[]` item (`type: CALIZA` for Caliza''s revenue and `type: INTEGRATOR_SPREAD` for yours).'
+          additionalProperties:
+            type: number
+          example:
+            INTEGRATOR_SPREAD: 10
+    FeeDetails:
+      type: object
+      description: 'Comprehensive breakdown of all fees applied to a transaction:
+
+        - taxes: Tax amount charged on the transaction (e.g., IOF in Brazil, VAT, etc.)
+
+        - integratorFee: Fee amount allocated to the integrator
+
+        - fixedFees: List of fixed fees charged regardless of transaction amount
+
+        - percentageFees: List of fees calculated as a percentage of the transaction amount
+
+        - spreadFees: List of fees derived from exchange rate spreads in currency conversions
+
+        - oldFees: Legacy fee structure (deprecated)
+
+        - totalFees: Sum of all fees charged on this transaction
+
+        - vet: VET (Valor Efetivo Total) - Brazilian total effective value including all costs
+
+        '
+      properties:
+        taxes:
+          $ref: '#/components/schemas/AmountFourDecimalPlacesResponse'
+        integratorFee:
+          $ref: '#/components/schemas/AmountFourDecimalPlacesResponse'
+        fixedFees:
+          type: array
+          description: List of fixed fees charged regardless of transaction amount.
+          items:
+            $ref: '#/components/schemas/FixedFeeItemResponse'
+        percentageFees:
+          type: array
+          description: List of fees calculated as a percentage of the transaction amount.
+          items:
+            $ref: '#/components/schemas/PercentageFeeItemResponse'
+        spreadFees:
+          type: array
+          description: List of fees derived from exchange rate spreads in currency conversions.
+          items:
+            $ref: '#/components/schemas/SpreadFeeItemResponse'
+        oldFees:
+          type: array
+          description: Legacy fee structure (deprecated).
+          items:
+            $ref: '#/components/schemas/OldFeeItemResponse'
+        totalFees:
+          $ref: '#/components/schemas/AmountFourDecimalPlacesResponse'
+        vet:
+          type: number
+          description: VET (Valor Efetivo Total) - Brazilian total effective value including all costs.
+          example: 105.5
+    NFTransferWalletDto:
+      type: object
+      description: Cryptocurrency wallet information for blockchain-based transfers.
+      properties:
+        address:
+          type: string
+          description: Blockchain wallet address (cryptocurrency public address).
+          example: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb'
+        tag:
+          type: string
+          description: Destination tag or memo (required for some networks like Stellar, XRP).
+          example: '123456'
+        chain:
+          type: string
+          description: Blockchain network identifier.
+          enum:
+          - SOL
+          - XLM
+          - POLY
+          - TRX
+          - MATIC
+          - BASE
+          example: POLY
+        provider:
+          type: string
+          description: Wallet service provider or custody solution.
+          example: CALIZA
+        type:
+          type: string
+          description: Type of wallet integration.
+          enum:
+          - CALIZA_BRIDGE
+          - EXTERNAL_BRIDGE
+          - RENTAL_PAYMENT
+          - CUSTODY
+          example: CALIZA_BRIDGE
+    MockTravelRuleClearanceRequest:
+      required:
+      - transactionId
+      - outcome
+      type: object
+      description: Sandbox request to resolve the Travel Rule decision a transaction is waiting on, standing in for the counterparty VASP (payouts) or the inbound verdict (deposits).
+      properties:
+        transactionId:
+          type: string
+          description: The transaction waiting on Travel Rule clearance.
+        outcome:
+          type: string
+          description: The decision the counterparty would have made.
+          enum:
+          - AUTHORIZED
+          - REJECTED
+    LocalTargetBankAccountDto:
+      type: object
+      description: Local bank account details for a beneficiary in their domestic country, supporting multiple countries and payment systems.
+      properties:
+        targetCountry:
+          type: string
+          enum:
+          - AF
+          - AX
+          - AL
+          - DZ
+          - AS
+          - AD
+          - AO
+          - AI
+          - AQ
+          - AG
+          - AR
+          - AM
+          - AW
+          - AU
+          - AT
+          - AZ
+          - BH
+          - BD
+          - BB
+          - BY
+          - BE
+          - BZ
+          - BJ
+          - BM
+          - BT
+          - BO
+          - BQ
+          - BA
+          - BW
+          - BV
+          - BR
+          - IO
+          - BN
+          - BG
+          - BF
+          - BI
+          - KH
+          - CM
+          - CA
+          - CV
+          - KY
+          - CF
+          - TD
+          - CL
+          - CN
+          - CX
+          - CC
+          - CO
+          - KM
+          - CG
+          - CK
+          - CR
+          - CI
+          - HR
+          - CU
+          - CW
+          - CY
+          - CZ
+          - CD
+          - DK
+          - DJ
+          - DM
+          - DO
+          - EC
+          - EG
+          - SV
+          - GQ
+          - ER
+          - EE
+          - SZ
+          - ET
+          - FK
+          - FO
+          - FJ
+          - FI
+          - FR
+          - GF
+          - PF
+          - TF
+          - GA
+          - GE
+          - DE
+          - GH
+          - GI
+          - GR
+          - GL
+          - GD
+          - GP
+          - GU
+          - GT
+          - GG
+          - GN
+          - GW
+          - GY
+          - HT
+          - HM
+          - HN
+          - HK
+          - HU
+          - IS
+          - IN
+          - ID
+          - IR
+          - IQ
+          - IE
+          - IL
+          - IT
+          - JM
+          - JP
+          - JE
+          - JO
+          - KZ
+          - KE
+          - KI
+          - XK
+          - KW
+          - KG
+          - LA
+          - LV
+          - LB
+          - LS
+          - LR
+          - LY
+          - LI
+          - LT
+          - LU
+          - MO
+          - MG
+          - MW
+          - MY
+          - MV
+          - ML
+          - MT
+          - IM
+          - MH
+          - MQ
+          - MR
+          - MU
+          - YT
+          - MX
+          - FM
+          - MD
+          - MC
+          - MN
+          - ME
+          - MS
+          - MA
+          - MZ
+          - MM
+          - NA
+          - NR
+          - NP
+          - NL
+          - NC
+          - NZ
+          - NI
+          - NE
+          - NG
+          - NU
+          - NF
+          - KP
+          - MK
+          - MP
+          - 'NO'
+          - OM
+          - PK
+          - PW
+          - PS
+          - PA
+          - PG
+          - PY
+          - PE
+          - PH
+          - PN
+          - PL
+          - PT
+          - PR
+          - QA
+          - RE
+          - RO
+          - RU
+          - RW
+          - SH
+          - KN
+          - LC
+          - PM
+          - VC
+          - BL
+          - MF
+          - WS
+          - SM
+          - ST
+          - SA
+          - SN
+          - RS
+          - SC
+          - SL
+          - SG
+          - SX
+          - SK
+          - SI
+          - SB
+          - SO
+          - ZA
+          - GS
+          - KR
+          - SS
+          - ES
+          - LK
+          - SD
+          - SR
+          - SJ
+          - SE
+          - CH
+          - SY
+          - TW
+          - TJ
+          - TZ
+          - TH
+          - BS
+          - GM
+          - TL
+          - TG
+          - TK
+          - TO
+          - TT
+          - TN
+          - TR
+          - TM
+          - TC
+          - TV
+          - UG
+          - UA
+          - AE
+          - GB
+          - US
+          - UM
+          - UY
+          - UZ
+          - VU
+          - VA
+          - VE
+          - VN
+          - VG
+          - VI
+          - WF
+          - EH
+          - YE
+          - ZM
+          - ZW
+          - ALL
+        accountDetails:
+          type: object
+          additionalProperties:
+            type: string
+    SwiftBankInfo:
+      required:
+      - city
+      - country
+      - name
+      - postalCode
+      - state
+      - street1
+      - swiftCode
+      type: object
+      description: Bank information for SWIFT international wire transfers including SWIFT code and bank address.
+      properties:
+        swiftCode:
+          type: string
+          description: SWIFT/BIC code identifying the bank (8 or 11 characters).
+          example: CHASUS33XXX
+          pattern: ^[A-Z]{6}[A-Z0-9]{2}([A-Z0-9]{3})?$
+        name:
+          type: string
+          description: Full legal name of the bank.
+          example: JPMorgan Chase Bank N.A.
+        street1:
+          type: string
+          description: Primary street address of the bank.
+          example: 383 Madison Avenue
+        street2:
+          type: string
+          description: Secondary address line (optional).
+          example: Floor 12
+        postalCode:
+          type: string
+          description: Postal or ZIP code.
+          example: '10179'
+        city:
+          type: string
+          description: City name.
+          example: New York
+        state:
+          type: string
+          description: State or province.
+          example: NY
+        country:
+          maxLength: 2
+          minLength: 2
+          type: string
+          description: ISO 3166-1 alpha-2 country code.
+          example: US
+    AchBusinessInfo:
+      required:
+      - accountNumber
+      - accountType
+      - address
+      - city
+      - country
+      - name
+      - postalCode
+      - routingNumber
+      - state
+      type: object
+      properties:
+        name:
+          type: string
+          description: Legal business name of the company.
+          example: Acme Corporation Inc.
+        address:
+          type: string
+          description: Street address of the business.
+          example: 123 Business Park Drive
+        city:
+          type: string
+          description: City where the business is located.
+          example: Austin
+        state:
+          type: string
+          description: State or province code (2 letters).
+          example: TX
+        country:
+          maxLength: 2
+          minLength: 2
+          type: string
+          description: ISO 3166-1 alpha-2 country code.
+          example: US
+        postalCode:
+          type: string
+          description: ZIP or postal code.
+          example: '78701'
+        accountNumber:
+          type: string
+          description: Bank account number for ACH transfers.
+          example: '123456789012'
+        accountType:
+          type: string
+          enum:
+          - CHECKING
+        routingNumber:
+          type: string
+        registrationNumber:
+          type: string
+        phoneNumber:
+          type: string
+        registrationType:
+          type: string
+        registrationDate:
+          type: string
+        registrationExpiryDate:
+          type: string
+        mobileNumber:
+          type: string
+        businessNature:
+          type: string
+        email:
+          type: string
+    MockSpeiDepositRequest:
+      type: object
+      description: Mock request to simulate an incoming SPEI deposit in the sandbox environment. Provide `transactionId` to settle an existing pending deposit (matched mode), or `clabe` and `amount` to simulate an unmatched deposit that auto-creates a transaction. The two modes are mutually exclusive.
+      properties:
+        transactionId:
+          type: string
+          description: ID of an existing pending SPEI deposit to settle. Provide this or `clabe`, not both.
+        clabe:
+          type: string
+          description: Destination CLABE for an unmatched deposit that auto-creates a transaction. Must be provided together with `amount`.
+        amount:
+          type: number
+          description: Deposit amount in MXN. Required when `clabe` is provided.
+        payerRfc:
+          type: string
+          description: Payer's RFC (tax ID). Unmatched mode only. Defaults to XAXX010101000.
+        payerName:
+          type: string
+          description: Payer's name. Unmatched mode only. Defaults to SANDBOX PAYER.
+        payerBank:
+          type: string
+          description: Payer's bank code. Unmatched mode only. Defaults to 40002.
+        payerAccount:
+          type: string
+          description: Payer's account number. Unmatched mode only. Defaults to 000000000000000000.
+    TransactionRequest:
+      required:
+      - beneficiaryIp
+      - simulationId
+      type: object
+      properties:
+        simulationId:
+          type: string
+        beneficiaryIp:
+          type: string
+        marketExecutionType:
+          type: string
+          enum:
+          - NONE
+          - EXECUTE_IMMEDIATELY
+          - MARKET_OPEN_TIME
+        achSameDay:
+          type: boolean
+          description: When true, requests same-day ACH settlement. Optional if achSameDay was already set on the simulation — the simulation value carries over automatically.
+        transferPurpose:
+          type: string
+        memo:
+          type: string
+        paymentReference:
+          type: string
+    WireAccountDto:
+      required:
+      - bankInfo
+      type: object
+      description: Domestic wire transfer account details for U.S. transfers supporting both individual and business accounts.
+      properties:
+        personInfo:
+          $ref: '#/components/schemas/PersonInfo'
+        bankInfo:
+          $ref: '#/components/schemas/BankInfo'
+        businessInfo:
+          $ref: '#/components/schemas/BusinessInfo'
+    SweepPayoutRequest:
+      type: object
+      description: Request to perform a sweep payout operation, consolidating balances from multiple beneficiaries.
+      properties:
+        currency:
+          type: string
+          description: Currency code for the sweep operation.
+          enum:
+          - USDT
+          - USDC
+          - USD
+          - BRL
+          - MXN
+          - COP
+          - EUR
+          - EURT
+          - HKD
+          - SGD
+          - CNY
+          - CNH
+          - ARS
+          - ANY
+          example: USD
+        filter:
+          type: string
+          description: Filter to determine which beneficiaries to include in the sweep.
+          enum:
+          - ALL
+          - SUBSET
+          example: SUBSET
+        beneficiariesSubSet:
+          uniqueItems: true
+          type: array
+          description: List of specific beneficiaries to include when filter is SUBSET.
+          items:
+            $ref: '#/components/schemas/SweepPayoutBeneficiary'
+        withdrawalMethod:
+          type: string
+          description: Payment rail to use for the sweep payout.
+          enum:
+          - PIX
+          - SPEI
+          - WIRE
+          - RTP
+          - COP
+          - CVU
+          - LOCAL_EXCHANGE
+          - CRYPTO_INTERNAL_TRANSFER
+          - POLYGON
+          - ETH
+          - TRON
+          - STELLAR
+          - UNKNOWN
+          - ACH
+          - SWIFT
+          - BASE
+          - SOLANA
+          - CALIZA_WALLET
+          - MAIN_CALIZA_WALLET
+          - ANY
+        destination:
+          type: string
+    MockWithdrawalRequest:
+      type: object
+      description: Mock request to simulate a withdrawal for testing purposes in the sandbox environment.
+      properties:
+        referenceId:
+          type: string
+        transactionId:
+          type: string
+        type:
+          type: string
+    AchBankInfo:
+      required:
+      - city
+      - country
+      - name
+      - postalCode
+      - routingNumber
+      - state
+      - street1
+      type: object
+      description: Bank information for ACH transfers including routing details and bank address.
+      properties:
+        routingNumber:
+          type: string
+          description: 9-digit ABA routing number identifying the bank.
+          example: '021000021'
+          pattern: ^[0-9]{9}$
+        name:
+          type: string
+          description: Full legal name of the financial institution.
+          example: JPMorgan Chase Bank
+        street1:
+          type: string
+          description: Primary street address of the bank.
+          example: 270 Park Avenue
+        street2:
+          type: string
+          description: Secondary address line (suite, floor, etc.).
+          example: Floor 12
+        postalCode:
+          type: string
+          description: ZIP or postal code.
+          example: '10017'
+        city:
+          type: string
+          description: City name.
+          example: New York
+        state:
+          type: string
+          description: State or province code (2 letters).
+          example: NY
+        country:
+          maxLength: 2
+          minLength: 2
+          type: string
+          description: ISO 3166-1 alpha-2 country code.
+          example: US
+          pattern: ^[A-Z]{2}$
+    PayoutTransaction:
+      required:
+      - amount
+      - paymentRailType
+      - target
+      - targetType
+      type: object
+      properties:
+        amount:
+          $ref: '#/components/schemas/AmountDto'
+        target:
+          type: string
+        targetType:
+          type: string
+          enum:
+          - BENEFICIARY
+          - INTEGRATOR
+          - WALLET
+        paymentRailType:
+          type: string
+          enum:
+          - PIX
+          - SPEI
+          - WIRE
+          - RTP
+          - COP
+          - CVU
+          - LOCAL_EXCHANGE
+          - CRYPTO_INTERNAL_TRANSFER
+          - POLYGON
+          - ETH
+          - TRON
+          - STELLAR
+          - UNKNOWN
+          - ACH
+          - SWIFT
+          - BASE
+          - SOLANA
+          - CALIZA_WALLET
+          - MAIN_CALIZA_WALLET
+          - ANY
+    SpeiAccountDto:
+      required:
+      - bankCode
+      - clabe
+      - receiverName
+      type: object
+      description: SPEI (Sistema de Pagos Electrónicos Interbancarios) account details for electronic transfers in Mexico.
+      properties:
+        clabe:
+          type: string
+          description: 18-digit CLABE (Clave Bancaria Estandarizada) number identifying the Mexican bank account.
+          example: 012180001234567890
+          pattern: ^[0-9]{18}$
+        bankCode:
+          type: string
+          description: 3-digit Mexican bank code.
+          example: '012'
+          pattern: ^[0-9]{3}$
+        receiverName:
+          type: string
+          description: Full name of the account holder as registered with the bank.
+          example: Carlos Hernández
+    PersonInfo:
+      required:
+      - accountNumber
+      - accountType
+      - city
+      - country
+      - name
+      - postalCode
+      - routingKey
+      - state
+      - street1
+      - type
+      type: object
+      description: Individual person account information for wire transfers including personal details and bank account information.
+      properties:
+        name:
+          type: string
+        street1:
+          type: string
+        postalCode:
+          type: string
+        city:
+          type: string
+        state:
+          type: string
+        country:
+          maxLength: 2
+          minLength: 2
+          type: string
+        routingKey:
+          type: string
+        accountNumber:
+          type: string
+        accountType:
+          type: string
+          enum:
+          - CHECKING
+        type:
+          type: string
+          enum:
+          - NATURAL_PERSON
+          - COMPANY
+  securitySchemes:
+    bearerAuth:
+      type: http
+      description: 'JWT Bearer token authentication. Include your access token in the Authorization header:
+
+
+        `Authorization: Bearer YOUR_ACCESS_TOKEN`
+
+
+        Tokens are obtained through the Caliza authentication flow and typically expire after 24 hours.
+
+        Refresh your token before expiration to maintain uninterrupted access.
+
+        '
+      scheme: bearer
+      bearerFormat: JWT
+x-provenance:
+  method: searched
+  source: https://docs.caliza.com/reference
+  harvested: '2026-10-14'
+  tool: harvest-readme-openapi.py
+  note: Assembled verbatim from the OpenAPI definition ReadMe embeds in each operation page of the provider's developer portal; paths and components merged by API title, nothing authored.
+  assembled_from:
+  - https://docs.caliza.com/reference/accepttermsandconditions.md
+  - https://docs.caliza.com/reference/addrelatedpersondocument.md
+  - https://docs.caliza.com/reference/approveverificationsandbox.md
+  - https://docs.caliza.com/reference/createfakecryptodeposit.md
+  - https://docs.caliza.com/reference/createfakepixindeposit.md
+  - https://docs.caliza.com/reference/createfakepixindeposit_1.md
+  - https://docs.caliza.com/reference/createfakespeiindeposit.md
+  - https://docs.caliza.com/reference/createfakeusddeposit.md
+  - https://docs.caliza.com/reference/createpayment.md
+  - https://docs.caliza.com/reference/createpaymentwithdocuments.md
+  - https://docs.caliza.com/reference/createrecipient.md
+  - https://docs.caliza.com/reference/createrelatedperson.md
+  - https://docs.caliza.com/reference/createsimulation.md
+  - https://docs.caliza.com/reference/createsimulation_1.md
+  - https://docs.caliza.com/reference/createtransaction.md
+  - https://docs.caliza.com/reference/createtransaction_1.md
+  - https://docs.caliza.com/reference/createverification.md
+  - https://docs.caliza.com/reference/createvirtualaccount.md
+  - https://docs.caliza.com/reference/deletebeneficiary.md
+  - https://docs.caliza.com/reference/deleterecipient.md
+  - https://docs.caliza.com/reference/deleterelatedperson.md
+  - https://docs.caliza.com/reference/disablebeneficiary.md
+  - https://docs.caliza.com/reference/enablebeneficiary.md
+  - https://docs.caliza.com/reference/findorcreatewallet.md
+  - https://docs.caliza.com/reference/getall.md
+  - https://docs.caliza.com/reference/getalltransactions.md
+  - https://docs.caliza.com/reference/getbeneficiary.md
+  - https://docs.caliza.com/reference/getbeneficiarybalance.md
+  - https://docs.caliza.com/reference/getbeneficiarydetailedbalance.md
+  - https://docs.caliza.com/reference/getbeneficiarydetailedbalancebycurrencies.md
+  - https://docs.caliza.com/reference/getcapabilitiesbyintegratorid.md
+  - https://docs.caliza.com/reference/getdepositinfo.md
+  - https://docs.caliza.com/reference/getdepositinstructions.md
+  - https://docs.caliza.com/reference/getintegratorbalances.md
+  - https://docs.caliza.com/reference/getintegratorwebhooks.md
+  - https://docs.caliza.com/reference/getintegratorwebhooksecret.md
+  - https://docs.caliza.com/reference/getme.md
+  - https://docs.caliza.com/reference/getpaymentinstructions.md
+  - https://docs.caliza.com/reference/getproof.md
+  - https://docs.caliza.com/reference/getrecipient.md
+  - https://docs.caliza.com/reference/getrecipients.md
+  - https://docs.caliza.com/reference/getrelatedperson.md
+  - https://docs.caliza.com/reference/getsimulationbyid.md
+  - https://docs.caliza.com/reference/getsimulationbyidv2.md
+  - https://docs.caliza.com/reference/gettermsandconditions.md
+  - https://docs.caliza.com/reference/gettransactionbyid.md
+  - https://docs.caliza.com/reference/gettransactionbyid_1.md
+  - https://docs.caliza.com/reference/gettransactionbyidwithdocuments.md
+  - https://docs.caliza.com/reference/gettransactionproofofpayment.md
+  - https://docs.caliza.com/reference/getverificationstatus.md
+  - https://docs.caliza.com/reference/issuedelegatetoken.md
+  - https://docs.caliza.com/reference/issuemanualattestation.md
+  - https://docs.caliza.com/reference/listrelatedpersons.md
+  - https://docs.caliza.com/reference/listvirtualaccounts.md
+  - https://docs.caliza.com/reference/payouts.md
+  - https://docs.caliza.com/reference/savebeneficiary.md
+  - https://docs.caliza.com/reference/searchvasps.md
+  - https://docs.caliza.com/reference/simulatetravelruleclearance.md
+  - https://docs.caliza.com/reference/startmicrotransfertest.md
+  - https://docs.caliza.com/reference/submitproof.md
+  - https://docs.caliza.com/reference/sweeppayouts.md
+  - https://docs.caliza.com/reference/updatebeneficiary.md
+  - https://docs.caliza.com/reference/updateintegratorwebhooksecret.md
+  - https://docs.caliza.com/reference/updateme.md
+  - https://docs.caliza.com/reference/updaterecipient.md
+  - https://docs.caliza.com/reference/updaterelatedperson.md
+  - https://docs.caliza.com/reference/updatewebhookconfig.md
+  - https://docs.caliza.com/reference/uploaddocument.md
+  merge:
+    pages: 68
+    deduped: 414
+    conflicts_kept_first: 0

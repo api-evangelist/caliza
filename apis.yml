@@ -156,21 +156,19 @@ common:
   url: skills/_index.yml
 
 apis:
-- name: Caliza Core API
-  description: 'Compliant, real-time cross-border payments and USD account infrastructure: beneficiaries and KYC/KYB, USD and multi-currency virtual
-    accounts, transaction/payment simulation and execution, batch and sweep payouts, FX rate locks, recipients, and webhooks. OAuth 2.0 (OIDC)
-    authenticated.'
+- aid: caliza:caliza-beneficiary-v1-api
+  name: Caliza Beneficiary V1 API
+  description: >-
+    Manage beneficiaries (individuals and businesses) and their related resources. Endpoints cover creating,
+    updating, enabling/disabling, deleting beneficiaries, managing wallets, virtual accounts, files, balances
+    and recording terms acceptance. Use these to onboard and maintain pay-in/payout recipients.
   humanURL: https://docs.caliza.com
   baseURL: https://api.caliza.com/core-api/v1
   tags:
-  - Payments
-  - Cross-Border Payments
-  - Stablecoins
-  - Foreign Exchange
-  - Virtual Accounts
+  - Beneficiary V1
   properties:
-  - url: openapi/caliza-api-documentation-reference-openapi.yml
-    type: OpenAPI
+  - type: OpenAPI
+    url: openapi/caliza-beneficiary-v1-api-openapi.yml
   - type: Documentation
     url: https://docs.caliza.com
   - type: APIReference
@@ -191,8 +189,336 @@ apis:
     url: json-schema/caliza-simulation-request-schema.json
   - type: JSONSchema
     url: json-schema/caliza-travel-rule-proof-response-schema.json
-  aid: caliza:caliza-core-api
-
+- aid: caliza:caliza-integrator-capabilities-v1-api
+  name: Caliza Integrator Capabilities V1 API
+  description: >-
+    Inspect and list the set of capabilities/features enabled for an integrator account (supported currencies,
+    payment rails, transaction types, limits and special features). Useful to adapt client behavior to
+    account permissions.
+  humanURL: https://docs.caliza.com
+  baseURL: https://api.caliza.com/core-api/v1
+  tags:
+  - Integrator Capabilities V1
+  properties:
+  - type: OpenAPI
+    url: openapi/caliza-integrator-capabilities-v1-api-openapi.yml
+  - type: Documentation
+    url: https://docs.caliza.com
+  - type: APIReference
+    url: https://docs.caliza.com/reference/overview
+  - type: Authentication
+    url: https://docs.caliza.com/docs/authenticate
+  - type: Webhooks
+    url: https://docs.caliza.com/docs/webhooks
+  - type: JSONSchema
+    url: json-schema/caliza-recipient-response-schema.json
+  - type: JSONSchema
+    url: json-schema/caliza-person-request-schema.json
+  - type: JSONSchema
+    url: json-schema/caliza-simulation-v2-request-schema.json
+  - type: JSONSchema
+    url: json-schema/caliza-transaction-response-schema.json
+  - type: JSONSchema
+    url: json-schema/caliza-simulation-request-schema.json
+  - type: JSONSchema
+    url: json-schema/caliza-travel-rule-proof-response-schema.json
+- aid: caliza:caliza-integrator-v1-api
+  name: Caliza Integrator V1 API
+  description: >-
+    Integrator-level configuration and profile endpoints: manage integrator profile, credentials, webhook
+    configuration and secrets, view integrator balances and perform integrator-scoped operations.
+  humanURL: https://docs.caliza.com
+  baseURL: https://api.caliza.com/core-api/v1
+  tags:
+  - Integrator V1
+  properties:
+  - type: OpenAPI
+    url: openapi/caliza-integrator-v1-api-openapi.yml
+  - type: Documentation
+    url: https://docs.caliza.com
+  - type: APIReference
+    url: https://docs.caliza.com/reference/overview
+  - type: Authentication
+    url: https://docs.caliza.com/docs/authenticate
+  - type: Webhooks
+    url: https://docs.caliza.com/docs/webhooks
+  - type: JSONSchema
+    url: json-schema/caliza-recipient-response-schema.json
+  - type: JSONSchema
+    url: json-schema/caliza-person-request-schema.json
+  - type: JSONSchema
+    url: json-schema/caliza-simulation-v2-request-schema.json
+  - type: JSONSchema
+    url: json-schema/caliza-transaction-response-schema.json
+  - type: JSONSchema
+    url: json-schema/caliza-simulation-request-schema.json
+  - type: JSONSchema
+    url: json-schema/caliza-travel-rule-proof-response-schema.json
+- aid: caliza:caliza-kyc-kyb-v1-api
+  name: Caliza KYC/KYB V1 API
+  description: >-
+    Manage KYC (Know Your Customer) and KYB (Know Your Business) verification for beneficiaries. Create
+    interactive verification sessions that redirect users to a third-party provider and track verification
+    status.
+  humanURL: https://docs.caliza.com
+  baseURL: https://api.caliza.com/core-api/v1
+  tags:
+  - KYC/KYB V1
+  properties:
+  - type: OpenAPI
+    url: openapi/caliza-kyc-kyb-v1-api-openapi.yml
+  - type: Documentation
+    url: https://docs.caliza.com
+  - type: APIReference
+    url: https://docs.caliza.com/reference/overview
+  - type: Authentication
+    url: https://docs.caliza.com/docs/authenticate
+  - type: Webhooks
+    url: https://docs.caliza.com/docs/webhooks
+  - type: JSONSchema
+    url: json-schema/caliza-recipient-response-schema.json
+  - type: JSONSchema
+    url: json-schema/caliza-person-request-schema.json
+  - type: JSONSchema
+    url: json-schema/caliza-simulation-v2-request-schema.json
+  - type: JSONSchema
+    url: json-schema/caliza-transaction-response-schema.json
+  - type: JSONSchema
+    url: json-schema/caliza-simulation-request-schema.json
+  - type: JSONSchema
+    url: json-schema/caliza-travel-rule-proof-response-schema.json
+- aid: caliza:caliza-payment-v1-api
+  name: Caliza Payment V1 API
+  description: >-
+    Payment-specific operations: create payments, attach supporting documents, set/update payment blockchain
+    hashes and retrieve payment instructions. Use these when initiating or inspecting single payment flows
+    and their required documentation.
+  humanURL: https://docs.caliza.com
+  baseURL: https://api.caliza.com/core-api/v1
+  tags:
+  - Payment V1
+  properties:
+  - type: OpenAPI
+    url: openapi/caliza-payment-v1-api-openapi.yml
+  - type: Documentation
+    url: https://docs.caliza.com
+  - type: APIReference
+    url: https://docs.caliza.com/reference/overview
+  - type: Authentication
+    url: https://docs.caliza.com/docs/authenticate
+  - type: Webhooks
+    url: https://docs.caliza.com/docs/webhooks
+  - type: JSONSchema
+    url: json-schema/caliza-recipient-response-schema.json
+  - type: JSONSchema
+    url: json-schema/caliza-person-request-schema.json
+  - type: JSONSchema
+    url: json-schema/caliza-simulation-v2-request-schema.json
+  - type: JSONSchema
+    url: json-schema/caliza-transaction-response-schema.json
+  - type: JSONSchema
+    url: json-schema/caliza-simulation-request-schema.json
+  - type: JSONSchema
+    url: json-schema/caliza-travel-rule-proof-response-schema.json
+- aid: caliza:caliza-recipient-v1-api
+  name: Caliza Recipient V1 API
+  description: >-
+    Manage saved payment recipients used as payout destinations. Create, retrieve, update, list and delete
+    recipient profiles including bank/crypto details and verification metadata.
+  humanURL: https://docs.caliza.com
+  baseURL: https://api.caliza.com/core-api/v1
+  tags:
+  - Recipient V1
+  properties:
+  - type: OpenAPI
+    url: openapi/caliza-recipient-v1-api-openapi.yml
+  - type: Documentation
+    url: https://docs.caliza.com
+  - type: APIReference
+    url: https://docs.caliza.com/reference/overview
+  - type: Authentication
+    url: https://docs.caliza.com/docs/authenticate
+  - type: Webhooks
+    url: https://docs.caliza.com/docs/webhooks
+  - type: JSONSchema
+    url: json-schema/caliza-recipient-response-schema.json
+  - type: JSONSchema
+    url: json-schema/caliza-person-request-schema.json
+  - type: JSONSchema
+    url: json-schema/caliza-simulation-v2-request-schema.json
+  - type: JSONSchema
+    url: json-schema/caliza-transaction-response-schema.json
+  - type: JSONSchema
+    url: json-schema/caliza-simulation-request-schema.json
+  - type: JSONSchema
+    url: json-schema/caliza-travel-rule-proof-response-schema.json
+- aid: caliza:caliza-related-person-api
+  name: Caliza Related Person API
+  description: >-
+    Manage related persons (e.g. beneficial owners, directors, representatives) linked to a beneficiary.
+    Create, retrieve, update, list and delete related persons and upload supporting identity documents
+    for compliance verification.
+  humanURL: https://docs.caliza.com
+  baseURL: https://api.caliza.com/core-api/v1
+  tags:
+  - Related Person
+  properties:
+  - type: OpenAPI
+    url: openapi/caliza-related-person-api-openapi.yml
+  - type: Documentation
+    url: https://docs.caliza.com
+  - type: APIReference
+    url: https://docs.caliza.com/reference/overview
+  - type: Authentication
+    url: https://docs.caliza.com/docs/authenticate
+  - type: Webhooks
+    url: https://docs.caliza.com/docs/webhooks
+  - type: JSONSchema
+    url: json-schema/caliza-recipient-response-schema.json
+  - type: JSONSchema
+    url: json-schema/caliza-person-request-schema.json
+  - type: JSONSchema
+    url: json-schema/caliza-simulation-v2-request-schema.json
+  - type: JSONSchema
+    url: json-schema/caliza-transaction-response-schema.json
+  - type: JSONSchema
+    url: json-schema/caliza-simulation-request-schema.json
+  - type: JSONSchema
+    url: json-schema/caliza-travel-rule-proof-response-schema.json
+- aid: caliza:caliza-terms-and-conditions-v1-api
+  name: Caliza Terms and Conditions V1 API
+  description: >-
+    Retrieve the current terms & conditions document and record user acceptance. Use these endpoints to
+    present legal terms to users and store auditable acceptance (timestamp, IP, version) required for
+    compliance.
+  humanURL: https://docs.caliza.com
+  baseURL: https://api.caliza.com/core-api/v1
+  tags:
+  - Terms and Conditions V1
+  properties:
+  - type: OpenAPI
+    url: openapi/caliza-terms-and-conditions-v1-api-openapi.yml
+  - type: Documentation
+    url: https://docs.caliza.com
+  - type: APIReference
+    url: https://docs.caliza.com/reference/overview
+  - type: Authentication
+    url: https://docs.caliza.com/docs/authenticate
+  - type: Webhooks
+    url: https://docs.caliza.com/docs/webhooks
+  - type: JSONSchema
+    url: json-schema/caliza-recipient-response-schema.json
+  - type: JSONSchema
+    url: json-schema/caliza-person-request-schema.json
+  - type: JSONSchema
+    url: json-schema/caliza-simulation-v2-request-schema.json
+  - type: JSONSchema
+    url: json-schema/caliza-transaction-response-schema.json
+  - type: JSONSchema
+    url: json-schema/caliza-simulation-request-schema.json
+  - type: JSONSchema
+    url: json-schema/caliza-travel-rule-proof-response-schema.json
+- aid: caliza:caliza-transaction-v1-api
+  name: Caliza Transaction V1 API
+  description: >-
+    Create, simulate, inspect and manage financial transactions. Includes endpoints to create transactions
+    and simulations, retrieve transaction details, update metadata (e.g. blockchain hashes), export results,
+    and run batch or sweep payouts. Use these for the full transaction lifecycle: preview costs, execute,
+    and track status.
+  humanURL: https://docs.caliza.com
+  baseURL: https://api.caliza.com/core-api/v1
+  tags:
+  - Transaction V1
+  properties:
+  - type: OpenAPI
+    url: openapi/caliza-transaction-v1-api-openapi.yml
+  - type: Documentation
+    url: https://docs.caliza.com
+  - type: APIReference
+    url: https://docs.caliza.com/reference/overview
+  - type: Authentication
+    url: https://docs.caliza.com/docs/authenticate
+  - type: Webhooks
+    url: https://docs.caliza.com/docs/webhooks
+  - type: JSONSchema
+    url: json-schema/caliza-recipient-response-schema.json
+  - type: JSONSchema
+    url: json-schema/caliza-person-request-schema.json
+  - type: JSONSchema
+    url: json-schema/caliza-simulation-v2-request-schema.json
+  - type: JSONSchema
+    url: json-schema/caliza-transaction-response-schema.json
+  - type: JSONSchema
+    url: json-schema/caliza-simulation-request-schema.json
+  - type: JSONSchema
+    url: json-schema/caliza-travel-rule-proof-response-schema.json
+- aid: caliza:caliza-transaction-v1-sandbox-api
+  name: Caliza Transaction V1 Sandbox API
+  description: >-
+    Sandbox-only transaction utilities for integration and testing. Simulate deposits, payouts and webhook
+    notifications (PIX, SPEI, USD, etc.) without real funds to validate integration behavior and webhook
+    handling.
+  humanURL: https://docs.caliza.com
+  baseURL: https://api.caliza.com/core-api/v1
+  tags:
+  - Transaction V1 Sandbox
+  properties:
+  - type: OpenAPI
+    url: openapi/caliza-transaction-v1-sandbox-api-openapi.yml
+  - type: Documentation
+    url: https://docs.caliza.com
+  - type: APIReference
+    url: https://docs.caliza.com/reference/overview
+  - type: Authentication
+    url: https://docs.caliza.com/docs/authenticate
+  - type: Webhooks
+    url: https://docs.caliza.com/docs/webhooks
+  - type: JSONSchema
+    url: json-schema/caliza-recipient-response-schema.json
+  - type: JSONSchema
+    url: json-schema/caliza-person-request-schema.json
+  - type: JSONSchema
+    url: json-schema/caliza-simulation-v2-request-schema.json
+  - type: JSONSchema
+    url: json-schema/caliza-transaction-response-schema.json
+  - type: JSONSchema
+    url: json-schema/caliza-simulation-request-schema.json
+  - type: JSONSchema
+    url: json-schema/caliza-travel-rule-proof-response-schema.json
+- aid: caliza:caliza-travel-rule-v1-api
+  name: Caliza Travel Rule V1 API
+  description: >-
+    Crypto Travel Rule compliance endpoints. Collect wallet ownership proofs for self-hosted (non-custodial)
+    wallet recipients — via wallet signature or microtransfer (Satoshi test) — and retrieve the Travel
+    Rule information a depositor's VASP needs to originate the Travel Rule message for an inbound crypto
+    deposit.
+  humanURL: https://docs.caliza.com
+  baseURL: https://api.caliza.com/core-api/v1
+  tags:
+  - Travel Rule V1
+  properties:
+  - type: OpenAPI
+    url: openapi/caliza-travel-rule-v1-api-openapi.yml
+  - type: Documentation
+    url: https://docs.caliza.com
+  - type: APIReference
+    url: https://docs.caliza.com/reference/overview
+  - type: Authentication
+    url: https://docs.caliza.com/docs/authenticate
+  - type: Webhooks
+    url: https://docs.caliza.com/docs/webhooks
+  - type: JSONSchema
+    url: json-schema/caliza-recipient-response-schema.json
+  - type: JSONSchema
+    url: json-schema/caliza-person-request-schema.json
+  - type: JSONSchema
+    url: json-schema/caliza-simulation-v2-request-schema.json
+  - type: JSONSchema
+    url: json-schema/caliza-transaction-response-schema.json
+  - type: JSONSchema
+    url: json-schema/caliza-simulation-request-schema.json
+  - type: JSONSchema
+    url: json-schema/caliza-travel-rule-proof-response-schema.json
 x-enrichment:
   date: '2026-07-19'
   status: backfilled

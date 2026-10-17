@@ -1,0 +1,339 @@
+openapi: 3.2.0
+info:
+  title: Caliza API documentation reference Integrator Capabilities…
+  description: The Caliza API enables seamless integration of financial services including payments, payouts, currency conversions, and compliance workflows.
+  version: v1
+  contact:
+    name: Caliza API Support
+    email: api-support@caliza.com
+    url: https://docs.caliza.com
+  termsOfService: https://caliza.com/terms
+servers:
+- url: https://api.sandbox.com
+  description: Sandbox Environment
+- url: https://api.caliza.com
+  description: Production Environment
+- url: https://api.sandbox.caliza.com
+  description: Sandbox Environment (backoffice)
+security:
+- bearerAuth: []
+tags:
+- name: Integrator Capabilities V1
+  description: Inspect and list the set of capabilities/features enabled for an integrator account (supported currencies, payment rails, transaction types, limits and special features). Useful to adapt client behavior to account permissions.
+paths:
+  /v1/integrator-capabilities:
+    get:
+      tags:
+      - Integrator Capabilities V1
+      summary: List integrator capabilities
+      description: Retrieves all enabled features, permissions, and access levels for your integrator account. This includes supported currencies (fiat and crypto), available transaction types (payments, payouts, conversions), payment rails (WIRE, ACH, PIX, SPEI, blockchain networks), regional availability, transaction limits, and any special features enabled for your account. Use this to dynamically adjust your UI based on available capabilities or to validate operations before attempting them.
+      operationId: getCapabilitiesByIntegratorId
+      parameters:
+      - name: pageable
+        in: query
+        description: Pagination parameters including page number, size, and sorting options.
+        required: true
+        schema:
+          $ref: '#/components/schemas/Pageable'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageIntegratorCapabilityResponse'
+components:
+  schemas:
+    PageIntegratorCapabilityResponse:
+      type: object
+      description: Paginated list of integrator capabilities including pagination metadata.
+      properties:
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+          format: int32
+        first:
+          type: boolean
+        last:
+          type: boolean
+        size:
+          type: integer
+          format: int32
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/IntegratorCapabilityResponse'
+        number:
+          type: integer
+          format: int32
+        sort:
+          $ref: '#/components/schemas/Sort'
+        numberOfElements:
+          type: integer
+          format: int32
+        pageable:
+          $ref: '#/components/schemas/PageableObject'
+        empty:
+          type: boolean
+    PageableObject:
+      type: object
+      description: Pagination information object including page number, size, offset, and sorting configuration.
+      properties:
+        offset:
+          type: integer
+          format: int64
+          description: Number of elements to skip from the beginning of the result set.
+          example: 20
+        sort:
+          $ref: '#/components/schemas/Sort'
+        pageNumber:
+          type: integer
+          format: int32
+          description: Zero-based page number (0 = first page).
+          example: 0
+        pageSize:
+          type: integer
+          format: int32
+          description: Number of elements per page.
+          example: 10
+        paged:
+          type: boolean
+          description: Indicates if pagination is enabled.
+          example: true
+        unpaged:
+          type: boolean
+          description: Indicates if pagination is disabled.
+          example: false
+    IntegratorCapabilityResponse:
+      type: object
+      description: Payment capability configuration for an integrator including enabled payment rails and limits.
+      properties:
+        id:
+          type: string
+        integratorId:
+          type: string
+        capability:
+          $ref: '#/components/schemas/CapabilityDto'
+    Pageable:
+      type: object
+      description: Pagination parameters for list requests including page number, size, and sort order.
+      properties:
+        page:
+          minimum: 0
+          type: integer
+          format: int32
+          description: Zero-based page number to retrieve (0 = first page).
+          example: 0
+        size:
+          minimum: 1
+          type: integer
+          format: int32
+          description: Number of items per page (minimum 1).
+          example: 20
+        sort:
+          type: array
+          description: Array of sort criteria in format 'property,direction' (e.g., 'createdDate,desc').
+          example:
+          - createdDate,desc
+          - id,asc
+          items:
+            type: string
+    Sort:
+      type: object
+      description: Sorting configuration for paginated results including order direction and property to sort by.
+      properties:
+        empty:
+          type: boolean
+          description: Indicates if no sorting is applied.
+          example: false
+        sorted:
+          type: boolean
+          description: Indicates if results are sorted.
+          example: true
+        unsorted:
+          type: boolean
+          description: Indicates if results are not sorted.
+          example: false
+    CapabilityDto:
+      type: object
+      description: Capability configuration for a payment rail including supported currencies, countries, and transaction limits.
+      properties:
+        id:
+          type: string
+        fromCurrency:
+          type: string
+          enum:
+          - USDT
+          - USDC
+          - USD
+          - BRL
+          - MXN
+          - COP
+          - EUR
+          - EURT
+          - HKD
+          - SGD
+          - CNY
+          - CNH
+          - ARS
+          - ANY
+        toCurrency:
+          type: string
+          enum:
+          - USDT
+          - USDC
+          - USD
+          - BRL
+          - MXN
+          - COP
+          - EUR
+          - EURT
+          - HKD
+          - SGD
+          - CNY
+          - CNH
+          - ARS
+          - ANY
+        funding:
+          type: string
+          enum:
+          - PIX
+          - SPEI
+          - WIRE
+          - RTP
+          - COP
+          - CVU
+          - LOCAL_EXCHANGE
+          - CRYPTO_INTERNAL_TRANSFER
+          - POLYGON
+          - ETH
+          - TRON
+          - STELLAR
+          - UNKNOWN
+          - ACH
+          - SWIFT
+          - BASE
+          - SOLANA
+          - CALIZA_WALLET
+          - MAIN_CALIZA_WALLET
+          - ANY
+        payout:
+          type: string
+          enum:
+          - PIX
+          - SPEI
+          - WIRE
+          - RTP
+          - COP
+          - CVU
+          - LOCAL_EXCHANGE
+          - CRYPTO_INTERNAL_TRANSFER
+          - POLYGON
+          - ETH
+          - TRON
+          - STELLAR
+          - UNKNOWN
+          - ACH
+          - SWIFT
+          - BASE
+          - SOLANA
+          - CALIZA_WALLET
+          - MAIN_CALIZA_WALLET
+          - ANY
+  securitySchemes:
+    bearerAuth:
+      type: http
+      description: 'JWT Bearer token authentication. Include your access token in the Authorization header:
+
+
+        `Authorization: Bearer YOUR_ACCESS_TOKEN`
+
+
+        Tokens are obtained through the Caliza authentication flow and typically expire after 24 hours.
+
+        Refresh your token before expiration to maintain uninterrupted access.
+
+        '
+      scheme: bearer
+      bearerFormat: JWT
+x-provenance:
+  method: searched
+  source: https://docs.caliza.com/reference
+  harvested: '2026-10-14'
+  tool: harvest-readme-openapi.py
+  note: Assembled verbatim from the OpenAPI definition ReadMe embeds in each operation page of the provider's developer portal; paths and components merged by API title, nothing authored.
+  assembled_from:
+  - https://docs.caliza.com/reference/accepttermsandconditions.md
+  - https://docs.caliza.com/reference/addrelatedpersondocument.md
+  - https://docs.caliza.com/reference/approveverificationsandbox.md
+  - https://docs.caliza.com/reference/createfakecryptodeposit.md
+  - https://docs.caliza.com/reference/createfakepixindeposit.md
+  - https://docs.caliza.com/reference/createfakepixindeposit_1.md
+  - https://docs.caliza.com/reference/createfakespeiindeposit.md
+  - https://docs.caliza.com/reference/createfakeusddeposit.md
+  - https://docs.caliza.com/reference/createpayment.md
+  - https://docs.caliza.com/reference/createpaymentwithdocuments.md
+  - https://docs.caliza.com/reference/createrecipient.md
+  - https://docs.caliza.com/reference/createrelatedperson.md
+  - https://docs.caliza.com/reference/createsimulation.md
+  - https://docs.caliza.com/reference/createsimulation_1.md
+  - https://docs.caliza.com/reference/createtransaction.md
+  - https://docs.caliza.com/reference/createtransaction_1.md
+  - https://docs.caliza.com/reference/createverification.md
+  - https://docs.caliza.com/reference/createvirtualaccount.md
+  - https://docs.caliza.com/reference/deletebeneficiary.md
+  - https://docs.caliza.com/reference/deleterecipient.md
+  - https://docs.caliza.com/reference/deleterelatedperson.md
+  - https://docs.caliza.com/reference/disablebeneficiary.md
+  - https://docs.caliza.com/reference/enablebeneficiary.md
+  - https://docs.caliza.com/reference/findorcreatewallet.md
+  - https://docs.caliza.com/reference/getall.md
+  - https://docs.caliza.com/reference/getalltransactions.md
+  - https://docs.caliza.com/reference/getbeneficiary.md
+  - https://docs.caliza.com/reference/getbeneficiarybalance.md
+  - https://docs.caliza.com/reference/getbeneficiarydetailedbalance.md
+  - https://docs.caliza.com/reference/getbeneficiarydetailedbalancebycurrencies.md
+  - https://docs.caliza.com/reference/getcapabilitiesbyintegratorid.md
+  - https://docs.caliza.com/reference/getdepositinfo.md
+  - https://docs.caliza.com/reference/getdepositinstructions.md
+  - https://docs.caliza.com/reference/getintegratorbalances.md
+  - https://docs.caliza.com/reference/getintegratorwebhooks.md
+  - https://docs.caliza.com/reference/getintegratorwebhooksecret.md
+  - https://docs.caliza.com/reference/getme.md
+  - https://docs.caliza.com/reference/getpaymentinstructions.md
+  - https://docs.caliza.com/reference/getproof.md
+  - https://docs.caliza.com/reference/getrecipient.md
+  - https://docs.caliza.com/reference/getrecipients.md
+  - https://docs.caliza.com/reference/getrelatedperson.md
+  - https://docs.caliza.com/reference/getsimulationbyid.md
+  - https://docs.caliza.com/reference/getsimulationbyidv2.md
+  - https://docs.caliza.com/reference/gettermsandconditions.md
+  - https://docs.caliza.com/reference/gettransactionbyid.md
+  - https://docs.caliza.com/reference/gettransactionbyid_1.md
+  - https://docs.caliza.com/reference/gettransactionbyidwithdocuments.md
+  - https://docs.caliza.com/reference/gettransactionproofofpayment.md
+  - https://docs.caliza.com/reference/getverificationstatus.md
+  - https://docs.caliza.com/reference/issuedelegatetoken.md
+  - https://docs.caliza.com/reference/issuemanualattestation.md
+  - https://docs.caliza.com/reference/listrelatedpersons.md
+  - https://docs.caliza.com/reference/listvirtualaccounts.md
+  - https://docs.caliza.com/reference/payouts.md
+  - https://docs.caliza.com/reference/savebeneficiary.md
+  - https://docs.caliza.com/reference/searchvasps.md
+  - https://docs.caliza.com/reference/simulatetravelruleclearance.md
+  - https://docs.caliza.com/reference/startmicrotransfertest.md
+  - https://docs.caliza.com/reference/submitproof.md
+  - https://docs.caliza.com/reference/sweeppayouts.md
+  - https://docs.caliza.com/reference/updatebeneficiary.md
+  - https://docs.caliza.com/reference/updateintegratorwebhooksecret.md
+  - https://docs.caliza.com/reference/updateme.md
+  - https://docs.caliza.com/reference/updaterecipient.md
+  - https://docs.caliza.com/reference/updaterelatedperson.md
+  - https://docs.caliza.com/reference/updatewebhookconfig.md
+  - https://docs.caliza.com/reference/uploaddocument.md
+  merge:
+    pages: 68
+    deduped: 414
+    conflicts_kept_first: 0

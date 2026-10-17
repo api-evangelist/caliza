@@ -1,0 +1,375 @@
+openapi: 3.2.0
+info:
+  title: Caliza API documentation reference Travel Rule V1 API
+  description: The Caliza API enables seamless integration of financial services including payments, payouts, currency conversions, and compliance workflows.
+  version: v1
+  contact:
+    name: Caliza API Support
+    email: api-support@caliza.com
+    url: https://docs.caliza.com
+  termsOfService: https://caliza.com/terms
+servers:
+- url: https://api.sandbox.com
+  description: Sandbox Environment
+- url: https://api.caliza.com
+  description: Production Environment
+- url: https://api.sandbox.caliza.com
+  description: Sandbox Environment (backoffice)
+security:
+- bearerAuth: []
+tags:
+- name: Travel Rule V1
+  description: Crypto Travel Rule compliance endpoints. Collect wallet ownership proofs for self-hosted (non-custodial) wallet recipients — via wallet signature or microtransfer (Satoshi test) — and retrieve the Travel Rule information a depositor's VASP needs to originate the Travel Rule message for an inbound crypto deposit.
+paths:
+  /v1/beneficiaries/{beneficiaryId}/travel-rule/deposit-info:
+    get:
+      tags:
+      - Travel Rule V1
+      summary: Get the Travel Rule deposit info for a beneficiary
+      description: 'Returns the information a depositor''s VASP (crypto exchange or custodial wallet provider) needs to originate the Travel Rule message for a crypto deposit into the beneficiary''s Caliza wallet: Caliza''s VASP name and DID, plus the beneficiary''s legal name. Display this alongside the deposit address so senders depositing from an exchange can provide it to their provider.'
+      operationId: getDepositInfo
+      parameters:
+      - name: beneficiaryId
+        in: path
+        description: Unique identifier of the beneficiary receiving the deposit.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelRuleDepositInfoResponse'
+        '204':
+          description: Travel Rule deposit info is not available for this account.
+  /v1/travel-rule/proofs:
+    post:
+      tags:
+      - Travel Rule V1
+      summary: Submit a signature ownership proof
+      description: Submits a wallet ownership proof produced by signing an attestation message with the wallet's private key — the output of the SafeConnect frontend components, or an equivalent raw proof assembled by your backend. When the signature is valid the proof is stored as VERIFIED with its validity window and the recipient becomes eligible for payouts. An invalid signature is rejected with 400.
+      operationId: submitProof
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TravelRuleProofRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelRuleProofResponse'
+        '400':
+          description: The signature does not prove ownership of the recipient's wallet address (`travel-rule.proof_invalid`).
+    get:
+      tags:
+      - Travel Rule V1
+      summary: Get the current ownership proof for a recipient
+      description: 'Returns the current wallet ownership proof covering the recipient''s wallet address: either the VERIFIED, unexpired proof, or the PENDING microtransfer test still awaiting its on-chain deposit (including the transfer instructions). Returns 404 when neither exists — a valid ownership proof must be collected before creating simulations or transactions that pay out to a self-hosted wallet recipient.'
+      operationId: getProof
+      parameters:
+      - name: recipientId
+        in: query
+        description: Unique identifier of the self-hosted wallet recipient.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelRuleProofResponse'
+        '404':
+          description: No verified proof or pending microtransfer test exists for the recipient's wallet address.
+  /v1/travel-rule/proofs/delegate-token:
+    post:
+      tags:
+      - Travel Rule V1
+      summary: Issue a delegate token for the SafeConnect components
+      description: Issues the short-lived access token that the SafeConnect frontend components require to produce a wallet ownership proof, scoped to the recipient's beneficiary. Your frontend passes this token to the SafeConnect widget; the resulting proof is then submitted via the submit ownership proof endpoint.
+      operationId: issueDelegateToken
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TravelRuleDelegateTokenRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelRuleDelegateTokenResponse'
+  /v1/travel-rule/proofs/manual-attestation:
+    post:
+      tags:
+      - Travel Rule V1
+      summary: Issue the attestation for a manual-signing ownership proof
+      description: Returns the exact attestation text the wallet holder must sign with the wallet's own key, and the signature scheme to submit it under — for wallets that cannot use the SafeConnect components (keystore or seed-phrase holders, MPC/custody consoles, TRON wallets). The wallet holder signs the text in their own tooling (`personal_sign` / "Sign message"); the resulting signature is then submitted via the submit ownership proof endpoint, which validates it cryptographically. Applies to externally owned accounts only — smart-contract accounts cannot produce this signature.
+      operationId: issueManualAttestation
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TravelRuleManualAttestationRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelRuleManualAttestationResponse'
+  /v1/travel-rule/proofs/microtransfer:
+    post:
+      tags:
+      - Travel Rule V1
+      summary: Start a microtransfer (Satoshi test) ownership proof
+      description: 'Starts a microtransfer ownership test for the recipient''s self-hosted wallet, as an alternative to a signature proof. The response carries the transfer instructions: send exactly `expectedAmount` `expectedCurrency` to `destinationAddress`, FROM the wallet address being proven, before `expiresAt`. The destination is the beneficiary''s own Caliza wallet, so the test amount is credited to the beneficiary''s balance like any other deposit. The proof is verified automatically when the matching deposit arrives on-chain. The endpoint is idempotent while a test is active — calling it again returns the same pending test.'
+      operationId: startMicrotransferTest
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TravelRuleMicrotransferTestRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelRuleProofResponse'
+components:
+  schemas:
+    TravelRuleManualAttestationRequest:
+      required:
+      - recipientId
+      type: object
+      properties:
+        recipientId:
+          type: string
+          description: Unique identifier of the self-hosted wallet recipient.
+    TravelRuleProofResponse:
+      type: object
+      description: A wallet ownership proof for a self-hosted wallet recipient. The microtransfer instruction fields are present only while a PENDING microtransfer test awaits its on-chain deposit.
+      properties:
+        id:
+          type: string
+        recipientId:
+          type: string
+        walletAddress:
+          type: string
+          description: The wallet address the proof covers.
+        chain:
+          type: string
+          description: The blockchain of the wallet address (for example `ETH` or `TRON`).
+        method:
+          type: string
+          description: How the proof was produced.
+          enum:
+          - SIGNATURE
+          - MICROTRANSFER
+        status:
+          type: string
+          description: Lifecycle status of the proof. PENDING applies only to microtransfer tests awaiting their deposit; EXPIRED means the validity window has passed; INVALIDATED means the recipient's Travel Rule data changed after the proof was collected.
+          enum:
+          - PENDING
+          - VERIFIED
+          - EXPIRED
+          - INVALIDATED
+        verifiedAt:
+          type: string
+          format: date-time
+        expiresAt:
+          type: string
+          format: date-time
+          description: For a VERIFIED proof, when it expires. For a PENDING microtransfer test, the deadline for the test deposit to arrive.
+        expectedAmount:
+          type: number
+          description: Microtransfer tests only — the exact amount to send from the wallet being proven.
+        expectedCurrency:
+          type: string
+          description: Microtransfer tests only — the currency of the test transfer.
+        destinationAddress:
+          type: string
+          description: Microtransfer tests only — the address to send the test transfer to (the beneficiary's own Caliza wallet; the test amount is credited to the beneficiary's balance).
+    TravelRuleDelegateTokenRequest:
+      required:
+      - recipientId
+      type: object
+      properties:
+        recipientId:
+          type: string
+          description: Unique identifier of the self-hosted wallet recipient.
+    TravelRuleDepositInfoResponse:
+      type: object
+      description: The Travel Rule information a depositor's VASP needs to originate the Travel Rule message for a crypto deposit into the beneficiary's Caliza wallet.
+      properties:
+        vaspName:
+          type: string
+          description: Name of Caliza's VASP entity (the beneficiary VASP).
+        vaspDid:
+          type: string
+          description: Decentralized identifier (DID) of Caliza's VASP entity in the Travel Rule network.
+        beneficiaryName:
+          type: string
+          description: Legal name of the beneficiary receiving the deposit.
+    TravelRuleMicrotransferTestRequest:
+      required:
+      - recipientId
+      type: object
+      properties:
+        recipientId:
+          type: string
+          description: Unique identifier of the self-hosted wallet recipient.
+    TravelRuleManualAttestationResponse:
+      type: object
+      description: 'The manual-signing instructions: the exact attestation text the wallet holder must sign with the wallet''s own key, and how to submit the resulting signature.'
+      properties:
+        attestation:
+          type: string
+          description: The attestation text to sign, exactly as returned (for example `I certify that Ethereum account 0x71c7... belonged to did:pkh:eip155:1:0x71c7... on Mon, 14 Sep 2026 12:00:00 GMT.`).
+        type:
+          type: string
+          description: The signature scheme to pass when submitting the proof — `eip-191` for EVM wallets, `tip-191` for TRON wallets.
+        walletAddress:
+          type: string
+          description: The recipient's wallet address; the signature must be produced by this address's key.
+    TravelRuleProofRequest:
+      required:
+      - recipientId
+      - type
+      - proof
+      - attestation
+      type: object
+      description: A signature ownership proof for a self-hosted wallet recipient, as produced by the SafeConnect components or assembled from an equivalent wallet signature.
+      properties:
+        recipientId:
+          type: string
+          description: Unique identifier of the self-hosted wallet recipient.
+        type:
+          type: string
+          description: Signature scheme used to produce the proof (for example `eip-191` for EVM wallets or `tip-191` for TRON wallets).
+        proof:
+          type: string
+          description: The signature produced by the wallet.
+        attestation:
+          type: string
+          description: The attestation text that was signed.
+        walletProvider:
+          type: string
+          description: Optional identifier of the wallet software used (for example `metamask`).
+    TravelRuleDelegateTokenResponse:
+      type: object
+      description: The short-lived token the SafeConnect frontend components use to produce a wallet ownership proof.
+      properties:
+        accessToken:
+          type: string
+        tokenType:
+          type: string
+        delegateDid:
+          type: string
+  securitySchemes:
+    bearerAuth:
+      type: http
+      description: 'JWT Bearer token authentication. Include your access token in the Authorization header:
+
+
+        `Authorization: Bearer YOUR_ACCESS_TOKEN`
+
+
+        Tokens are obtained through the Caliza authentication flow and typically expire after 24 hours.
+
+        Refresh your token before expiration to maintain uninterrupted access.
+
+        '
+      scheme: bearer
+      bearerFormat: JWT
+x-provenance:
+  method: searched
+  source: https://docs.caliza.com/reference
+  harvested: '2026-10-14'
+  tool: harvest-readme-openapi.py
+  note: Assembled verbatim from the OpenAPI definition ReadMe embeds in each operation page of the provider's developer portal; paths and components merged by API title, nothing authored.
+  assembled_from:
+  - https://docs.caliza.com/reference/accepttermsandconditions.md
+  - https://docs.caliza.com/reference/addrelatedpersondocument.md
+  - https://docs.caliza.com/reference/approveverificationsandbox.md
+  - https://docs.caliza.com/reference/createfakecryptodeposit.md
+  - https://docs.caliza.com/reference/createfakepixindeposit.md
+  - https://docs.caliza.com/reference/createfakepixindeposit_1.md
+  - https://docs.caliza.com/reference/createfakespeiindeposit.md
+  - https://docs.caliza.com/reference/createfakeusddeposit.md
+  - https://docs.caliza.com/reference/createpayment.md
+  - https://docs.caliza.com/reference/createpaymentwithdocuments.md
+  - https://docs.caliza.com/reference/createrecipient.md
+  - https://docs.caliza.com/reference/createrelatedperson.md
+  - https://docs.caliza.com/reference/createsimulation.md
+  - https://docs.caliza.com/reference/createsimulation_1.md
+  - https://docs.caliza.com/reference/createtransaction.md
+  - https://docs.caliza.com/reference/createtransaction_1.md
+  - https://docs.caliza.com/reference/createverification.md
+  - https://docs.caliza.com/reference/createvirtualaccount.md
+  - https://docs.caliza.com/reference/deletebeneficiary.md
+  - https://docs.caliza.com/reference/deleterecipient.md
+  - https://docs.caliza.com/reference/deleterelatedperson.md
+  - https://docs.caliza.com/reference/disablebeneficiary.md
+  - https://docs.caliza.com/reference/enablebeneficiary.md
+  - https://docs.caliza.com/reference/findorcreatewallet.md
+  - https://docs.caliza.com/reference/getall.md
+  - https://docs.caliza.com/reference/getalltransactions.md
+  - https://docs.caliza.com/reference/getbeneficiary.md
+  - https://docs.caliza.com/reference/getbeneficiarybalance.md
+  - https://docs.caliza.com/reference/getbeneficiarydetailedbalance.md
+  - https://docs.caliza.com/reference/getbeneficiarydetailedbalancebycurrencies.md
+  - https://docs.caliza.com/reference/getcapabilitiesbyintegratorid.md
+  - https://docs.caliza.com/reference/getdepositinfo.md
+  - https://docs.caliza.com/reference/getdepositinstructions.md
+  - https://docs.caliza.com/reference/getintegratorbalances.md
+  - https://docs.caliza.com/reference/getintegratorwebhooks.md
+  - https://docs.caliza.com/reference/getintegratorwebhooksecret.md
+  - https://docs.caliza.com/reference/getme.md
+  - https://docs.caliza.com/reference/getpaymentinstructions.md
+  - https://docs.caliza.com/reference/getproof.md
+  - https://docs.caliza.com/reference/getrecipient.md
+  - https://docs.caliza.com/reference/getrecipients.md
+  - https://docs.caliza.com/reference/getrelatedperson.md
+  - https://docs.caliza.com/reference/getsimulationbyid.md
+  - https://docs.caliza.com/reference/getsimulationbyidv2.md
+  - https://docs.caliza.com/reference/gettermsandconditions.md
+  - https://docs.caliza.com/reference/gettransactionbyid.md
+  - https://docs.caliza.com/reference/gettransactionbyid_1.md
+  - https://docs.caliza.com/reference/gettransactionbyidwithdocuments.md
+  - https://docs.caliza.com/reference/gettransactionproofofpayment.md
+  - https://docs.caliza.com/reference/getverificationstatus.md
+  - https://docs.caliza.com/reference/issuedelegatetoken.md
+  - https://docs.caliza.com/reference/issuemanualattestation.md
+  - https://docs.caliza.com/reference/listrelatedpersons.md
+  - https://docs.caliza.com/reference/listvirtualaccounts.md
+  - https://docs.caliza.com/reference/payouts.md
+  - https://docs.caliza.com/reference/savebeneficiary.md
+  - https://docs.caliza.com/reference/searchvasps.md
+  - https://docs.caliza.com/reference/simulatetravelruleclearance.md
+  - https://docs.caliza.com/reference/startmicrotransfertest.md
+  - https://docs.caliza.com/reference/submitproof.md
+  - https://docs.caliza.com/reference/sweeppayouts.md
+  - https://docs.caliza.com/reference/updatebeneficiary.md
+  - https://docs.caliza.com/reference/updateintegratorwebhooksecret.md
+  - https://docs.caliza.com/reference/updateme.md
+  - https://docs.caliza.com/reference/updaterecipient.md
+  - https://docs.caliza.com/reference/updaterelatedperson.md
+  - https://docs.caliza.com/reference/updatewebhookconfig.md
+  - https://docs.caliza.com/reference/uploaddocument.md
+  merge:
+    pages: 68
+    deduped: 414
+    conflicts_kept_first: 0
