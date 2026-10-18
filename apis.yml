@@ -361,6 +361,8 @@ apis:
   humanURL: https://docs.caliza.com
   baseURL: https://api.caliza.com/core-api/v1
   tags:
+  - RelatedPerson
+  tags_raw:
   - Related Person
   properties:
   - type: OpenAPI
