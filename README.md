@@ -64,6 +64,154 @@
 > Full detail: **[Where this data comes from](https://apievangelist.com/about/where-our-data-comes-from)**
 <!-- API-EVANGELIST-PROVENANCE:END -->
 
-Caliza is a company surfaced as a portfolio company of initialized-capital, qed-investors and added to the API Evangelist network as a stub for enrichment. Sector: fintech. This profile is a lead awaiting the enrichment pipeline.
+Caliza is a financial infrastructure company providing compliant, real-time cross-border payments and USD account infrastructure for global businesses. The Caliza Core API lets integrators create individual and business beneficiaries (with KYC/KYB verification), issue named USD digital-dollar and multi-currency virtual accounts, simulate and execute transactions and payments across fiat and stablecoin rails (ACH, WIRE, SWIFT, RTP, PIX, SPEI, and blockchain networks including Ethereum, Polygon, Tron, Stellar, Base and Solana), run batch and sweep payouts, lock FX rates, manage recipients, and receive HMAC-signed webhook notifications for the full transaction and beneficiary lifecycle. Authentication is OAuth 2.0 (OpenID Connect / Keycloak) and a full sandbox environment with mock deposit simulators is provided. Caliza is backed by Initialized Capital and QED Investors.
 
-Backed by: initialized-capital, qed-investors — https://caliza.co/
+**Areas:** Company · Fintech · Payments · Cross-Border Payments · Stablecoins · Remittances · Foreign Exchange · Virtual Accounts · Payouts · KYC · Latin America
+
+## Caliza on APIs.io
+
+Everything profiled for Caliza is published on APIs.io rather than in this repository. Start at the provider page — **[apis.io/providers/caliza/](https://apis.io/providers/caliza/)** — or go straight to one of the APIs or properties below.
+
+### APIs (11)
+
+- [Caliza Beneficiary V1 API](https://apis.io/apis/caliza/caliza-beneficiary-v1-api/) — Manage beneficiaries (individuals and businesses) and their related resources. Endpoints cover creating, updating, enabling/disabling, deleting…
+- [Caliza Integrator Capabilities V1 API](https://apis.io/apis/caliza/caliza-integrator-capabilities-v1-api/) — Inspect and list the set of capabilities/features enabled for an integrator account (supported currencies, payment rails, transaction types, limits and…
+- [Caliza Integrator V1 API](https://apis.io/apis/caliza/caliza-integrator-v1-api/) — Integrator-level configuration and profile endpoints: manage integrator profile, credentials, webhook configuration and secrets, view integrator balances…
+- [Caliza KYC/KYB V1 API](https://apis.io/apis/caliza/caliza-kyc-kyb-v1-api/) — Manage KYC (Know Your Customer) and KYB (Know Your Business) verification for beneficiaries. Create interactive verification sessions that redirect users to…
+- [Caliza Payment V1 API](https://apis.io/apis/caliza/caliza-payment-v1-api/) — Payment-specific operations: create payments, attach supporting documents, set/update payment blockchain hashes and retrieve payment instructions. Use these…
+- [Caliza Recipient V1 API](https://apis.io/apis/caliza/caliza-recipient-v1-api/) — Manage saved payment recipients used as payout destinations. Create, retrieve, update, list and delete recipient profiles including bank/crypto details and…
+- [Caliza Related Person API](https://apis.io/apis/caliza/caliza-related-person-api/) — Manage related persons (e.g. beneficial owners, directors, representatives) linked to a beneficiary. Create, retrieve, update, list and delete related…
+- [Caliza Terms and Conditions V1 API](https://apis.io/apis/caliza/caliza-terms-and-conditions-v1-api/) — Retrieve the current terms & conditions document and record user acceptance. Use these endpoints to present legal terms to users and store auditable…
+- [Caliza Transaction V1 API](https://apis.io/apis/caliza/caliza-transaction-v1-api/) — Create, simulate, inspect and manage financial transactions. Includes endpoints to create transactions and simulations, retrieve transaction details, update…
+- [Caliza Transaction V1 Sandbox API](https://apis.io/apis/caliza/caliza-transaction-v1-sandbox-api/) — Sandbox-only transaction utilities for integration and testing. Simulate deposits, payouts and webhook notifications (PIX, SPEI, USD, etc.) without real…
+- [Caliza Travel Rule V1 API](https://apis.io/apis/caliza/caliza-travel-rule-v1-api/) — Crypto Travel Rule compliance endpoints. Collect wallet ownership proofs for self-hosted (non-custodial) wallet recipients — via wallet signature or…
+
+### Published properties
+
+Each property below is a page on APIs.io carrying the machine-readable artifact and what it says.
+
+#### AsyncAPI (1)
+
+Event-driven and webhook contracts.
+
+- [Caliza Webhooks](https://apis.io/asyncapis/caliza/caliza-webhooks/)
+
+#### MCP servers (1)
+
+Model Context Protocol servers that expose the API to agents.
+
+- [caliza](https://apis.io/servers/caliza/caliza/)
+
+#### Agentic access (1)
+
+Which operations an agent can call, which act, and which need a human in the loop.
+
+- [Caliza Agentic Access](https://apis.io/agentic-access/caliza/caliza-agentic-access/)
+
+#### JSON Schema (6)
+
+The data models the API reads and writes.
+
+- [PersonRequest](https://apis.io/schemas/caliza/caliza-person-request/)
+- [RecipientResponse](https://apis.io/schemas/caliza/caliza-recipient-response/)
+- [SimulationRequest](https://apis.io/schemas/caliza/caliza-simulation-request/)
+- [SimulationV2Request](https://apis.io/schemas/caliza/caliza-simulation-v2-request/)
+- [TransactionResponse](https://apis.io/schemas/caliza/caliza-transaction-response/)
+- [TravelRuleProofResponse](https://apis.io/schemas/caliza/caliza-travel-rule-proof-response/)
+
+#### JSON-LD (1)
+
+Linked-data contexts for the provider's vocabulary.
+
+- [Caliza Context](https://apis.io/jsonld/caliza/caliza-context/)
+
+#### Governance rules (1)
+
+Spectral rulesets for the provider's contracts.
+
+- [Caliza API Rules](https://apis.io/rules/caliza/caliza-rules/)
+
+#### Security (3)
+
+Authentication, trust centre, and vulnerability disclosure.
+
+- [Caliza Authentication](https://apis.io/security/caliza/caliza-authentication/)
+- [Caliza Domain Security](https://apis.io/security/caliza/caliza-domain-security/)
+- [Caliza Trust Center](https://apis.io/security/caliza/caliza-trust-center/)
+
+#### OAuth scopes (1)
+
+The permissions the API asks for.
+
+- [Caliza Scopes](https://apis.io/scopes/caliza/caliza-scopes/)
+
+## Where to find this API
+
+Links to the company's own pages. This repository publishes no copy of their specifications — the canonical document is theirs and lives at the URLs below.
+
+- [Website](https://www.caliza.com/)
+- [Documentation](https://docs.caliza.com)
+- [Getting started](https://docs.caliza.com/docs/authenticate)
+- [API reference](https://docs.caliza.com/reference/overview)
+- [Sign up](https://www.caliza.com/contact)
+- [Support](https://www.caliza.com/faq)
+- [Blog](https://www.caliza.com/blog)
+- [Trust centre](https://trust.caliza.com)
+- [Terms of service](https://cdn.prod.website-files.com/677ed676bd7257ea423799b4/69177a9c7494e512590531d7_Caliza%20US%20Website%20Terms%20-%2007.17.2025.pdf)
+- [Privacy policy](https://cdn.prod.website-files.com/677ed676bd7257ea423799b4/698a6522f0a64bd8dedb0942_Caliza%20US%20Privacy%20Policy%20-%20Final%2002.06.2026.docx.pdf)
+- [Status](https://status.caliza.com)
+
+## API Evangelist rating
+
+**Kin Score 53.7** — developing · rubric 0.25.0 · scored 2026-10-23
+
+| Facet | Score |
+|---|---|
+| Discoverability | 73.2 |
+| Contract quality | 71.3 |
+| Contract governance | 35.6 |
+| Operational transparency | 27.6 |
+| Developer ergonomics | 53.0 |
+| Access clarity | 42.1 |
+
+**Agent readiness 40.3** — agent-ready (gated down from agent-native)
+
+| Agent-readiness dimension | Result |
+|---|---|
+| Spec Presence | yes |
+| Agentic Access | derived (partial credit) |
+| Reversibility Documented | — |
+| MCP Server | — |
+| Auth Clarity | served (partial credit) |
+| Idempotency | — |
+| Error Semantics | documented (partial credit) |
+| OpenAPI Examples | partial |
+| Rate Limit Signal | — |
+| Event Surface Described | yes |
+| Agent Skills | derived (partial credit) |
+| Well Known Catalog | — |
+| Consent Identity | — |
+| Agent Card | — |
+| Dry Run Mode | — |
+| Delegated Identity | served (partial credit) |
+| Protected Resource Metadata | — |
+| Dynamic Client Registration | yes |
+| Agentic Commerce | — |
+| Pagination Ratio | — |
+| Operation Distinctiveness | distinct |
+
+**Regulatory alignment 35.7** — Payments
+
+The rubric is published at [github.com/api-evangelist/kin-score](https://github.com/api-evangelist/kin-score). The per-check breakdown behind these numbers — which checks were earned, partial or missed — along with score history and how this provider compares to its peers, is available at [apis.io/providers/caliza/](https://apis.io/providers/caliza/).
+
+## How this profile is made
+
+API Evangelist profiles a company's public API surface the way a developer would find it: the website, developer portal and documentation, the specifications it publishes, its public repositories, and its pricing, status and changelog pages. From that it derives the properties above — contracts split per API, workflows, schemas, collections, governance rules, plans and rate limits — and scores them against the published [Kin Score rubric](https://github.com/api-evangelist/kin-score).
+
+The artifacts are published on [APIs.io](https://apis.io), not in this repository. This repository is the public record for Caliza: the place to say something is wrong, missing or out of date, and to ask for a re-score or a removal.
+
+## Open an issue
+
+- **Something about this listing** — a wrong description, a missing API, a stale artifact or a question about the rating: [open an issue on this repository](https://github.com/api-evangelist/caliza/issues/new).
+- **A new API, or one that is not in the catalog yet** — [submit it on APIs.io](https://apis.io/add/).
+- **Anything else** — [the APIs.io inbox](https://github.com/api-search/inbox/issues/new) or [info@apievangelist.com](mailto:info@apievangelist.com).
